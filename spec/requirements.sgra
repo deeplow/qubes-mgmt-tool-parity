@@ -1,0 +1,89 @@
+[GRAMMAR]
+ELEMENTS:
+- TAG: SECTION
+  PROPERTIES:
+    IS_COMPOSITE: True
+  FIELDS:
+  - TITLE: TITLE
+    TYPE: String
+    REQUIRED: True
+- TAG: SYSTEM_GOAL
+  PROPERTIES:
+    PREFIX: L1-
+  FIELDS:
+  - TITLE: UID
+    TYPE: String
+    REQUIRED: True
+  - TITLE: TITLE
+    TYPE: String
+    REQUIRED: True
+  - TITLE: STATEMENT
+    TYPE: String
+    REQUIRED: True
+  - TITLE: RATIONALE
+    TYPE: String
+    REQUIRED: False
+- TAG: PRODUCT_REQUIREMENT
+  PROPERTIES:
+    PREFIX: L2-
+  FIELDS:
+  - TITLE: UID
+    TYPE: String
+    REQUIRED: True
+  - TITLE: TITLE
+    TYPE: String
+    REQUIRED: True
+  - TITLE: STATEMENT
+    TYPE: String
+    REQUIRED: True
+  - TITLE: EARS_PATTERN
+    TYPE: SingleChoice(Ubiquitous, Event-driven, State-driven, Optional-feature, Unwanted-behaviour, Complex)
+    REQUIRED: True
+  - TITLE: PRODUCT
+    TYPE: MultipleChoice(Ansible, Salt, QubesadminTools)
+    REQUIRED: True
+  - TITLE: RATIONALE
+    TYPE: String
+    REQUIRED: False
+  RELATIONS:
+  - TYPE: Parent
+    ROLE: Refines
+  - TYPE: File
+    ROLE: Authority
+- TAG: TECHNICAL_REQUIREMENT
+  PROPERTIES:
+    PREFIX: L3-
+  FIELDS:
+  - TITLE: UID
+    TYPE: String
+    REQUIRED: True
+  - TITLE: TITLE
+    TYPE: String
+    REQUIRED: True
+  - TITLE: STATEMENT
+    TYPE: String
+    REQUIRED: True
+  - TITLE: EARS_PATTERN
+    TYPE: SingleChoice(Ubiquitous, Event-driven, State-driven, Optional-feature, Unwanted-behaviour, Complex)
+    REQUIRED: True
+  - TITLE: PRODUCT
+    TYPE: SingleChoice(Ansible, Salt, QubesadminTools)
+    REQUIRED: True
+  - TITLE: STATUS
+    TYPE: SingleChoice(Implemented, Partial, Not Implemented)
+    REQUIRED: True
+  - TITLE: RATIONALE
+    TYPE: String
+    REQUIRED: False
+  - TITLE: DEFECT
+    TYPE: String
+    REQUIRED: False
+  RELATIONS:
+  - TYPE: Parent
+    ROLE: Refines
+  - TYPE: File
+    ROLE: Implementation
+  - TYPE: File
+    ROLE: Verification
+  - TYPE: File
+    ROLE: Authority

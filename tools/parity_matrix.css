@@ -1,0 +1,314 @@
+/*
+ * Feature-parity matrix styling.
+ *
+ * Loaded on every screen via `custom_css_path` in strictdoc_config.py, so every
+ * selector is scoped: either under `.parity` (the matrix wrapper) or under the
+ * `parity-` class prefix. Nothing here may affect other screens.
+ */
+
+/*
+ * One palette, shared by everything that draws a status. Declared on all three
+ * roots because the bar and the tally chips live outside .parity (they sit in
+ * their own metric values), and duplicating hex literals across them is how
+ * the matrix and its summary drift apart.
+ */
+.parity,
+.parity-bar {
+  --parity-full-bg: #e7f4ea;
+  --parity-full-fg: #1e6b32;
+  --parity-full-br: #b6ddc0;
+  --parity-part-bg: #fdf3d6;
+  --parity-part-fg: #85631a;
+  --parity-part-br: #e8d193;
+  --parity-none-bg: #fce9e7;
+  --parity-none-fg: #a52a1f;
+  --parity-none-br: #f0bcb6;
+  --parity-out-bg: #f4f4f5;
+  --parity-out-fg: #9b9ba1;
+  --parity-out-br: #e3e3e6;
+  --parity-line: #dcdce1;
+  --parity-chip-bg: #fff; /* the out-of-scope fill */
+}
+
+.parity {
+  /* Header height, so the ::before band can be sized from it. Mirrors
+     --traceability_matrix-thead-height in StrictDoc's own matrix screen. */
+  --parity-thead-height: calc(4 * var(--base-rhythm));
+  --parity-thead-amend: 2px; /* covers the border space */
+
+  width: 100%;
+
+  /* Deliberately no overflow here. Setting overflow-x makes overflow-y
+     compute to auto (CSS Overflow 3), which would turn this into a scroll
+     container on both axes; the sticky header below would then resolve
+     against this box instead of StrictDoc's .main and would never pin.
+     The table is table-layout:fixed/width:100% so it cannot overflow, and
+     if a narrow viewport forces it, .main scrolls instead. */
+}
+
+.parity-legend {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+
+.parity-hint {
+  color: #6b6b74;
+  font-size: 0.85em;
+  margin-left: 4px;
+}
+
+.parity-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+/*
+ * Sticky header. Follows the recipe StrictDoc uses on its own traceability
+ * matrix screen (features/traceability_matrix/assets/
+ * traceability_matrix_screen.css): sticky thead, z-index above the cells,
+ * and an opaque palette background -- --color-bg-secondary is translucent
+ * (rgba(0,0,0,.025)), so rows would scroll visibly through it.
+ *
+ * The scroll container is StrictDoc's .main (content.css: overflow:auto),
+ * not this table; nothing between .main and here creates a scrollport.
+ */
+.parity-table thead {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background-color: var(--color-bg-main, #f2f5f9);
+}
+
+/*
+ * .main pads its content by --base-gap, and the key-value cell adds its own
+ * padding; content scrolls through that strip, so without an opaque band
+ * rows appear above the pinned header.
+ *
+ * Safari does not establish a containing block for position:absolute
+ * children of sticky table elements, so this uses an explicit height rather
+ * than bottom: 0 -- the same caveat noted in StrictDoc's stylesheet.
+ */
+.parity-table thead::before {
+  content: '';
+  position: absolute;
+  top: calc(-1 * (var(--base-gap) + var(--base-rhythm)));
+  left: calc(var(--base-rhythm) * -2);
+  right: calc(var(--base-rhythm) * -2);
+  height: calc(
+    var(--base-gap) + var(--base-rhythm) + var(--parity-thead-height) +
+      var(--parity-thead-amend)
+  );
+  z-index: 0;
+  background-color: var(--color-bg-main, #f2f5f9);
+}
+
+.parity-table thead th {
+  /* position:relative keeps the label above the ::before band. */
+  position: relative;
+  height: var(--parity-thead-height);
+  vertical-align: middle;
+  background-color: var(--color-bg-main, #f2f5f9);
+  padding: 6px 8px;
+  text-align: left;
+  font-size: 0.75em;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #6b6b74;
+  border-bottom: 2px solid var(--parity-line);
+}
+
+.parity-table thead th:first-child {
+  width: 34%;
+}
+
+.parity-table tbody th,
+.parity-table tbody td {
+  border: 1px solid var(--parity-line);
+  padding: 4px 6px;
+  vertical-align: top;
+}
+
+/*
+ * Second sticky level: the area label pins directly under the column header.
+ * Offset is built from the header's own height variables so the two bands
+ * meet exactly; z-index stays below the thead's 2 so the header paints over
+ * it. Sticky goes on the td, not the tr -- the reliable form under
+ * border-collapse: collapse, and the same choice StrictDoc makes.
+ * Requires one <tbody> per area group (see _render_matrix).
+ */
+.parity-table tr.area td {
+  position: sticky;
+  top: calc(var(--parity-thead-height) + var(--parity-thead-amend));
+  z-index: 1;
+  background: #f7f7f9; /* opaque: rows must not show through */
+  font-size: 0.75em;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #6b6b74;
+  padding: 4px 8px;
+}
+
+.parity-table th.req {
+  text-align: left;
+  font-weight: 400;
+}
+
+.parity-table th.req .uid {
+  display: block;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.82em;
+  color: #6b6b74;
+}
+
+.parity-table th.req .rt {
+  display: block;
+}
+
+.parity .cell.full { background: var(--parity-full-bg); }
+.parity .cell.partial { background: var(--parity-part-bg); }
+.parity .cell.none { background: var(--parity-none-bg); }
+
+.parity .cell.out {
+  background: repeating-linear-gradient(
+    45deg,
+    var(--parity-out-bg),
+    var(--parity-out-bg) 5px,
+    #ececef 5px,
+    #ececef 10px
+  );
+  text-align: center;
+}
+
+.parity .cell.out .dash { color: var(--parity-out-fg); }
+
+/* Unreachable while audit_spec.py's fan-out check passes: loud on purpose. */
+.parity .cell.missing {
+  background: #ff00ff;
+  color: #fff;
+  font-weight: 700;
+  text-align: center;
+}
+
+.parity .chip {
+  display: inline-block;
+  margin: 1px 1px 1px 0;
+  padding: 1px 5px;
+  border-radius: 3px;
+  border: 1px solid transparent;
+  background: #fff;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.78em;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.parity .chip.full { color: var(--parity-full-fg); border-color: var(--parity-full-br); }
+.parity .chip.partial { color: var(--parity-part-fg); border-color: var(--parity-part-br); }
+.parity .chip.none { color: var(--parity-none-fg); border-color: var(--parity-none-br); }
+.parity .chip.out { color: var(--parity-out-fg); border-color: var(--parity-out-br); }
+
+.parity a.chip:hover { filter: brightness(0.94); }
+
+.parity-legend .chip {
+  font-family: inherit;
+  font-size: 0.8em;
+  padding: 2px 8px;
+}
+
+/*
+ * Per-column stacked bar. Segment widths and labels come from the same integer
+ * percentages, so the bar always fills the track exactly. Fills use the
+ * saturated end of the same palette the matrix cells use, so a column's bar
+ * and its grid column read as the same colour.
+ */
+.parity-bar {
+  display: flex;
+  /* stretch, not center: the track then takes its height from the tallest
+     item on the row -- the out-of-scope chip -- so the two always match
+     without hardcoding a pixel height that would drift if the chip's font
+     size or padding changed. */
+  align-items: stretch;
+  gap: 8px;
+  width: 100%;
+}
+
+.parity-bar-track {
+  display: flex;
+  flex: 1 1 auto;
+  min-width: 0;
+  /* No fixed height: .parity-bar stretches this to the chip's height. */
+  border: 1px solid var(--parity-line); /* same framing as the grid cells */
+  border-radius: 3px; /* matches the chips */
+  overflow: hidden;
+  background: var(--parity-out-bg);
+}
+
+.parity-bar-seg {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  min-width: 0;
+  overflow: hidden;
+  padding: 3px 0; /* sets the track height now that the chip is gone */
+  font-size: 0.72em;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* Pale fill with the matching darker text: the same pairing the grid cells
+   and chips use, so a column's bar reads as the same colour as its column. */
+.parity-bar-seg.full {
+  background: var(--parity-full-bg);
+  color: var(--parity-full-fg);
+}
+
+.parity-bar-seg.partial {
+  background: var(--parity-part-bg);
+  color: var(--parity-part-fg);
+}
+
+.parity-bar-seg.none {
+  background: var(--parity-none-bg);
+  color: var(--parity-none-fg);
+}
+
+.parity-bar-seg.out {
+  background: var(--parity-chip-bg);
+  color: var(--parity-out-fg);
+}
+
+/* Pale fills sit flush, so give adjacent segments a hairline of separation. */
+.parity-bar-seg:not(:last-child) {
+  border-right: 1px solid var(--parity-line);
+}
+
+
+/*
+ * Drop the key cell beside the matrix.
+ *
+ * StrictDoc's key-value component renders every metric as a key cell plus a
+ * value cell. The container stretches items, so the matrix's key cell becomes
+ * a full-height strip as tall as the whole table, sized to the widest key in
+ * the grid ("Deliberately out of scope"). Its label is not sticky, so once you
+ * scroll it reads as a blank column beside the pinned header. The section
+ * title above the table already names it, so the cell carries nothing.
+ *
+ * These are the only selectors here not prefixed .parity. Both are gated on a
+ * .parity descendant, which exists on this screen only, so the globally-loaded
+ * stylesheet still cannot affect any other screen. If :has() is unsupported or
+ * StrictDoc renames these classes, the rules simply stop matching and the
+ * previous layout returns.
+ */
+.sdoc-table_key_value-key:has(+ .sdoc-table_key_value-value > .parity) {
+  display: none;
+}
+
+.sdoc-table_key_value-value:has(> .parity) {
+  grid-column: 1 / -1;
+}

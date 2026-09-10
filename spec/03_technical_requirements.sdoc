@@ -1,0 +1,3922 @@
+[DOCUMENT]
+TITLE: L3 — Technical Requirements
+UID: QMGMT-L3
+VERSION: 0.1
+OPTIONS:
+  MARKUP: RST
+  AUTO_LEVELS: On
+
+[GRAMMAR]
+IMPORT_FROM_FILE: requirements.sgra
+
+[[SECTION]]
+TITLE: Ansible
+
+[[SECTION]]
+TITLE: Qube lifecycle
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-ANS-001
+TITLE: Qube creation
+STATEMENT: >>>
+When the declared qube does not exist, the qube module shall create it with the
+declared class and template.
+<<<
+EARS_PATTERN: Event-driven
+PRODUCT: Ansible
+STATUS: Implemented
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-LIFECYCLE-01
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-ansible/ansible_collections/qubesos/core/plugins/module_utils/qubes_module_qube.py
+  ELEMENT: function
+  ID: QubeModule.enforce_existence
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-ansible/ansible_collections/qubesos/core/plugins/module_utils/qubes_helper.py
+  ELEMENT: function
+  ID: QubesHelper.create
+- TYPE: File
+  ROLE: Verification
+  PATH: qubes-ansible/tests/qubes/test_module_qube.py
+  ELEMENT: function
+  ID: test_lifecycle_full_create_start_shutdown_remove
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-ANS-002
+TITLE: Qube cloning
+STATEMENT: >>>
+When a clone source is declared and the qube does not exist, the qube module
+shall copy that source.
+<<<
+EARS_PATTERN: Event-driven
+PRODUCT: Ansible
+STATUS: Partial
+DEFECT: >>>
+The clone is taken with ``ignore_devices=True``, so the source qube's device
+assignments are not carried over to the copy
+(qubes-ansible/ansible_collections/qubesos/core/plugins/module_utils/qubes_module_qube.py:252).
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-LIFECYCLE-02
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-ansible/ansible_collections/qubesos/core/plugins/module_utils/qubes_module_qube.py
+  ELEMENT: function
+  ID: QubeModule.enforce_existence
+- TYPE: File
+  ROLE: Verification
+  PATH: qubes-ansible/tests/qubes/test_module_qube.py
+  ELEMENT: function
+  ID: test_create_clone_vmtype_combinations
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-ANS-003
+TITLE: Qube removal
+STATEMENT: >>>
+When state ``absent`` is declared, the qube module shall delete the qube
+together with its volumes.
+<<<
+EARS_PATTERN: Event-driven
+PRODUCT: Ansible
+STATUS: Partial
+DEFECT: >>>
+The wait for the qube to reach the shutdown state is an unbounded ``while True``
+loop with no timeout, so a qube that never halts hangs the play
+(qubes-ansible/ansible_collections/qubesos/core/plugins/module_utils/qubes_helper.py:319).
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-LIFECYCLE-03
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-ansible/ansible_collections/qubesos/core/plugins/module_utils/qubes_helper.py
+  ELEMENT: function
+  ID: QubesHelper.remove
+- TYPE: File
+  ROLE: Verification
+  PATH: qubes-ansible/tests/qubes/test_module_qube.py
+  ELEMENT: function
+  ID: test_lifecycle_create_and_absent
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-ANS-004
+TITLE: Qube start
+STATEMENT: >>>
+When state ``running`` is declared for a halted qube, the qube module shall
+start it.
+<<<
+EARS_PATTERN: Event-driven
+PRODUCT: Ansible
+STATUS: Implemented
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-LIFECYCLE-04
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-ansible/ansible_collections/qubesos/core/plugins/module_utils/qubes_module_qube.py
+  ELEMENT: function
+  ID: QubeModule.enforce_state
+- TYPE: File
+  ROLE: Verification
+  PATH: qubes-ansible/tests/qubes/test_module_qube.py
+  ELEMENT: function
+  ID: test_lifecycle_create_running_vm
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-ANS-005
+TITLE: Graceful shutdown
+STATEMENT: >>>
+When state ``halted`` is declared for a running qube, the qube module shall shut
+it down before returning.
+<<<
+EARS_PATTERN: Event-driven
+PRODUCT: Ansible
+STATUS: Implemented
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-LIFECYCLE-05
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-ansible/ansible_collections/qubesos/core/plugins/module_utils/qubes_helper.py
+  ELEMENT: function
+  ID: QubesHelper.shutdown
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-ansible/ansible_collections/qubesos/core/plugins/module_utils/qubes_module_qube.py
+  ELEMENT: function
+  ID: QubeModule.run
+- TYPE: File
+  ROLE: Verification
+  PATH: qubes-ansible/tests/qubes/test_module_qube.py
+  ELEMENT: function
+  ID: test_lifecycle_full_create_start_shutdown_remove
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-ANS-006
+TITLE: Forced shutdown
+STATEMENT: >>>
+Where ``force`` is declared, the qube module shall shut the qube down regardless
+of the domains connected to it.
+<<<
+EARS_PATTERN: Optional-feature
+PRODUCT: Ansible
+STATUS: Implemented
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-LIFECYCLE-05
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-ansible/ansible_collections/qubesos/core/plugins/module_utils/qubes_helper.py
+  ELEMENT: function
+  ID: QubesHelper.shutdown
+- TYPE: File
+  ROLE: Verification
+  PATH: qubes-ansible/tests/qubes/test_module_qube.py
+  ELEMENT: function
+  ID: test_lifecycle_shutdown_force_with_dependent
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-ANS-007
+TITLE: Qube kill
+STATEMENT: >>>
+When state ``destroyed`` is declared, the qube module shall kill the qube
+without a graceful shutdown.
+<<<
+EARS_PATTERN: Event-driven
+PRODUCT: Ansible
+STATUS: Partial
+RATIONALE: >>>
+``admin.vm.Kill`` and ``admin.vm.Shutdown`` are separate endpoints, and no
+argument to Shutdown destroys a running qube. The documented hard kill is
+therefore reachable only through Kill, which the graceful path never calls.
+<<<
+DEFECT: >>>
+``destroyed`` is normalised to ``halted`` and routed to the graceful shutdown
+path, so the documented ``qvm-kill`` equivalent never reaches ``admin.vm.Kill``
+(qubes-ansible/ansible_collections/qubesos/core/plugins/module_utils/qubes_module_qube.py:94).
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-LIFECYCLE-05
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-ansible/ansible_collections/qubesos/core/plugins/module_utils/qubes_helper.py
+  ELEMENT: function
+  ID: QubesHelper.destroy
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-ansible/ansible_collections/qubesos/core/plugins/module_utils/qubes_module_qube.py
+  ELEMENT: function
+  ID: QubeModule.__init__
+- TYPE: File
+  ROLE: Authority
+  PATH: qubes-core-admin/qubes/api/admin.py
+  ELEMENT: function
+  ID: QubesAdminAPI.vm_kill
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-ANS-008
+TITLE: Pause and resume
+STATEMENT: >>>
+The qube module shall move the qube between the running and paused states to
+match the declared state.
+<<<
+EARS_PATTERN: Ubiquitous
+PRODUCT: Ansible
+STATUS: Implemented
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-LIFECYCLE-06
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-ansible/ansible_collections/qubesos/core/plugins/module_utils/qubes_module_qube.py
+  ELEMENT: function
+  ID: QubeModule.enforce_state
+- TYPE: File
+  ROLE: Verification
+  PATH: qubes-ansible/tests/qubes/test_module_qube.py
+  ELEMENT: function
+  ID: test_lifecycle_pause_and_resume
+
+[[/SECTION]]
+
+[[SECTION]]
+TITLE: Qube configuration
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-ANS-009
+TITLE: Property configuration
+STATEMENT: >>>
+The qube module shall set each property named in the ``properties`` parameter to
+its declared value.
+<<<
+EARS_PATTERN: Ubiquitous
+PRODUCT: Ansible
+STATUS: Implemented
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-CONFIG-01
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-ansible/ansible_collections/qubesos/core/plugins/module_utils/qubes_module_qube.py
+  ELEMENT: function
+  ID: QubeModule.enforce_properties
+- TYPE: File
+  ROLE: Verification
+  PATH: qubes-ansible/tests/qubes/test_module_qube.py
+  ELEMENT: function
+  ID: test_properties_and_features_set_and_tag_vm
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-ANS-010
+TITLE: Property reset to default
+STATEMENT: >>>
+When a property is declared as ``*default*``, the qube module shall restore that
+property to its default value.
+<<<
+EARS_PATTERN: Event-driven
+PRODUCT: Ansible
+STATUS: Implemented
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-CONFIG-02
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-ansible/ansible_collections/qubesos/core/plugins/module_utils/qubes_module_qube.py
+  ELEMENT: function
+  ID: QubeModule.enforce_properties
+- TYPE: File
+  ROLE: Verification
+  PATH: qubes-ansible/tests/qubes/test_module_qube.py
+  ELEMENT: function
+  ID: test_properties_reset_to_default_netvm
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-ANS-011
+TITLE: Feature configuration
+STATEMENT: >>>
+The qube module shall set each feature named in the ``features`` parameter to
+its declared value.
+<<<
+EARS_PATTERN: Ubiquitous
+PRODUCT: Ansible
+STATUS: Implemented
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-CONFIG-03
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-ansible/ansible_collections/qubesos/core/plugins/module_utils/qubes_module_qube.py
+  ELEMENT: function
+  ID: QubeModule.enforce_features
+- TYPE: File
+  ROLE: Verification
+  PATH: qubes-ansible/tests/qubes/test_module_qube.py
+  ELEMENT: function
+  ID: test_features_vm
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-ANS-012
+TITLE: Service enablement
+STATEMENT: >>>
+The qube module shall enable each name in the ``services`` parameter through its
+matching ``service.`` feature.
+<<<
+EARS_PATTERN: Ubiquitous
+PRODUCT: Ansible
+STATUS: Implemented
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-CONFIG-04
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-ansible/ansible_collections/qubesos/core/plugins/module_utils/qubes_module_qube.py
+  ELEMENT: function
+  ID: QubeModule.validate_services
+- TYPE: File
+  ROLE: Verification
+  PATH: qubes-ansible/tests/qubes/test_module_qube.py
+  ELEMENT: function
+  ID: test_services_aliased_to_features_only
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-ANS-013
+TITLE: Tag configuration
+STATEMENT: >>>
+The qube module shall bring the qube's tag set to the tags declared in the
+``tags`` parameter.
+<<<
+EARS_PATTERN: Ubiquitous
+PRODUCT: Ansible
+STATUS: Partial
+DEFECT: >>>
+Tag handling is additive only — a tag present on the qube but absent from the
+declared set is never removed, so a tag set cannot be converged
+(qubes-ansible/ansible_collections/qubesos/core/plugins/module_utils/qubes_module_qube.py:363).
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-CONFIG-05
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-ansible/ansible_collections/qubesos/core/plugins/module_utils/qubes_module_qube.py
+  ELEMENT: function
+  ID: QubeModule.enforce_tags
+- TYPE: File
+  ROLE: Verification
+  PATH: qubes-ansible/tests/qubes/test_module_qube.py
+  ELEMENT: function
+  ID: test_properties_and_features_set_and_tag_vm
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-ANS-014
+TITLE: Tag removal command
+STATEMENT: >>>
+When the ``removetags`` command is issued, the command module shall remove every
+listed tag from the qube.
+<<<
+EARS_PATTERN: Event-driven
+PRODUCT: Ansible
+STATUS: Partial
+DEFECT: >>>
+``contextlib.suppress`` wraps the whole removal loop, so the first tag that is
+not present aborts every remaining removal
+(qubes-ansible/ansible_collections/qubesos/core/plugins/module_utils/qubes_module_command.py:165).
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-CONFIG-05
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-ansible/ansible_collections/qubesos/core/plugins/module_utils/qubes_module_command.py
+  ELEMENT: function
+  ID: remove_tags
+- TYPE: File
+  ROLE: Verification
+  PATH: qubes-ansible/tests/qubes/test_module_command.py
+  ELEMENT: function
+  ID: test_removetags_errors_if_no_tags_present
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-ANS-015
+TITLE: Qube notes
+STATEMENT: >>>
+The qube module shall set the qube's notes to the text declared in the ``notes``
+parameter.
+<<<
+EARS_PATTERN: Ubiquitous
+PRODUCT: Ansible
+STATUS: Implemented
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-CONFIG-06
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-ansible/ansible_collections/qubesos/core/plugins/module_utils/qubes_module_qube.py
+  ELEMENT: function
+  ID: QubeModule.enforce_notes
+- TYPE: File
+  ROLE: Verification
+  PATH: qubes-ansible/tests/qubes/test_module_qube.py
+  ELEMENT: function
+  ID: test_notes
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-ANS-016
+TITLE: Notes size limit
+STATEMENT: >>>
+If the declared notes exceed 256 000 bytes, then the qube module shall reject the
+change.
+<<<
+EARS_PATTERN: Unwanted-behaviour
+PRODUCT: Ansible
+STATUS: Not Implemented
+DEFECT: >>>
+The module applies notes with no size check of its own, so oversized notes reach
+qubesd and the limit is enforced only there
+(qubes-ansible/ansible_collections/qubesos/core/plugins/module_utils/qubes_module_qube.py:288).
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-CONFIG-07
+  ROLE: Refines
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-ANS-017
+TITLE: Qube class immutability
+STATEMENT: >>>
+If the declared class differs from the existing qube's class, then the qube
+module shall fail the task.
+<<<
+EARS_PATTERN: Unwanted-behaviour
+PRODUCT: Ansible
+STATUS: Implemented
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-CONFIG-08
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-ansible/ansible_collections/qubesos/core/plugins/module_utils/qubes_module_qube.py
+  ELEMENT: function
+  ID: QubeModule.validate_module_parameters
+- TYPE: File
+  ROLE: Verification
+  PATH: qubes-ansible/tests/qubes/test_module_qube.py
+  ELEMENT: function
+  ID: test_no_vm_klass_should_no_try_to_convert_to_appvm
+- TYPE: File
+  ROLE: Authority
+  PATH: qubes-core-admin/qubes/api/admin.py
+  ELEMENT: function
+  ID: QubesAdminAPI.vm_create
+
+[[/SECTION]]
+
+[[SECTION]]
+TITLE: Storage and volumes
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-ANS-018
+TITLE: Volume resize
+STATEMENT: >>>
+The qube module shall resize a declared volume to the declared size.
+<<<
+EARS_PATTERN: Ubiquitous
+PRODUCT: Ansible
+STATUS: Implemented
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-STORAGE-01
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-ansible/ansible_collections/qubesos/core/plugins/module_utils/qubes_module_qube.py
+  ELEMENT: function
+  ID: QubeModule.enforce_volumes
+- TYPE: File
+  ROLE: Verification
+  PATH: qubes-ansible/tests/qubes/test_module_qube.py
+  ELEMENT: function
+  ID: test_volumes_list_for_standalonevm
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-ANS-019
+TITLE: Volume revision retention
+STATEMENT: >>>
+The qube module shall set a declared volume's retained revision count to the
+declared value.
+<<<
+EARS_PATTERN: Ubiquitous
+PRODUCT: Ansible
+STATUS: Implemented
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-STORAGE-02
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-ansible/ansible_collections/qubesos/core/plugins/module_utils/qubes_module_qube.py
+  ELEMENT: function
+  ID: QubeModule.enforce_volumes
+- TYPE: File
+  ROLE: Verification
+  PATH: qubes-ansible/tests/qubes/test_module_qube.py
+  ELEMENT: function
+  ID: test_volumes_list_for_standalonevm
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-ANS-020
+TITLE: Storage pool selection
+STATEMENT: >>>
+The qube module shall place a qube's volumes in the declared storage pool.
+<<<
+EARS_PATTERN: Ubiquitous
+PRODUCT: Ansible
+STATUS: Not Implemented
+DEFECT: >>>
+There is no pool parameter, and volume enforcement recognises only ``size`` and
+``revisions_to_keep`` while silently ignoring any other key
+(qubes-ansible/ansible_collections/qubesos/core/plugins/module_utils/qubes_module_qube.py:382).
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-STORAGE-03
+  ROLE: Refines
+
+[[/SECTION]]
+
+[[SECTION]]
+TITLE: Device assignment
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-ANS-021
+TITLE: Persistent device assignment
+STATEMENT: >>>
+The qube module shall assign each device declared in the ``devices`` parameter
+to the qube.
+<<<
+EARS_PATTERN: Ubiquitous
+PRODUCT: Ansible
+STATUS: Implemented
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-DEVICE-02
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-ansible/ansible_collections/qubesos/core/plugins/module_utils/qubes_helper.py
+  ELEMENT: function
+  ID: QubesHelper.assign
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-ansible/ansible_collections/qubesos/core/plugins/module_utils/qubes_module_qube.py
+  ELEMENT: function
+  ID: QubeModule.enforce_devices
+- TYPE: File
+  ROLE: Verification
+  PATH: qubes-ansible/tests/qubes/test_module_qube.py
+  ELEMENT: function
+  ID: test_devices_strict_single_pci_assignment
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-ANS-022
+TITLE: Strict device strategy
+STATEMENT: >>>
+Where the ``strict`` device strategy applies, the qube module shall unassign
+devices absent from the desired state.
+<<<
+EARS_PATTERN: Optional-feature
+PRODUCT: Ansible
+STATUS: Implemented
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-DEVICE-02
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-ansible/ansible_collections/qubesos/core/plugins/module_utils/qubes_helper.py
+  ELEMENT: function
+  ID: QubesHelper.sync_devices
+- TYPE: File
+  ROLE: Verification
+  PATH: qubes-ansible/tests/qubes/test_module_qube.py
+  ELEMENT: function
+  ID: test_devices_strict_unassign_all
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-ANS-023
+TITLE: Append device strategy
+STATEMENT: >>>
+Where the ``append`` device strategy is declared, the qube module shall leave
+undeclared assignments in place.
+<<<
+EARS_PATTERN: Optional-feature
+PRODUCT: Ansible
+STATUS: Implemented
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-DEVICE-02
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-ansible/ansible_collections/qubesos/core/plugins/module_utils/qubes_module_qube.py
+  ELEMENT: function
+  ID: QubeModule._enforce_device_class_append_mode
+- TYPE: File
+  ROLE: Verification
+  PATH: qubes-ansible/tests/qubes/test_module_qube.py
+  ELEMENT: function
+  ID: test_devices_append_strategy_adds_without_removal
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-ANS-024
+TITLE: Device assignment mode
+STATEMENT: >>>
+The qube module shall assign a device in the mode declared for that device.
+<<<
+EARS_PATTERN: Ubiquitous
+PRODUCT: Ansible
+STATUS: Implemented
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-DEVICE-03
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-ansible/ansible_collections/qubesos/core/plugins/module_utils/qubes_module_qube.py
+  ELEMENT: function
+  ID: QubeModule.validate_devices
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-ansible/ansible_collections/qubesos/core/plugins/module_utils/qubes_helper.py
+  ELEMENT: function
+  ID: QubesHelper.sync_devices
+- TYPE: File
+  ROLE: Verification
+  PATH: qubes-ansible/tests/qubes/test_module_qube.py
+  ELEMENT: function
+  ID: test_devices_per_device_mode_and_options
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-ANS-025
+TITLE: PCI assignment mode
+STATEMENT: >>>
+Where no mode is declared for a pci device, the qube module shall assign it as
+required.
+<<<
+EARS_PATTERN: Optional-feature
+PRODUCT: Ansible
+STATUS: Implemented
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-DEVICE-04
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-ansible/ansible_collections/qubesos/core/plugins/module_utils/qubes_helper.py
+  ELEMENT: function
+  ID: QubesHelper.sync_devices
+- TYPE: File
+  ROLE: Verification
+  PATH: qubes-ansible/tests/qubes/test_module_qube.py
+  ELEMENT: function
+  ID: test_devices_strict_single_pci_assignment
+- TYPE: File
+  ROLE: Authority
+  PATH: qubes-core-admin/qubes/api/admin.py
+  ELEMENT: function
+  ID: QubesAdminAPI.vm_device_assign
+
+[[/SECTION]]
+
+[[SECTION]]
+TITLE: Network and firewall
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-ANS-026
+TITLE: Netvm validation
+STATEMENT: >>>
+If the qube declared as ``netvm`` does not provide network, then the qube module
+shall fail the task.
+<<<
+EARS_PATTERN: Unwanted-behaviour
+PRODUCT: Ansible
+STATUS: Implemented
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-NET-01
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-ansible/ansible_collections/qubesos/core/plugins/module_utils/qubes_module_qube.py
+  ELEMENT: function
+  ID: QubeModule.validate_properties
+- TYPE: File
+  ROLE: Verification
+  PATH: qubes-ansible/tests/qubes/test_module_qube.py
+  ELEMENT: function
+  ID: test_properties_missing_netvm
+- TYPE: File
+  ROLE: Authority
+  PATH: qubes-core-admin/qubes/api/admin.py
+  ELEMENT: function
+  ID: QubesAdminAPI.vm_property_set
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-ANS-027
+TITLE: Firewall rule set
+STATEMENT: >>>
+The qube module shall replace a qube's firewall rules with the declared ordered
+rule set.
+<<<
+EARS_PATTERN: Ubiquitous
+PRODUCT: Ansible
+STATUS: Not Implemented
+DEFECT: >>>
+The module argument spec has no firewall parameter, so firewall rules cannot be
+declared at all
+(qubes-ansible/ansible_collections/qubesos/core/plugins/module_utils/qubes_module_qube.py:610).
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-NET-02
+  ROLE: Refines
+
+[[/SECTION]]
+
+[[SECTION]]
+TITLE: Convergence
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-ANS-028
+TITLE: Idempotent property write
+STATEMENT: >>>
+The qube module shall write a property only when its current value differs from
+the declared value.
+<<<
+EARS_PATTERN: Ubiquitous
+PRODUCT: Ansible
+STATUS: Implemented
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-CONV-01
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-ansible/ansible_collections/qubesos/core/plugins/module_utils/qubes_module_qube.py
+  ELEMENT: function
+  ID: QubeModule.enforce_properties
+- TYPE: File
+  ROLE: Verification
+  PATH: qubes-ansible/tests/qubes/test_module_qube.py
+  ELEMENT: function
+  ID: test_change_properties_should_occur_only_when_necessary
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-ANS-029
+TITLE: Change reporting
+STATEMENT: >>>
+The qube module shall report the attributes it changed, with their values before
+and after the run.
+<<<
+EARS_PATTERN: Ubiquitous
+PRODUCT: Ansible
+STATUS: Implemented
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-CONV-02
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-ansible/ansible_collections/qubesos/core/plugins/module_utils/qubes_module_qube.py
+  ELEMENT: function
+  ID: QubeModule.run
+- TYPE: File
+  ROLE: Verification
+  PATH: qubes-ansible/tests/qubes/test_module_qube.py
+  ELEMENT: function
+  ID: test_change_properties_should_occur_only_when_necessary
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-ANS-030
+TITLE: Dry-run forwarding
+STATEMENT: >>>
+Where a check run is requested, the qubes_proxy strategy shall pass ``--check``
+to the playbook run in the DispVM.
+<<<
+EARS_PATTERN: Optional-feature
+PRODUCT: Ansible
+STATUS: Implemented
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-CONV-03
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-ansible/ansible_collections/qubesos/security/plugins/strategy/qubes_proxy.py
+  ELEMENT: function
+  ID: QubesPlayExecutor._build_ansible_args
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-ANS-031
+TITLE: Module check mode
+STATEMENT: >>>
+Where a check run is requested, the qube module shall report the changes it
+would make without applying them.
+<<<
+EARS_PATTERN: Optional-feature
+PRODUCT: Ansible
+STATUS: Not Implemented
+DEFECT: >>>
+The argument spec declares no ``supports_check_mode``, so Ansible skips the
+module under ``--check`` and the preview forwarded by the proxy strategy never
+reaches it
+(qubes-ansible/ansible_collections/qubesos/core/plugins/module_utils/qubes_module_qube.py:609).
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-CONV-03
+  ROLE: Refines
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-ANS-032
+TITLE: Ordered enforcement
+STATEMENT: >>>
+The qube module shall apply a qube's declared configuration before bringing it
+to the declared power state.
+<<<
+EARS_PATTERN: Ubiquitous
+PRODUCT: Ansible
+STATUS: Implemented
+RATIONALE: >>>
+Properties such as ``template`` can only be changed while the qube is halted, so
+a run that started the qube first could never converge.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-CONV-04
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-ansible/ansible_collections/qubesos/core/plugins/module_utils/qubes_module_qube.py
+  ELEMENT: function
+  ID: QubeModule.enforce_all
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-ansible/ansible_collections/qubesos/core/plugins/module_utils/qubes_module_qube.py
+  ELEMENT: function
+  ID: QubeModule._shutdown_for_template_update
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-ANS-033
+TITLE: Precondition validation
+STATEMENT: >>>
+The qube module shall validate every declared parameter before making any change
+to the qube.
+<<<
+EARS_PATTERN: Ubiquitous
+PRODUCT: Ansible
+STATUS: Implemented
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-CONV-05
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-ansible/ansible_collections/qubesos/core/plugins/module_utils/qubes_module_qube.py
+  ELEMENT: function
+  ID: QubeModule.validate_module_parameters
+- TYPE: File
+  ROLE: Verification
+  PATH: qubes-ansible/tests/qubes/test_module_qube.py
+  ELEMENT: function
+  ID: test_properties_invalid_volume_name_for_appvm
+
+[[/SECTION]]
+
+[[SECTION]]
+TITLE: Inspection
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-ANS-034
+TITLE: Qube listing
+STATEMENT: >>>
+The command module shall list the qubes whose power state matches the requested
+state.
+<<<
+EARS_PATTERN: Ubiquitous
+PRODUCT: Ansible
+STATUS: Implemented
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-INSPECT-01
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-ansible/ansible_collections/qubesos/core/plugins/module_utils/qubes_helper.py
+  ELEMENT: function
+  ID: QubesHelper.list_vms
+- TYPE: File
+  ROLE: Verification
+  PATH: qubes-ansible/tests/qubes/test_module_command.py
+  ELEMENT: function
+  ID: test_list_vms_command
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-ANS-035
+TITLE: Power state reporting
+STATEMENT: >>>
+The command module shall report the current power state of a named qube.
+<<<
+EARS_PATTERN: Ubiquitous
+PRODUCT: Ansible
+STATUS: Implemented
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-INSPECT-02
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-ansible/ansible_collections/qubesos/core/plugins/module_utils/qubes_helper.py
+  ELEMENT: function
+  ID: QubesHelper.status
+- TYPE: File
+  ROLE: Verification
+  PATH: qubes-ansible/tests/qubes/test_module_command.py
+  ELEMENT: function
+  ID: test_lifecycle_status_reporting
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-ANS-036
+TITLE: Qube fact reporting
+STATEMENT: >>>
+The qube_facts module shall report the qube's properties, features and tags.
+<<<
+EARS_PATTERN: Ubiquitous
+PRODUCT: Ansible
+STATUS: Implemented
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-INSPECT-03
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-ansible/ansible_collections/qubesos/core/plugins/modules/qube_facts.py
+  ELEMENT: function
+  ID: core
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-ansible/ansible_collections/qubesos/core/plugins/modules/qube_facts.py
+  ELEMENT: function
+  ID: get_qube_properties
+- TYPE: File
+  ROLE: Verification
+  PATH: qubes-ansible/tests/qubes/test_module_qube_facts.py
+  ELEMENT: function
+  ID: test_facts_contains_properties
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-ANS-037
+TITLE: Service fact reporting
+STATEMENT: >>>
+The qube_facts module shall report each of the qube's services as enabled or
+disabled.
+<<<
+EARS_PATTERN: Ubiquitous
+PRODUCT: Ansible
+STATUS: Partial
+DEFECT: >>>
+The reported value is ``bool(feature_value)``, so a service feature set to the
+string ``"0"`` — a disabled service — is reported as enabled
+(qubes-ansible/ansible_collections/qubesos/core/plugins/modules/qube_facts.py:189).
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-INSPECT-03
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-ansible/ansible_collections/qubesos/core/plugins/modules/qube_facts.py
+  ELEMENT: function
+  ID: core
+- TYPE: File
+  ROLE: Verification
+  PATH: qubes-ansible/tests/qubes/test_module_qube_facts.py
+  ELEMENT: function
+  ID: test_services_are_subset_of_features
+
+[[/SECTION]]
+
+[[SECTION]]
+TITLE: Command execution
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-ANS-038
+TITLE: Command execution in qube
+STATEMENT: >>>
+The qubes connection plugin shall return the exit status of the command it runs
+inside the target qube.
+<<<
+EARS_PATTERN: Ubiquitous
+PRODUCT: Ansible
+STATUS: Implemented
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-EXEC-01
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-ansible/ansible_collections/qubesos/core/plugins/connection/qubes.py
+  ELEMENT: function
+  ID: Connection.exec_command
+- TYPE: File
+  ROLE: Verification
+  PATH: qubes-ansible/tests/qubes/test_cli.py
+  ELEMENT: function
+  ID: test_vm_connection
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-ANS-039
+TITLE: File upload to qube
+STATEMENT: >>>
+The qubes connection plugin shall copy a dom0 file into the target qube at the
+requested path.
+<<<
+EARS_PATTERN: Ubiquitous
+PRODUCT: Ansible
+STATUS: Implemented
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-EXEC-02
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-ansible/ansible_collections/qubesos/core/plugins/connection/qubes.py
+  ELEMENT: function
+  ID: Connection.put_file
+- TYPE: File
+  ROLE: Verification
+  PATH: qubes-ansible/tests/qubes/test_cli.py
+  ELEMENT: function
+  ID: test_vm_connection
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-ANS-040
+TITLE: File retrieval from qube
+STATEMENT: >>>
+The qubes connection plugin shall copy a file out of the target qube to the
+requested dom0 path.
+<<<
+EARS_PATTERN: Ubiquitous
+PRODUCT: Ansible
+STATUS: Partial
+DEFECT: >>>
+The fetch always requests ``qubes.VMShell``, ignoring the selected remote user,
+so a file readable only by root cannot be fetched
+(qubes-ansible/ansible_collections/qubesos/core/plugins/connection/qubes.py:189).
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-EXEC-02
+  ROLE: Refines
+- TYPE: Parent
+  VALUE: L2-EXEC-03
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-ansible/ansible_collections/qubesos/core/plugins/connection/qubes.py
+  ELEMENT: function
+  ID: Connection.fetch_file
+- TYPE: File
+  ROLE: Verification
+  PATH: qubes-ansible/tests/qubes/test_cli.py
+  ELEMENT: function
+  ID: test_minimalvm_connection
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-ANS-041
+TITLE: Execution user selection
+STATEMENT: >>>
+The qubes connection plugin shall run a command as the qube user named by
+``ansible_user``.
+<<<
+EARS_PATTERN: Ubiquitous
+PRODUCT: Ansible
+STATUS: Implemented
+RATIONALE: >>>
+The user is selected by the qrexec service invoked, ``qubes.VMRootShell`` for
+root and ``qubes.VMShell`` otherwise.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-EXEC-03
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-ansible/ansible_collections/qubesos/core/plugins/connection/qubes.py
+  ELEMENT: function
+  ID: Connection._qubes
+- TYPE: File
+  ROLE: Verification
+  PATH: qubes-ansible/tests/qubes/test_cli.py
+  ELEMENT: function
+  ID: test_vm_connection
+
+[[/SECTION]]
+
+[[SECTION]]
+TITLE: Software and templates
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-ANS-042
+TITLE: dom0 package update
+STATEMENT: >>>
+The qubes_dom0_update module shall upgrade the dom0 packages named in the
+desired state.
+<<<
+EARS_PATTERN: Ubiquitous
+PRODUCT: Ansible
+STATUS: Implemented
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-SW-01
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-ansible/ansible_collections/qubesos/core/plugins/modules/qubes_dom0_update.py
+  ELEMENT: function
+  ID: QubesDom0UpdateModule._process_update
+- TYPE: File
+  ROLE: Verification
+  PATH: qubes-ansible/tests/qubes/test_module_dom0_update_units.py
+  ELEMENT: function
+  ID: test_process_update_returns_transaction_history
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-ANS-043
+TITLE: Template installation
+STATEMENT: >>>
+The Ansible collection shall install a template from a configured template
+repository.
+<<<
+EARS_PATTERN: Ubiquitous
+PRODUCT: Ansible
+STATUS: Not Implemented
+DEFECT: >>>
+The collection ships no template management module, and qubes_dom0_update
+exposes only dom0 package states
+(qubes-ansible/ansible_collections/qubesos/core/plugins/modules/qubes_dom0_update.py:142).
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-SW-02
+  ROLE: Refines
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-ANS-044
+TITLE: Template signature verification
+STATEMENT: >>>
+The Ansible collection shall verify a downloaded template's signature before
+installing it.
+<<<
+EARS_PATTERN: Ubiquitous
+PRODUCT: Ansible
+STATUS: Not Implemented
+DEFECT: >>>
+No template download path exists in the collection, so no signature check is
+performed anywhere in it
+(qubes-ansible/ansible_collections/qubesos/core/plugins/modules/qubes_dom0_update.py:142).
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-SW-03
+  ROLE: Refines
+
+[[/SECTION]]
+
+[[SECTION]]
+TITLE: Security and isolation
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-ANS-045
+TITLE: Policy grant authorisation
+STATEMENT: >>>
+If a calling qube asks for policies naming a DispVM it did not create, then the
+policy service shall refuse the request.
+<<<
+EARS_PATTERN: Unwanted-behaviour
+PRODUCT: Ansible
+STATUS: Implemented
+RATIONALE: >>>
+The DispVM name is an argument supplied by the caller, so it is untrusted input
+handled with dom0 privileges.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-SEC-01
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-ansible/qubes-rpc/qubes-ansible-manage-policies
+  LINE_RANGE: 32, 43
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-ANS-046
+TITLE: Management DispVM isolation
+STATEMENT: >>>
+The qubes_proxy strategy shall run each target's play in a management DispVM
+dedicated to that target.
+<<<
+EARS_PATTERN: Ubiquitous
+PRODUCT: Ansible
+STATUS: Partial
+DEFECT: >>>
+The DispVM name is the target name truncated to 31 characters, so two targets
+sharing their first 21 characters are managed through the same DispVM
+(qubes-ansible/ansible_collections/qubesos/security/plugins/strategy/qubes_proxy.py:176).
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-SEC-02
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-ansible/ansible_collections/qubesos/security/plugins/strategy/qubes_proxy.py
+  ELEMENT: function
+  ID: QubesPlayExecutor._start_mgmt_disp_vm
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-ansible/ansible_collections/qubesos/security/plugins/strategy/qubes_proxy.py
+  ELEMENT: function
+  ID: QubesPlayExecutor.dispvm_mgmt_name
+- TYPE: File
+  ROLE: Verification
+  PATH: qubes-ansible/tests/qubes/test_proxy.py
+  ELEMENT: function
+  ID: test_proxy_with_target_appvm
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-ANS-047
+TITLE: Management DispVM teardown
+STATEMENT: >>>
+Where the management DispVM was not already running, the qubes_proxy strategy
+shall kill it once the play ends.
+<<<
+EARS_PATTERN: Optional-feature
+PRODUCT: Ansible
+STATUS: Implemented
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-SEC-02
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-ansible/ansible_collections/qubesos/security/plugins/strategy/qubes_proxy.py
+  ELEMENT: function
+  ID: QubesPlayExecutor.run
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-ANS-048
+TITLE: Management policy revocation
+STATEMENT: >>>
+When a play over a target ends, the qubes_proxy strategy shall remove the RPC
+policies granted for that target.
+<<<
+EARS_PATTERN: Event-driven
+PRODUCT: Ansible
+STATUS: Implemented
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-SEC-03
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-ansible/ansible_collections/qubesos/security/plugins/strategy/qubes_proxy.py
+  ELEMENT: function
+  ID: QubesPlayExecutor._remove_rpc_policies
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-ansible/qubes-rpc/qubes-ansible-manage-policies
+  LINE_RANGE: 62, 78
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-ANS-049
+TITLE: Output sanitisation
+STATEMENT: >>>
+The qubes_proxy strategy shall replace control characters in a qube's output
+before displaying it in dom0.
+<<<
+EARS_PATTERN: Ubiquitous
+PRODUCT: Ansible
+STATUS: Implemented
+RATIONALE: >>>
+Only the reset and foreground-colour SGR sequences are passed through; every
+other control byte becomes an underscore.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-SEC-04
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-ansible/ansible_collections/qubesos/security/plugins/strategy/qubes_proxy.py
+  ELEMENT: function
+  ID: filter_control_chars
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-ANS-050
+TITLE: Strategy bypass guard
+STATEMENT: >>>
+If a play uses the qubes connection without the qubes_proxy strategy, then the
+guard callback shall stop the run.
+<<<
+EARS_PATTERN: Unwanted-behaviour
+PRODUCT: Ansible
+STATUS: Partial
+DEFECT: >>>
+The strategy is compared against the bare name ``qubes_proxy`` only, so a play
+using the documented FQCN ``qubesos.security.qubes_proxy`` is treated as
+unprotected
+(qubes-ansible/ansible_collections/qubesos/security/plugins/callback/qubesos_strategy_guard.py:66).
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-SEC-05
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-ansible/ansible_collections/qubesos/security/plugins/callback/qubesos_strategy_guard.py
+  ELEMENT: function
+  ID: CallbackModule.v2_runner_on_start
+- TYPE: File
+  ROLE: Verification
+  PATH: qubes-ansible/tests/qubes/test_proxy.py
+  ELEMENT: function
+  ID: test_guard_callback_blocking_execution
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-ANS-051
+TITLE: Default strategy installation
+STATEMENT: >>>
+The Ansible package shall set the qubes_proxy strategy as the default in
+``/etc/ansible/ansible.cfg``.
+<<<
+EARS_PATTERN: Ubiquitous
+PRODUCT: Ansible
+STATUS: Partial
+DEFECT: >>>
+The current value is compared against ``qubesos.core.qubes_proxy`` but
+``qubesos.security.qubes_proxy`` is written, so every run rewrites the file and
+overwrites the previous ``.rpmsave`` backup
+(qubes-ansible/update-ansible-default-strategy:22).
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-SEC-05
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-ansible/update-ansible-default-strategy
+  LINE_RANGE: 22, 25
+
+[[/SECTION]]
+
+[[SECTION]]
+TITLE: Diagnostics
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-ANS-052
+TITLE: Failure exit status
+STATEMENT: >>>
+If a target's playbook run exits non-zero, then the qubes_proxy strategy shall
+mark that host as failed.
+<<<
+EARS_PATTERN: Unwanted-behaviour
+PRODUCT: Ansible
+STATUS: Implemented
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-DIAG-01
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-ansible/ansible_collections/qubesos/security/plugins/strategy/qubes_proxy.py
+  ELEMENT: function
+  ID: StrategyModule.proxy_run
+- TYPE: File
+  ROLE: Verification
+  PATH: qubes-ansible/tests/qubes/test_cli.py
+  ELEMENT: function
+  ID: test_playbook_execution_stops_whole_playbook_execution_when_all_hosts_fail
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-ANS-053
+TITLE: Error attribution
+STATEMENT: >>>
+The qubes_proxy strategy shall label each reported result with the management
+DispVM and the play that produced it.
+<<<
+EARS_PATTERN: Ubiquitous
+PRODUCT: Ansible
+STATUS: Implemented
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-DIAG-02
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-ansible/ansible_collections/qubesos/security/plugins/strategy/qubes_proxy.py
+  ELEMENT: function
+  ID: StrategyModule.collect_result
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-ANS-054
+TITLE: Missing dependency reporting
+STATEMENT: >>>
+If qubesadmin cannot be imported, then the qube module shall fail with a message
+naming that dependency.
+<<<
+EARS_PATTERN: Unwanted-behaviour
+PRODUCT: Ansible
+STATUS: Partial
+DEFECT: >>>
+The ``if qubesadmin is None`` guard runs after ``qubesadmin.Qubes()`` has already
+been called, so the run dies on an unattributed exception instead of the intended
+message
+(qubes-ansible/ansible_collections/qubesos/core/plugins/module_utils/qubes_helper.py:60).
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-DIAG-02
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-ansible/ansible_collections/qubesos/core/plugins/module_utils/qubes_helper.py
+  ELEMENT: class
+  ID: QubesHelper
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-ANS-055
+TITLE: Diagnostic verbosity control
+STATEMENT: >>>
+Where increased verbosity is requested, the qubes_proxy strategy shall pass that
+verbosity level to the DispVM playbook run.
+<<<
+EARS_PATTERN: Optional-feature
+PRODUCT: Ansible
+STATUS: Implemented
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-DIAG-03
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-ansible/ansible_collections/qubesos/security/plugins/strategy/qubes_proxy.py
+  ELEMENT: function
+  ID: QubesPlayExecutor._build_ansible_args
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-ansible/ansible_collections/qubesos/security/plugins/strategy/qubes_proxy.py
+  ELEMENT: function
+  ID: QubesPlayExecutor._verbose
+
+[[/SECTION]]
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-ANS-056
+TITLE: Disposable template validation
+STATEMENT: >>>
+If default_dispvm or management_dispvm names a qube that is not an AppVM serving
+as a disposable template, then the qube module shall fail the task.
+<<<
+EARS_PATTERN: Unwanted-behaviour
+PRODUCT: Ansible
+STATUS: Implemented
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-CONFIG-01
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-ansible/ansible_collections/qubesos/core/plugins/module_utils/qubes_module_qube.py
+  ELEMENT: function
+  ID: QubeModule.validate_properties
+- TYPE: File
+  ROLE: Authority
+  PATH: qubes-core-admin/qubes/api/admin.py
+  ELEMENT: function
+  ID: QubesAdminAPI.vm_property_set
+
+[[/SECTION]]
+
+[[SECTION]]
+TITLE: Salt
+
+[[SECTION]]
+TITLE: Qube lifecycle
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-SLS-001
+TITLE: Qube creation
+STATEMENT: >>>
+When the named qube is absent, the qvm execution module shall create it with
+the declared class, template and label.
+<<<
+EARS_PATTERN: Event-driven
+PRODUCT: Salt
+STATUS: Implemented
+RATIONALE: >>>
+Neither Salt repository ships an automated test suite, so no requirement in
+this component carries a Verification anchor.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-LIFECYCLE-01
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-mgmt-salt-dom0-qvm/_modules/ext_module_qvm.py
+  ELEMENT: function
+  ID: create
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-mgmt-salt-dom0-qvm/_states/ext_state_qvm.py
+  ELEMENT: function
+  ID: present
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-SLS-002
+TITLE: Shell-safe command construction
+STATEMENT: >>>
+The qvm execution module shall pass declared arguments to the qvm-* command
+line without shell interpretation.
+<<<
+EARS_PATTERN: Ubiquitous
+PRODUCT: Salt
+STATUS: Partial
+DEFECT: >>>
+No call site quotes its arguments; create, remove, clone, start, shutdown and
+run interpolate parsed argv straight into a shell string
+(qubes-mgmt-salt-dom0-qvm/_modules/ext_module_qvm.py:470).
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-LIFECYCLE-01
+  ROLE: Refines
+- TYPE: Parent
+  VALUE: L2-EXEC-01
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-mgmt-salt-dom0-qvm/_modules/ext_module_qvm.py
+  ELEMENT: function
+  ID: create
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-mgmt-salt-dom0-qvm/_modules/ext_module_qvm.py
+  ELEMENT: function
+  ID: run
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-SLS-003
+TITLE: Qube cloning
+STATEMENT: >>>
+When the declared clone name is free, the qvm execution module shall copy the
+source qube under that name.
+<<<
+EARS_PATTERN: Event-driven
+PRODUCT: Salt
+STATUS: Implemented
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-LIFECYCLE-02
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-mgmt-salt-dom0-qvm/_modules/ext_module_qvm.py
+  ELEMENT: function
+  ID: clone
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-mgmt-salt-dom0-qvm/_states/ext_state_qvm.py
+  ELEMENT: function
+  ID: clone
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-SLS-004
+TITLE: Qube removal
+STATEMENT: >>>
+The qvm execution module shall remove the named qube together with its storage
+volumes.
+<<<
+EARS_PATTERN: Ubiquitous
+PRODUCT: Salt
+STATUS: Implemented
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-LIFECYCLE-03
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-mgmt-salt-dom0-qvm/_modules/ext_module_qvm.py
+  ELEMENT: function
+  ID: remove
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-mgmt-salt-dom0-qvm/_states/ext_state_qvm.py
+  ELEMENT: function
+  ID: absent
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-SLS-005
+TITLE: Qube start
+STATEMENT: >>>
+When a start is requested, the qvm execution module shall report completion
+only after the qube reports the running power state.
+<<<
+EARS_PATTERN: Event-driven
+PRODUCT: Salt
+STATUS: Implemented
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-LIFECYCLE-04
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-mgmt-salt-dom0-qvm/_modules/ext_module_qvm.py
+  ELEMENT: function
+  ID: start
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-mgmt-salt-dom0-qvm/_states/ext_state_qvm.py
+  ELEMENT: function
+  ID: start
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-SLS-006
+TITLE: Graceful shutdown
+STATEMENT: >>>
+The qvm execution module shall bring a running qube to the halted state by a
+graceful shutdown.
+<<<
+EARS_PATTERN: Ubiquitous
+PRODUCT: Salt
+STATUS: Implemented
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-LIFECYCLE-05
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-mgmt-salt-dom0-qvm/_modules/ext_module_qvm.py
+  ELEMENT: function
+  ID: shutdown
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-mgmt-salt-dom0-qvm/_states/ext_state_qvm.py
+  ELEMENT: function
+  ID: shutdown
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-SLS-007
+TITLE: Forced kill
+STATEMENT: >>>
+If a graceful shutdown leaves the qube running, then the qvm execution module
+shall kill it when force is requested.
+<<<
+EARS_PATTERN: Unwanted-behaviour
+PRODUCT: Salt
+STATUS: Implemented
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-LIFECYCLE-05
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-mgmt-salt-dom0-qvm/_modules/ext_module_qvm.py
+  ELEMENT: function
+  ID: kill
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-mgmt-salt-dom0-qvm/_states/ext_state_qvm.py
+  ELEMENT: function
+  ID: kill
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-SLS-008
+TITLE: Pause and resume
+STATEMENT: >>>
+When a pause or a resume is requested, the qvm execution module shall place the
+qube in the matching execution state.
+<<<
+EARS_PATTERN: Event-driven
+PRODUCT: Salt
+STATUS: Implemented
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-LIFECYCLE-06
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-mgmt-salt-dom0-qvm/_modules/ext_module_qvm.py
+  ELEMENT: function
+  ID: pause
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-mgmt-salt-dom0-qvm/_modules/ext_module_qvm.py
+  ELEMENT: function
+  ID: unpause
+
+[[/SECTION]]
+
+[[SECTION]]
+TITLE: Qube configuration
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-SLS-009
+TITLE: Qube property configuration
+STATEMENT: >>>
+The qvm execution module shall set each qube property named in the state
+declaration to the declared value.
+<<<
+EARS_PATTERN: Ubiquitous
+PRODUCT: Salt
+STATUS: Implemented
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-CONFIG-01
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-mgmt-salt-dom0-qvm/_modules/ext_module_qvm.py
+  ELEMENT: function
+  ID: prefs
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-mgmt-salt-dom0-qvm/_states/ext_state_qvm.py
+  ELEMENT: function
+  ID: prefs
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-SLS-010
+TITLE: Property reset to default
+STATEMENT: >>>
+When a declared property value is *default*, the qvm execution module shall
+delete the qube's explicit value.
+<<<
+EARS_PATTERN: Event-driven
+PRODUCT: Salt
+STATUS: Implemented
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-CONFIG-02
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-mgmt-salt-dom0-qvm/_modules/ext_module_qvm.py
+  ELEMENT: function
+  ID: prefs
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-SLS-011
+TITLE: Qube feature configuration
+STATEMENT: >>>
+The qvm execution module shall bring each declared qube feature to its declared
+value.
+<<<
+EARS_PATTERN: Ubiquitous
+PRODUCT: Salt
+STATUS: Implemented
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-CONFIG-03
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-mgmt-salt-dom0-qvm/_modules/ext_module_qvm.py
+  ELEMENT: function
+  ID: features
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-mgmt-salt-dom0-qvm/_states/ext_state_qvm.py
+  ELEMENT: function
+  ID: features
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-SLS-012
+TITLE: Qube service configuration
+STATEMENT: >>>
+The qvm execution module shall enable, disable or reset a named service through
+its service feature.
+<<<
+EARS_PATTERN: Ubiquitous
+PRODUCT: Salt
+STATUS: Partial
+DEFECT: >>>
+The reset action is misspelled 'defualt' in the positional-argument branch, so
+a command-line reset falls through to list mode
+(qubes-mgmt-salt-dom0-qvm/_modules/ext_module_qvm.py:1262).
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-CONFIG-04
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-mgmt-salt-dom0-qvm/_modules/ext_module_qvm.py
+  ELEMENT: function
+  ID: service
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-mgmt-salt-dom0-qvm/_states/ext_state_qvm.py
+  ELEMENT: function
+  ID: service
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-SLS-013
+TITLE: Qube tag configuration
+STATEMENT: >>>
+The qvm execution module shall bring a qube's tag set to the tags declared
+present and absent.
+<<<
+EARS_PATTERN: Ubiquitous
+PRODUCT: Salt
+STATUS: Implemented
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-CONFIG-05
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-mgmt-salt-dom0-qvm/_modules/ext_module_qvm.py
+  ELEMENT: function
+  ID: tags
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-mgmt-salt-dom0-qvm/_states/ext_state_qvm.py
+  ELEMENT: function
+  ID: tags
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-SLS-014
+TITLE: Qube notes
+STATEMENT: >>>
+The qvm execution module shall set the free-form notes attached to a qube.
+<<<
+EARS_PATTERN: Ubiquitous
+PRODUCT: Salt
+STATUS: Not Implemented
+DEFECT: >>>
+Notes are absent from the formula: no state, module function or property in the
+prefs argument group refers to them
+(qubes-mgmt-salt-dom0-qvm/_modules/ext_module_qvm.py:771).
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-CONFIG-06
+  ROLE: Refines
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-SLS-015
+TITLE: Qube class immutability
+STATEMENT: >>>
+If a declared class differs from an existing qube's class, then the qvm state
+module shall reject the declaration.
+<<<
+EARS_PATTERN: Unwanted-behaviour
+PRODUCT: Salt
+STATUS: Partial
+DEFECT: >>>
+present returns a skipped result for any qube that already exists, so a changed
+class is ignored rather than rejected
+(qubes-mgmt-salt-dom0-qvm/_states/ext_state_qvm.py:247).
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-CONFIG-08
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-mgmt-salt-dom0-qvm/_states/ext_state_qvm.py
+  ELEMENT: function
+  ID: present
+- TYPE: File
+  ROLE: Authority
+  PATH: qubes-core-admin/qubes/api/admin.py
+  ELEMENT: function
+  ID: QubesAdminAPI.vm_create
+
+[[/SECTION]]
+
+[[SECTION]]
+TITLE: Storage and volumes
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-SLS-016
+TITLE: Volume resize
+STATEMENT: >>>
+The qvm execution module shall resize a qube volume to the declared size.
+<<<
+EARS_PATTERN: Ubiquitous
+PRODUCT: Salt
+STATUS: Not Implemented
+DEFECT: >>>
+No resize path exists; the state module's own TODO checklist still marks
+qvm-grow-private and qvm-grow-root unimplemented
+(qubes-mgmt-salt-dom0-qvm/_states/ext_state_qvm.py:42).
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-STORAGE-01
+  ROLE: Refines
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-SLS-017
+TITLE: Volume revision retention
+STATEMENT: >>>
+The qvm execution module shall set the number of snapshot revisions retained
+for a qube volume.
+<<<
+EARS_PATTERN: Ubiquitous
+PRODUCT: Salt
+STATUS: Not Implemented
+DEFECT: >>>
+Volumes are not modelled at all: revisions_to_keep appears nowhere in either
+repository and prefs exposes no volume property
+(qubes-mgmt-salt-dom0-qvm/_modules/ext_module_qvm.py:771).
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-STORAGE-02
+  ROLE: Refines
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-SLS-018
+TITLE: Storage pool selection
+STATEMENT: >>>
+The qvm execution module shall place a qube's volumes in the declared storage
+pool.
+<<<
+EARS_PATTERN: Ubiquitous
+PRODUCT: Salt
+STATUS: Not Implemented
+DEFECT: >>>
+A pool can be named only when installing a template; qvm.create accepts no pool
+option and no pool is managed for a qube
+(qubes-mgmt-salt-dom0-qvm/_modules/ext_module_qvm.py:2434).
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-STORAGE-03
+  ROLE: Refines
+
+[[/SECTION]]
+
+[[SECTION]]
+TITLE: Device assignment
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-SLS-019
+TITLE: Transient device attachment
+STATEMENT: >>>
+The qvm execution module shall attach a device to a qube for the lifetime of
+that qube's current run.
+<<<
+EARS_PATTERN: Ubiquitous
+PRODUCT: Salt
+STATUS: Not Implemented
+DEFECT: >>>
+qvm.devices only creates persistent assignments, and the state module's TODO
+checklist still marks qvm-block and qvm-usb unimplemented
+(qubes-mgmt-salt-dom0-qvm/_states/ext_state_qvm.py:36).
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-DEVICE-01
+  ROLE: Refines
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-SLS-020
+TITLE: Persistent device assignment
+STATEMENT: >>>
+The qvm execution module shall assign each declared device to the qube so that
+the assignment survives a restart.
+<<<
+EARS_PATTERN: Ubiquitous
+PRODUCT: Salt
+STATUS: Partial
+DEFECT: >>>
+The already-assigned test compares a backend domain object against the declared
+backend name string, so the skip branch is unreachable and every run reassigns
+(qubes-mgmt-salt-dom0-qvm/_modules/ext_module_qvm.py:1134).
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-DEVICE-02
+  ROLE: Refines
+- TYPE: Parent
+  VALUE: L2-CONV-01
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-mgmt-salt-dom0-qvm/_modules/ext_module_qvm.py
+  ELEMENT: function
+  ID: devices
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-mgmt-salt-dom0-qvm/_states/ext_state_qvm.py
+  ELEMENT: function
+  ID: devices
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-SLS-021
+TITLE: Assignment mode selection
+STATEMENT: >>>
+The qvm execution module shall set a device assignment's mode to the declared
+ask-to-attach, auto-attach or required value.
+<<<
+EARS_PATTERN: Ubiquitous
+PRODUCT: Salt
+STATUS: Not Implemented
+DEFECT: >>>
+Every assignment is built with the mode fixed to required and no mode option is
+accepted from the declaration
+(qubes-mgmt-salt-dom0-qvm/_modules/ext_module_qvm.py:1153).
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-DEVICE-03
+  ROLE: Refines
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-SLS-022
+TITLE: PCI assignment mode
+STATEMENT: >>>
+If a PCI device is declared for a qube, then the qvm execution module shall
+record it as a required assignment.
+<<<
+EARS_PATTERN: Unwanted-behaviour
+PRODUCT: Salt
+STATUS: Implemented
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-DEVICE-04
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-mgmt-salt-dom0-qvm/_modules/ext_module_qvm.py
+  ELEMENT: function
+  ID: prefs
+- TYPE: File
+  ROLE: Authority
+  PATH: qubes-core-admin/qubes/api/admin.py
+  ELEMENT: function
+  ID: QubesAdminAPI.vm_device_assign
+
+[[/SECTION]]
+
+[[SECTION]]
+TITLE: Network and firewall
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-SLS-023
+TITLE: Netvm validation
+STATEMENT: >>>
+If a declared netvm does not provide network, then the qvm state module shall
+report the property change as failed.
+<<<
+EARS_PATTERN: Unwanted-behaviour
+PRODUCT: Salt
+STATUS: Partial
+DEFECT: >>>
+Validation is left to the Admin API and the resulting qubesadmin exception is
+not among those _state_action catches, so the run aborts with a traceback
+(qubes-mgmt-salt-dom0-qvm/_states/ext_state_qvm.py:138).
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-NET-01
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-mgmt-salt-dom0-qvm/_modules/ext_module_qvm.py
+  ELEMENT: function
+  ID: prefs
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-mgmt-salt-dom0-qvm/_states/ext_state_qvm.py
+  ELEMENT: function
+  ID: _state_action
+- TYPE: File
+  ROLE: Authority
+  PATH: qubes-core-admin/qubes/api/admin.py
+  ELEMENT: function
+  ID: QubesAdminAPI.vm_property_set
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-SLS-024
+TITLE: Firewall rule set
+STATEMENT: >>>
+The qvm execution module shall replace a qube's firewall rules with the
+declared ordered rule set.
+<<<
+EARS_PATTERN: Ubiquitous
+PRODUCT: Salt
+STATUS: Implemented
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-NET-02
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-mgmt-salt-dom0-qvm/_modules/ext_module_qvm.py
+  ELEMENT: function
+  ID: firewall
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-mgmt-salt-dom0-qvm/_states/ext_state_qvm.py
+  ELEMENT: function
+  ID: firewall
+
+[[/SECTION]]
+
+[[SECTION]]
+TITLE: Convergence
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-SLS-025
+TITLE: Unchanged property skip
+STATEMENT: >>>
+While a declared property already holds the declared value, the qvm execution
+module shall skip the assignment.
+<<<
+EARS_PATTERN: State-driven
+PRODUCT: Salt
+STATUS: Implemented
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-CONV-01
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-mgmt-salt-dom0-qvm/_modules/ext_module_qvm.py
+  ELEMENT: function
+  ID: prefs
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-mgmt-salt-dom0-qvm/_modules/ext_module_qvm.py
+  ELEMENT: function
+  ID: firewall
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-SLS-026
+TITLE: Change reporting
+STATEMENT: >>>
+The qvm execution module shall record the previous and new value of every
+object it changes in the state result.
+<<<
+EARS_PATTERN: Ubiquitous
+PRODUCT: Salt
+STATUS: Implemented
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-CONV-02
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-mgmt-salt-dom0-qvm/_modules/ext_module_qvm.py
+  ELEMENT: function
+  ID: prefs
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-mgmt-salt-dom0-qvm/_states/ext_state_qvm.py
+  ELEMENT: function
+  ID: vm
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-SLS-027
+TITLE: Dry-run property preview
+STATEMENT: >>>
+Where a dry run is requested, the qvm execution module shall report property
+changes without applying them.
+<<<
+EARS_PATTERN: Optional-feature
+PRODUCT: Salt
+STATUS: Partial
+DEFECT: >>>
+prefs carries no test-mode guard, so setattr, delattr and the PCI
+assign/unassign calls all execute during a dry run
+(qubes-mgmt-salt-dom0-qvm/_modules/ext_module_qvm.py:988).
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-CONV-03
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-mgmt-salt-dom0-qvm/_modules/ext_module_qvm.py
+  ELEMENT: function
+  ID: prefs
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-SLS-028
+TITLE: Dry-run device preview
+STATEMENT: >>>
+Where a dry run is requested, the qvm execution module shall report device
+changes without applying them.
+<<<
+EARS_PATTERN: Optional-feature
+PRODUCT: Salt
+STATUS: Partial
+DEFECT: >>>
+devices assigns and unassigns with no test-mode guard, so a preview mutates the
+qube's device list
+(qubes-mgmt-salt-dom0-qvm/_modules/ext_module_qvm.py:1156).
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-CONV-03
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-mgmt-salt-dom0-qvm/_modules/ext_module_qvm.py
+  ELEMENT: function
+  ID: devices
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-SLS-029
+TITLE: Dry-run shutdown preview
+STATEMENT: >>>
+Where a dry run is requested, the qvm execution module shall report a pending
+shutdown only for a qube that is running.
+<<<
+EARS_PATTERN: Optional-feature
+PRODUCT: Salt
+STATUS: Partial
+DEFECT: >>>
+The test-mode branch returns before the already-halted check, so a dry run
+announces a shutdown for a qube that is already halted
+(qubes-mgmt-salt-dom0-qvm/_modules/ext_module_qvm.py:2214).
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-CONV-03
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-mgmt-salt-dom0-qvm/_modules/ext_module_qvm.py
+  ELEMENT: function
+  ID: shutdown
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-SLS-030
+TITLE: Template-first ordering
+STATEMENT: >>>
+qubesctl shall configure every targeted TemplateVM before any other targeted
+qube.
+<<<
+EARS_PATTERN: Ubiquitous
+PRODUCT: Salt
+STATUS: Implemented
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-CONV-04
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-mgmt-salt/qubesctl
+  LINE_RANGE: 100, 117
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-SLS-031
+TITLE: Precondition validation
+STATEMENT: >>>
+The qvm state module shall validate every declared action before applying any
+part of the declaration.
+<<<
+EARS_PATTERN: Ubiquitous
+PRODUCT: Salt
+STATUS: Partial
+DEFECT: >>>
+vm validates and applies one action at a time, skipping only the remaining
+actions after a failure and leaving the earlier ones applied
+(qubes-mgmt-salt-dom0-qvm/_states/ext_state_qvm.py:440).
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-CONV-05
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-mgmt-salt-dom0-qvm/_states/ext_state_qvm.py
+  ELEMENT: function
+  ID: vm
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-mgmt-salt-dom0-qvm/_modules/ext_module_qvm.py
+  ELEMENT: function
+  ID: check
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-SLS-032
+TITLE: Module availability check
+STATEMENT: >>>
+The qvm execution module shall load only on a host where the Qubes Admin API is
+reachable.
+<<<
+EARS_PATTERN: Ubiquitous
+PRODUCT: Salt
+STATUS: Not Implemented
+DEFECT: >>>
+__virtual__ returns the virtual name unconditionally, with no check for
+qubesadmin or for dom0
+(qubes-mgmt-salt-dom0-qvm/_modules/ext_module_qvm.py:52).
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-CONV-05
+  ROLE: Refines
+
+[[/SECTION]]
+
+[[SECTION]]
+TITLE: Inspection
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-SLS-033
+TITLE: Target selection
+STATEMENT: >>>
+qubesctl shall restrict a run to the qubes named by the caller's target and
+class selection options.
+<<<
+EARS_PATTERN: Ubiquitous
+PRODUCT: Salt
+STATUS: Implemented
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-INSPECT-01
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-mgmt-salt/qubesctl
+  LINE_RANGE: 76, 95
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-SLS-034
+TITLE: Power state reporting
+STATEMENT: >>>
+The qvm execution module shall report the current power state of the named
+qube.
+<<<
+EARS_PATTERN: Ubiquitous
+PRODUCT: Salt
+STATUS: Implemented
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-INSPECT-02
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-mgmt-salt-dom0-qvm/_modules/ext_module_qvm.py
+  ELEMENT: function
+  ID: state
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-mgmt-salt-dom0-qvm/_states/ext_state_qvm.py
+  ELEMENT: function
+  ID: running
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-SLS-035
+TITLE: Property and tag listing
+STATEMENT: >>>
+When no value is declared, the qvm execution module shall report the qube's
+current properties, features and tags.
+<<<
+EARS_PATTERN: Event-driven
+PRODUCT: Salt
+STATUS: Implemented
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-INSPECT-03
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-mgmt-salt-dom0-qvm/_modules/ext_module_qvm.py
+  ELEMENT: function
+  ID: prefs
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-mgmt-salt-dom0-qvm/_modules/ext_module_qvm.py
+  ELEMENT: function
+  ID: tags
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-SLS-036
+TITLE: Device inventory listing
+STATEMENT: >>>
+The qvm execution module shall report the devices currently assigned to a qube.
+<<<
+EARS_PATTERN: Ubiquitous
+PRODUCT: Salt
+STATUS: Partial
+DEFECT: >>>
+List mode returns a plain dict rather than a Status, which _state_action then
+passes to vars() and raises an uncaught TypeError
+(qubes-mgmt-salt-dom0-qvm/_modules/ext_module_qvm.py:1097).
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-INSPECT-03
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-mgmt-salt-dom0-qvm/_modules/ext_module_qvm.py
+  ELEMENT: function
+  ID: devices
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-mgmt-salt-dom0-qvm/_states/ext_state_qvm.py
+  ELEMENT: function
+  ID: _state_action
+
+[[/SECTION]]
+
+[[SECTION]]
+TITLE: Command execution
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-SLS-037
+TITLE: Command execution in qube
+STATEMENT: >>>
+The qvm execution module shall run the declared command inside the named qube
+and return its exit status.
+<<<
+EARS_PATTERN: Ubiquitous
+PRODUCT: Salt
+STATUS: Implemented
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-EXEC-01
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-mgmt-salt-dom0-qvm/_modules/ext_module_qvm.py
+  ELEMENT: function
+  ID: run
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-mgmt-salt-dom0-qvm/_states/ext_state_qvm.py
+  ELEMENT: function
+  ID: run
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-SLS-038
+TITLE: File transfer
+STATEMENT: >>>
+The qubessalt management runner shall transfer a file from dom0 into a qube.
+<<<
+EARS_PATTERN: Ubiquitous
+PRODUCT: Salt
+STATUS: Not Implemented
+DEFECT: >>>
+No state or module function exposes file transfer to a declaration; the only
+qubes.Filecopy use stages the salt configuration into the management DispVM
+(qubes-mgmt-salt/qubessalt/__init__.py:181).
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-EXEC-02
+  ROLE: Refines
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-SLS-039
+TITLE: Execution user selection
+STATEMENT: >>>
+The qvm execution module shall run a command in a qube under the declared user
+account.
+<<<
+EARS_PATTERN: Ubiquitous
+PRODUCT: Salt
+STATUS: Implemented
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-EXEC-03
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-mgmt-salt-dom0-qvm/_modules/ext_module_qvm.py
+  ELEMENT: function
+  ID: run
+
+[[/SECTION]]
+
+[[SECTION]]
+TITLE: Software and templates
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-SLS-040
+TITLE: dom0 configuration run
+STATEMENT: >>>
+Where dom0 is not skipped, qubesctl shall apply the requested salt command
+locally in dom0 before targeting any qube.
+<<<
+EARS_PATTERN: Optional-feature
+PRODUCT: Salt
+STATUS: Implemented
+RATIONALE: >>>
+dom0 packages are updated by ordinary salt pkg states, which reach dom0 only
+through this local salt-call passthrough.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-SW-01
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-mgmt-salt/qubesctl
+  LINE_RANGE: 65, 71
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-mgmt-salt/qubesctl
+  LINE_RANGE: 121, 130
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-SLS-041
+TITLE: Template installation
+STATEMENT: >>>
+When the declared template is not installed, the qvm state module shall install
+it from the declared repository.
+<<<
+EARS_PATTERN: Event-driven
+PRODUCT: Salt
+STATUS: Implemented
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-SW-02
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-mgmt-salt-dom0-qvm/_states/ext_state_qvm.py
+  ELEMENT: function
+  ID: template_installed
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-mgmt-salt-dom0-qvm/_modules/ext_module_qvm.py
+  ELEMENT: function
+  ID: template_install
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-SLS-042
+TITLE: Template signature verification
+STATEMENT: >>>
+The qvm execution module shall verify a downloaded template's signature before
+installing it.
+<<<
+EARS_PATTERN: Ubiquitous
+PRODUCT: Salt
+STATUS: Partial
+DEFECT: >>>
+Verification is left entirely to qvm-template; the module neither requests it
+nor inspects the result beyond the exit code
+(qubes-mgmt-salt-dom0-qvm/_modules/ext_module_qvm.py:2430).
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-SW-03
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-mgmt-salt-dom0-qvm/_modules/ext_module_qvm.py
+  ELEMENT: function
+  ID: template_install
+
+[[/SECTION]]
+
+[[SECTION]]
+TITLE: Security and isolation
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-SLS-043
+TITLE: Configuration outside dom0
+STATEMENT: >>>
+The qubessalt management runner shall run salt-ssh against a target from inside
+a DisposableVM rather than from dom0.
+<<<
+EARS_PATTERN: Ubiquitous
+PRODUCT: Salt
+STATUS: Implemented
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-SEC-01
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-mgmt-salt/qubessalt/__init__.py
+  ELEMENT: function
+  ID: ManageVM.salt_call
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-mgmt-salt/qubes.SaltLinuxVM
+  LINE_RANGE: 28, 63
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-SLS-044
+TITLE: Per-target management DisposableVM
+STATEMENT: >>>
+The qubessalt management runner shall use a DisposableVM dedicated to the
+single target it is configuring.
+<<<
+EARS_PATTERN: Ubiquitous
+PRODUCT: Salt
+STATUS: Partial
+DEFECT: >>>
+The DispVM name is truncated to 31 characters and reused if it already exists,
+so two targets sharing a long name prefix share one management DisposableVM
+(qubes-mgmt-salt/qubessalt/__init__.py:141).
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-SEC-02
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-mgmt-salt/qubessalt/__init__.py
+  ELEMENT: function
+  ID: ManageVM.salt_call
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-SLS-045
+TITLE: Management policy revocation
+STATEMENT: >>>
+When a management run over a target ends, the qubessalt management runner shall
+remove the qrexec policy lines granted for it.
+<<<
+EARS_PATTERN: Event-driven
+PRODUCT: Salt
+STATUS: Implemented
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-SEC-03
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-mgmt-salt/qubessalt/__init__.py
+  ELEMENT: function
+  ID: qrexec_policy
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-mgmt-salt/qubessalt/__init__.py
+  ELEMENT: function
+  ID: ManageVM.salt_call
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-SLS-046
+TITLE: Output sanitisation
+STATEMENT: >>>
+The qubessalt management runner shall strip control characters from qube output
+before writing it to dom0.
+<<<
+EARS_PATTERN: Ubiquitous
+PRODUCT: Salt
+STATUS: Partial
+DEFECT: >>>
+The force-color option disables the filter and passes raw qube output through
+to the dom0 terminal
+(qubes-mgmt-salt/qubessalt/__init__.py:195).
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-SEC-04
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-mgmt-salt/qubessalt/__init__.py
+  ELEMENT: function
+  ID: ManageVM.salt_call
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-SLS-047
+TITLE: DisposableVM bypass prevention
+STATEMENT: >>>
+If a run is configured to bypass the management DisposableVM, then qubesctl
+shall refuse to start that run.
+<<<
+EARS_PATTERN: Unwanted-behaviour
+PRODUCT: Salt
+STATUS: Not Implemented
+DEFECT: >>>
+No such check exists; the isolation rests solely on salt_call having no
+non-DisposableVM code path
+(qubes-mgmt-salt/qubessalt/__init__.py:133).
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-SEC-05
+  ROLE: Refines
+
+[[/SECTION]]
+
+[[SECTION]]
+TITLE: Diagnostics
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-SLS-048
+TITLE: Failure exit status
+STATEMENT: >>>
+qubesctl shall exit with the highest exit code returned by any target it
+configured.
+<<<
+EARS_PATTERN: Ubiquitous
+PRODUCT: Salt
+STATUS: Implemented
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-DIAG-01
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-mgmt-salt/qubessalt/__init__.py
+  ELEMENT: function
+  ID: ManageVMRunner.run
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-mgmt-salt/qubesctl
+  LINE_RANGE: 101, 117
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-SLS-049
+TITLE: Error attribution
+STATEMENT: >>>
+The qubessalt management runner shall label every reported result with the name
+of the qube that produced it.
+<<<
+EARS_PATTERN: Ubiquitous
+PRODUCT: Salt
+STATUS: Implemented
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-DIAG-02
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-mgmt-salt/qubessalt/__init__.py
+  ELEMENT: function
+  ID: run_one
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-mgmt-salt/qubessalt/__init__.py
+  ELEMENT: function
+  ID: ManageVMRunner.collect_result
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-SLS-050
+TITLE: Diagnostic verbosity control
+STATEMENT: >>>
+Where show-output is requested, qubesctl shall print the salt output collected
+from each target.
+<<<
+EARS_PATTERN: Optional-feature
+PRODUCT: Salt
+STATUS: Implemented
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-DIAG-03
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-mgmt-salt/qubesctl
+  LINE_RANGE: 20, 21
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-mgmt-salt/qubessalt/__init__.py
+  ELEMENT: function
+  ID: ManageVMRunner.collect_result
+
+[[/SECTION]]
+
+[[/SECTION]]
+
+[[SECTION]]
+TITLE: QubesadminTools
+
+[[SECTION]]
+TITLE: Qube lifecycle
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-QTL-001
+TITLE: Qube creation
+STATEMENT: >>>
+The qvm-create tool shall create a qube of the caller-given class, template and
+label.
+<<<
+EARS_PATTERN: Ubiquitous
+PRODUCT: QubesadminTools
+STATUS: Implemented
+RATIONALE: >>>
+The qubesadmin library and its test suite are absent from this working tree, so
+no requirement in this slice carries a Verification anchor.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-LIFECYCLE-01
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-core-admin-client/qubesadmin/tools/qvm_create.py
+  ELEMENT: function
+  ID: main
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-QTL-002
+TITLE: Qube cloning
+STATEMENT: >>>
+The qvm-clone tool shall create a new qube as a copy of an existing qube.
+<<<
+EARS_PATTERN: Ubiquitous
+PRODUCT: QubesadminTools
+STATUS: Implemented
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-LIFECYCLE-02
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-core-admin-client/qubesadmin/tools/qvm_clone.py
+  ELEMENT: function
+  ID: main
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-QTL-003
+TITLE: Qube removal
+STATEMENT: >>>
+The qvm-remove tool shall delete each named qube together with its storage
+volumes.
+<<<
+EARS_PATTERN: Ubiquitous
+PRODUCT: QubesadminTools
+STATUS: Implemented
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-LIFECYCLE-03
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-core-admin-client/qubesadmin/tools/qvm_remove.py
+  ELEMENT: function
+  ID: main
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-QTL-004
+TITLE: dom0 removal refusal
+STATEMENT: >>>
+If dom0 is among the qubes named for removal, then qvm-remove shall refuse the
+whole request.
+<<<
+EARS_PATTERN: Unwanted-behaviour
+PRODUCT: QubesadminTools
+STATUS: Implemented
+RATIONALE: >>>
+Removing dom0 is unrecoverable, so the guard runs before any qube in the batch
+is touched.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-LIFECYCLE-03
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-core-admin-client/qubesadmin/tools/qvm_remove.py
+  ELEMENT: function
+  ID: main
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-QTL-005
+TITLE: Qube start
+STATEMENT: >>>
+The qvm-start tool shall return only once each named qube has been started.
+<<<
+EARS_PATTERN: Ubiquitous
+PRODUCT: QubesadminTools
+STATUS: Implemented
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-LIFECYCLE-04
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-core-admin-client/qubesadmin/tools/qvm_start.py
+  ELEMENT: function
+  ID: run_async
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-QTL-006
+TITLE: Graceful shutdown
+STATEMENT: >>>
+The qvm-shutdown tool shall request a graceful shutdown of each named running
+qube.
+<<<
+EARS_PATTERN: Ubiquitous
+PRODUCT: QubesadminTools
+STATUS: Implemented
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-LIFECYCLE-05
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-core-admin-client/qubesadmin/tools/qvm_shutdown.py
+  ELEMENT: function
+  ID: run_async
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-QTL-007
+TITLE: Shutdown timeout escalation
+STATEMENT: >>>
+If a qube is still running after its shutdown was retried, then qvm-shutdown
+shall kill it.
+<<<
+EARS_PATTERN: Unwanted-behaviour
+PRODUCT: QubesadminTools
+STATUS: Implemented
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-LIFECYCLE-05
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-core-admin-client/qubesadmin/tools/qvm_shutdown.py
+  ELEMENT: function
+  ID: run_async
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-QTL-008
+TITLE: Forced kill
+STATEMENT: >>>
+The qvm-kill tool shall terminate each named qube without a graceful shutdown
+sequence.
+<<<
+EARS_PATTERN: Ubiquitous
+PRODUCT: QubesadminTools
+STATUS: Implemented
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-LIFECYCLE-05
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-core-admin-client/qubesadmin/tools/qvm_kill.py
+  ELEMENT: function
+  ID: run_async
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-QTL-009
+TITLE: Qube pause
+STATEMENT: >>>
+The qvm-pause tool shall suspend execution of each named running qube.
+<<<
+EARS_PATTERN: Ubiquitous
+PRODUCT: QubesadminTools
+STATUS: Implemented
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-LIFECYCLE-06
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-core-admin-client/qubesadmin/tools/qvm_pause.py
+  ELEMENT: function
+  ID: main
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-QTL-010
+TITLE: Qube resume
+STATEMENT: >>>
+The qvm-unpause tool shall return each named paused qube to the running state.
+<<<
+EARS_PATTERN: Ubiquitous
+PRODUCT: QubesadminTools
+STATUS: Implemented
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-LIFECYCLE-06
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-core-admin-client/qubesadmin/tools/qvm_unpause.py
+  ELEMENT: function
+  ID: main
+
+[[/SECTION]]
+
+[[SECTION]]
+TITLE: Qube configuration
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-QTL-011
+TITLE: Property configuration
+STATEMENT: >>>
+The qvm-prefs and qubes-prefs tools shall set a named property to the value
+given by the caller.
+<<<
+EARS_PATTERN: Ubiquitous
+PRODUCT: QubesadminTools
+STATUS: Implemented
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-CONFIG-01
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-core-admin-client/qubesadmin/tools/qvm_prefs.py
+  ELEMENT: function
+  ID: process_actions
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-core-admin-client/qubesadmin/tools/qubes_prefs.py
+  ELEMENT: function
+  ID: main
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-QTL-012
+TITLE: Property reset
+STATEMENT: >>>
+Where a reset is requested, qvm-prefs shall restore the named property to its
+default value.
+<<<
+EARS_PATTERN: Optional-feature
+PRODUCT: QubesadminTools
+STATUS: Implemented
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-CONFIG-02
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-core-admin-client/qubesadmin/tools/qvm_prefs.py
+  ELEMENT: function
+  ID: process_actions
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-QTL-013
+TITLE: Feature configuration
+STATEMENT: >>>
+The qvm-features tool shall set a named qube feature to the caller-given value.
+<<<
+EARS_PATTERN: Ubiquitous
+PRODUCT: QubesadminTools
+STATUS: Implemented
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-CONFIG-03
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-core-admin-client/qubesadmin/tools/qvm_features.py
+  ELEMENT: function
+  ID: main
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-QTL-014
+TITLE: Service configuration
+STATEMENT: >>>
+The qvm-service tool shall record a named service as enabled or disabled in the
+corresponding service feature.
+<<<
+EARS_PATTERN: Ubiquitous
+PRODUCT: QubesadminTools
+STATUS: Implemented
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-CONFIG-04
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-core-admin-client/qubesadmin/tools/qvm_service.py
+  ELEMENT: function
+  ID: main
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-core-admin-client/qubesadmin/tools/qvm_service.py
+  ELEMENT: function
+  ID: parse_bool
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-QTL-015
+TITLE: Tag configuration
+STATEMENT: >>>
+The qvm-tags tool shall bring a qube's tag set to the tags named by the caller.
+<<<
+EARS_PATTERN: Ubiquitous
+PRODUCT: QubesadminTools
+STATUS: Partial
+DEFECT: >>>
+The add subcommand and its set alias only add tags, so no invocation makes a
+qube's tags equal a given set
+(qubes-core-admin-client/qubesadmin/tools/qvm_tags.py:47).
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-CONFIG-05
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-core-admin-client/qubesadmin/tools/qvm_tags.py
+  ELEMENT: function
+  ID: mode_add
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-QTL-016
+TITLE: Qube notes
+STATEMENT: >>>
+The qvm-notes tool shall replace a qube's notes with caller-supplied text.
+<<<
+EARS_PATTERN: Ubiquitous
+PRODUCT: QubesadminTools
+STATUS: Implemented
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-CONFIG-06
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-core-admin-client/qubesadmin/tools/qvm_notes.py
+  ELEMENT: function
+  ID: main
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-QTL-017
+TITLE: Notes size limit
+STATEMENT: >>>
+If supplied notes exceed 256 000 bytes, then qvm-notes shall reject the change and
+leave the stored notes untouched.
+<<<
+EARS_PATTERN: Unwanted-behaviour
+PRODUCT: QubesadminTools
+STATUS: Not Implemented
+DEFECT: >>>
+qvm-notes checks no size before calling set_notes, so text of any length is sent
+to the Admin API
+(qubes-core-admin-client/qubesadmin/tools/qvm_notes.py:174).
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-CONFIG-07
+  ROLE: Refines
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-QTL-018
+TITLE: Qube class immutability
+STATEMENT: >>>
+The qvm-prefs tool shall reject a request to change an existing qube's class.
+<<<
+EARS_PATTERN: Ubiquitous
+PRODUCT: QubesadminTools
+STATUS: Partial
+DEFECT: >>>
+qvm-prefs forwards any property name unchecked, so a class change is refused
+only by the Admin API answering that the property does not exist
+(qubes-core-admin-client/qubesadmin/tools/qvm_prefs.py:127).
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-CONFIG-08
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-core-admin-client/qubesadmin/tools/qvm_prefs.py
+  ELEMENT: function
+  ID: process_actions
+- TYPE: File
+  ROLE: Authority
+  PATH: qubes-core-admin/qubes/api/admin.py
+  ELEMENT: function
+  ID: QubesAdminAPI.vm_property_set
+
+[[/SECTION]]
+
+[[SECTION]]
+TITLE: Storage and volumes
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-QTL-019
+TITLE: Volume resize
+STATEMENT: >>>
+The qvm-volume tool shall resize a named qube volume to the caller-given size.
+<<<
+EARS_PATTERN: Ubiquitous
+PRODUCT: QubesadminTools
+STATUS: Implemented
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-STORAGE-01
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-core-admin-client/qubesadmin/tools/qvm_volume.py
+  ELEMENT: function
+  ID: resize_volume
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-QTL-020
+TITLE: Volume revision retention
+STATEMENT: >>>
+The qvm-volume tool shall set the number of revisions retained for a named qube
+volume.
+<<<
+EARS_PATTERN: Ubiquitous
+PRODUCT: QubesadminTools
+STATUS: Implemented
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-STORAGE-02
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-core-admin-client/qubesadmin/tools/qvm_volume.py
+  ELEMENT: function
+  ID: config_volume
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-QTL-021
+TITLE: Settable volume properties
+STATEMENT: >>>
+If a caller names a volume property other than rw, revisions_to_keep or
+ephemeral, then qvm-volume shall reject it.
+<<<
+EARS_PATTERN: Unwanted-behaviour
+PRODUCT: QubesadminTools
+STATUS: Implemented
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-STORAGE-02
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-core-admin-client/qubesadmin/tools/qvm_volume.py
+  ELEMENT: function
+  ID: config_volume
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-QTL-022
+TITLE: Storage pool selection
+STATEMENT: >>>
+The qvm-create tool shall place a new qube's volumes in the caller-given storage
+pool.
+<<<
+EARS_PATTERN: Ubiquitous
+PRODUCT: QubesadminTools
+STATUS: Implemented
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-STORAGE-03
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-core-admin-client/qubesadmin/tools/qvm_create.py
+  ELEMENT: function
+  ID: main
+
+[[/SECTION]]
+
+[[SECTION]]
+TITLE: Device assignment
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-QTL-023
+TITLE: Transient device attachment
+STATEMENT: >>>
+The qvm-device tool shall attach a device to a qube for that qube's current run.
+<<<
+EARS_PATTERN: Ubiquitous
+PRODUCT: QubesadminTools
+STATUS: Implemented
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-DEVICE-01
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-core-admin-client/qubesadmin/tools/qvm_device.py
+  ELEMENT: function
+  ID: attach_device
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-QTL-024
+TITLE: Persistent device assignment
+STATEMENT: >>>
+The qvm-device tool shall assign a device to a qube so the binding survives a
+restart.
+<<<
+EARS_PATTERN: Ubiquitous
+PRODUCT: QubesadminTools
+STATUS: Implemented
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-DEVICE-02
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-core-admin-client/qubesadmin/tools/qvm_device.py
+  ELEMENT: function
+  ID: assign_device
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-QTL-025
+TITLE: Assignment removal
+STATEMENT: >>>
+The qvm-device tool shall remove an existing device assignment from a qube.
+<<<
+EARS_PATTERN: Ubiquitous
+PRODUCT: QubesadminTools
+STATUS: Implemented
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-DEVICE-02
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-core-admin-client/qubesadmin/tools/qvm_device.py
+  ELEMENT: function
+  ID: unassign_device
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-QTL-026
+TITLE: Assignment modes
+STATEMENT: >>>
+The qvm-device tool shall record the assignment mode requested by the caller as
+ask-to-attach, auto-attach or required.
+<<<
+EARS_PATTERN: Ubiquitous
+PRODUCT: QubesadminTools
+STATUS: Implemented
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-DEVICE-03
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-core-admin-client/qubesadmin/tools/qvm_device.py
+  ELEMENT: function
+  ID: assign_device
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-core-admin-client/qubesadmin/tools/qvm_device.py
+  ELEMENT: function
+  ID: attach_device
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-QTL-027
+TITLE: PCI assignment constraint
+STATEMENT: >>>
+If a PCI device is bound to a qube, then qvm-device shall record a required
+assignment rather than an attachment.
+<<<
+EARS_PATTERN: Unwanted-behaviour
+PRODUCT: QubesadminTools
+STATUS: Partial
+DEFECT: >>>
+A required assignment is recorded only when --persistent is given, so a plain
+pci attach is forwarded to the Admin API unchecked
+(qubes-core-admin-client/qubesadmin/tools/qvm_device.py:257).
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-DEVICE-04
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-core-admin-client/qubesadmin/tools/qvm_device.py
+  ELEMENT: function
+  ID: attach_device
+- TYPE: File
+  ROLE: Authority
+  PATH: qubes-core-admin/qubes/api/admin.py
+  ELEMENT: function
+  ID: QubesAdminAPI.vm_device_attach
+
+[[/SECTION]]
+
+[[SECTION]]
+TITLE: Network and firewall
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-QTL-028
+TITLE: Netvm validation
+STATEMENT: >>>
+If the qube named as netvm does not provide network, then qvm-prefs shall reject
+the change.
+<<<
+EARS_PATTERN: Unwanted-behaviour
+PRODUCT: QubesadminTools
+STATUS: Not Implemented
+DEFECT: >>>
+qvm-prefs validates no property value and forwards the netvm name straight to
+the Admin API
+(qubes-core-admin-client/qubesadmin/tools/qvm_prefs.py:127).
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-NET-01
+  ROLE: Refines
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-QTL-029
+TITLE: Firewall rule set
+STATEMENT: >>>
+The qvm-firewall tool shall apply a caller-supplied rule sequence to a qube in
+the order given.
+<<<
+EARS_PATTERN: Ubiquitous
+PRODUCT: QubesadminTools
+STATUS: Partial
+DEFECT: >>>
+Rules are added and deleted one at a time; no subcommand replaces the rule set
+with a caller-supplied sequence, and reset installs only a single accept rule
+(qubes-core-admin-client/qubesadmin/tools/qvm_firewall.py:207).
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-NET-02
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-core-admin-client/qubesadmin/tools/qvm_firewall.py
+  ELEMENT: function
+  ID: rules_add
+
+[[/SECTION]]
+
+[[SECTION]]
+TITLE: Convergence
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-QTL-030
+TITLE: Dry-run preview
+STATEMENT: >>>
+Where a dry run is requested, qvm-shutdown shall report the shutdowns it would
+perform.
+<<<
+EARS_PATTERN: Optional-feature
+PRODUCT: QubesadminTools
+STATUS: Partial
+DEFECT: >>>
+The --dry-run option returns before any output is produced, and no other tool in
+the component offers a preview
+(qubes-core-admin-client/qubesadmin/tools/qvm_shutdown.py:94).
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-CONV-03
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-core-admin-client/qubesadmin/tools/qvm_shutdown.py
+  ELEMENT: function
+  ID: run_async
+
+[[/SECTION]]
+
+[[SECTION]]
+TITLE: Inspection
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-QTL-031
+TITLE: Qube listing and filtering
+STATEMENT: >>>
+The qvm-ls tool shall list the qubes matching the selection criteria given by
+the caller.
+<<<
+EARS_PATTERN: Ubiquitous
+PRODUCT: QubesadminTools
+STATUS: Implemented
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-INSPECT-01
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-core-admin-client/qubesadmin/tools/qvm_ls.py
+  ELEMENT: function
+  ID: main
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-core-admin-client/qubesadmin/tools/__init__.py
+  ELEMENT: function
+  ID: VmNameAction.parse_qubes_app
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-QTL-032
+TITLE: Power state reporting
+STATEMENT: >>>
+The qvm-check tool shall report through its exit status whether the named qubes
+are in a requested power state.
+<<<
+EARS_PATTERN: Ubiquitous
+PRODUCT: QubesadminTools
+STATUS: Implemented
+RATIONALE: >>>
+Status 1 means no qube matched and status 3 means only some did, which a caller
+cannot infer from a single failure code.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-INSPECT-02
+  ROLE: Refines
+- TYPE: Parent
+  VALUE: L2-DIAG-01
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-core-admin-client/qubesadmin/tools/qvm_check.py
+  ELEMENT: function
+  ID: main
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-core-admin-client/qubesadmin/tools/qvm_check.py
+  ELEMENT: function
+  ID: get_filters
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-QTL-033
+TITLE: Property reporting
+STATEMENT: >>>
+The qvm-prefs tool shall print each property of a qube with a marker showing
+whether the value is the default.
+<<<
+EARS_PATTERN: Ubiquitous
+PRODUCT: QubesadminTools
+STATUS: Implemented
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-INSPECT-03
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-core-admin-client/qubesadmin/tools/qvm_prefs.py
+  ELEMENT: function
+  ID: process_actions
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-QTL-034
+TITLE: Tag reporting
+STATEMENT: >>>
+The qvm-tags tool shall print the tags currently carried by a qube.
+<<<
+EARS_PATTERN: Ubiquitous
+PRODUCT: QubesadminTools
+STATUS: Implemented
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-INSPECT-03
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-core-admin-client/qubesadmin/tools/qvm_tags.py
+  ELEMENT: function
+  ID: mode_query
+
+[[/SECTION]]
+
+[[SECTION]]
+TITLE: Command execution
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-QTL-035
+TITLE: Command execution in qube
+STATEMENT: >>>
+The qvm-run tool shall run a caller-supplied command in a qube and return that
+command's exit status.
+<<<
+EARS_PATTERN: Ubiquitous
+PRODUCT: QubesadminTools
+STATUS: Implemented
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-EXEC-01
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-core-admin-client/qubesadmin/tools/qvm_run.py
+  ELEMENT: function
+  ID: main
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-core-admin-client/qubesadmin/tools/qvm_run.py
+  ELEMENT: function
+  ID: run_command_single
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-QTL-036
+TITLE: File transfer
+STATEMENT: >>>
+The command-line tools shall transfer a file between dom0 and a qube.
+<<<
+EARS_PATTERN: Ubiquitous
+PRODUCT: QubesadminTools
+STATUS: Not Implemented
+DEFECT: >>>
+No tool in the component transfers files; a caller must stream data through a
+shell pipeline built on qvm-run --pass-io
+(qubes-core-admin-client/qubesadmin/tools/qvm_run.py:63).
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-EXEC-02
+  ROLE: Refines
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-QTL-037
+TITLE: Execution user selection
+STATEMENT: >>>
+The qvm-run tool shall run the command under the user account named by the
+caller.
+<<<
+EARS_PATTERN: Ubiquitous
+PRODUCT: QubesadminTools
+STATUS: Implemented
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-EXEC-03
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-core-admin-client/qubesadmin/tools/qvm_run.py
+  ELEMENT: function
+  ID: run_command_single
+
+[[/SECTION]]
+
+[[SECTION]]
+TITLE: Software and templates
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-QTL-038
+TITLE: Template installation
+STATEMENT: >>>
+The qvm-template tool shall install a template package obtained from a
+configured template repository.
+<<<
+EARS_PATTERN: Ubiquitous
+PRODUCT: QubesadminTools
+STATUS: Implemented
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-SW-02
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-core-admin-client/qubesadmin/tools/qvm_template.py
+  ELEMENT: function
+  ID: install
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-core-admin-client/qubesadmin/tools/qvm_template.py
+  ELEMENT: function
+  ID: download
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-QTL-039
+TITLE: Template signature verification
+STATEMENT: >>>
+The qvm-template tool shall verify a template package against the repository key
+before installing it.
+<<<
+EARS_PATTERN: Ubiquitous
+PRODUCT: QubesadminTools
+STATUS: Implemented
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-SW-03
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-core-admin-client/qubesadmin/tools/qvm_template.py
+  ELEMENT: function
+  ID: verify_rpm
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-QTL-040
+TITLE: Verification bypass scope
+STATEMENT: >>>
+Where a signature check is waived for a downloaded template, qvm-template shall
+verify that template regardless.
+<<<
+EARS_PATTERN: Optional-feature
+PRODUCT: QubesadminTools
+STATUS: Implemented
+RATIONALE: >>>
+The --nogpgcheck escape exists for packages the administrator already holds; a
+freshly downloaded one has no such provenance.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-SW-03
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-core-admin-client/qubesadmin/tools/qvm_template.py
+  ELEMENT: function
+  ID: download
+
+[[/SECTION]]
+
+[[SECTION]]
+TITLE: Backup and recovery
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-QTL-041
+TITLE: Backup passphrase
+STATEMENT: >>>
+The qvm-backup tool shall obtain a passphrase from the caller and record it in
+the profile driving the backup.
+<<<
+EARS_PATTERN: Ubiquitous
+PRODUCT: QubesadminTools
+STATUS: Implemented
+RATIONALE: >>>
+The --encrypt option is accepted only for compatibility, because a backup is
+always encrypted under this passphrase.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-BACKUP-01
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-core-admin-client/qubesadmin/tools/qvm_backup.py
+  ELEMENT: function
+  ID: main
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-core-admin-client/qubesadmin/tools/qvm_backup.py
+  ELEMENT: function
+  ID: write_backup_profile
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-QTL-042
+TITLE: Restore abort on failure
+STATEMENT: >>>
+If the backup fails its integrity check, then qvm-backup-restore shall exit with
+an error instead of restoring.
+<<<
+EARS_PATTERN: Unwanted-behaviour
+PRODUCT: QubesadminTools
+STATUS: Implemented
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-BACKUP-02
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-core-admin-client/qubesadmin/tools/qvm_backup_restore.py
+  ELEMENT: function
+  ID: main
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-QTL-043
+TITLE: Verification without restore
+STATEMENT: >>>
+Where verification alone is requested, qvm-backup-restore shall check the backup
+without writing any restored data.
+<<<
+EARS_PATTERN: Optional-feature
+PRODUCT: QubesadminTools
+STATUS: Implemented
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-BACKUP-02
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-core-admin-client/qubesadmin/tools/qvm_backup_restore.py
+  ELEMENT: function
+  ID: main
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-QTL-044
+TITLE: Paranoid restore isolation
+STATEMENT: >>>
+Where a paranoid restore is requested, qvm-backup-restore shall parse the backup
+inside a DisposableVM.
+<<<
+EARS_PATTERN: Optional-feature
+PRODUCT: QubesadminTools
+STATUS: Implemented
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-BACKUP-03
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-core-admin-client/qubesadmin/tools/qvm_backup_restore.py
+  ELEMENT: function
+  ID: main
+
+[[/SECTION]]
+
+[[SECTION]]
+TITLE: Diagnostics
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-QTL-045
+TITLE: Failure exit status
+STATEMENT: >>>
+The command-line tools shall exit with a non-zero status when a requested
+operation fails.
+<<<
+EARS_PATTERN: Ubiquitous
+PRODUCT: QubesadminTools
+STATUS: Implemented
+RATIONALE: >>>
+qvm-create grades the status by stage, distinguishing a failed creation from a
+qube that exists but is incompletely configured.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-DIAG-01
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-core-admin-client/qubesadmin/tools/__init__.py
+  ELEMENT: function
+  ID: QubesArgumentParser.error_runtime
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-core-admin-client/qubesadmin/tools/qvm_create.py
+  ELEMENT: function
+  ID: main
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-QTL-046
+TITLE: Error attribution
+STATEMENT: >>>
+The command-line tools shall name the qube and the failed operation in each
+error they report.
+<<<
+EARS_PATTERN: Ubiquitous
+PRODUCT: QubesadminTools
+STATUS: Implemented
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-DIAG-02
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-core-admin-client/qubesadmin/tools/__init__.py
+  ELEMENT: function
+  ID: QubesArgumentParser.print_error
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-core-admin-client/qubesadmin/tools/qvm_shutdown.py
+  ELEMENT: function
+  ID: run_async
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-QTL-047
+TITLE: Diagnostic verbosity control
+STATEMENT: >>>
+Where increased verbosity is requested, the command-line tools shall lower the
+logging threshold by one level per repetition.
+<<<
+EARS_PATTERN: Optional-feature
+PRODUCT: QubesadminTools
+STATUS: Implemented
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-DIAG-03
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-core-admin-client/qubesadmin/tools/__init__.py
+  ELEMENT: function
+  ID: QubesArgumentParser.set_qubes_verbosity
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-core-admin-client/qubesadmin/tools/__init__.py
+  ELEMENT: function
+  ID: QubesArgumentParser.get_loglevel_from_verbosity
+
+[[/SECTION]]
+
+[[/SECTION]]

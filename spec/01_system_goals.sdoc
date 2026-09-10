@@ -1,0 +1,62 @@
+[DOCUMENT]
+TITLE: L1 — System Goals
+UID: QMGMT-L1
+VERSION: 0.1
+OPTIONS:
+  MARKUP: RST
+  AUTO_LEVELS: On
+
+[GRAMMAR]
+IMPORT_FROM_FILE: requirements.sgra
+
+[SYSTEM_GOAL]
+UID: L1-ISOLATION
+TITLE: Management qube security
+STATEMENT: >>>
+Administering a qube shall never cause data originating from that qube to be
+interpreted by a management qube, unless it is trivial to parse.
+<<<
+RATIONALE: >>>
+A management qube has control of the qubes it manages, so any parser it runs over
+qube-supplied data is a total-compromise path. QSB #45 established the
+countermeasure now common to the tooling: configuration work runs inside a
+per-target management DisposableVM rather than in dom0 / management qubes.
+
+Trivial-to-parse data such as progress information can be used directly without an intermediate disposable, so long as the parsing is hardened.
+<<<
+
+[SYSTEM_GOAL]
+UID: L1-ADMINAPI
+TITLE: Admin API through policy system
+STATEMENT: >>>
+Every administrative action shall reach the system through a qrexec-mediated
+interface: the Admin API for configuration, qrexec services for in-qube
+execution.
+<<<
+RATIONALE: >>>
+Qrexec policy is the authoritative access control over administration in Qubes OS.
+<<<
+
+[SYSTEM_GOAL]
+UID: L1-IDEMPOTENT
+TITLE: Idempotent Configuration
+STATEMENT: >>>
+The configuration of a Qubes system shall convergs to the same result however many times it is applied.
+<<<
+RATIONALE: >>>
+A Qubes install is rebuilt often — after hardware changes, template migrations or recovery. Reproducing it must not depend on the order or count of past
+operations.
+<<<
+
+[SYSTEM_GOAL]
+UID: L1-OBSERVABILITY
+TITLE: Inspectable state and reviewable changes
+STATEMENT: >>>
+An administrator shall be able to inspect current state, preview a change before
+applying it, and obtain an unambiguous account of what changed and what failed.
+<<<
+RATIONALE: >>>
+Administrative errors in dom0 are expensive and hard to reverse. Previewing a
+change is the primary defence, so a dry run that silently mutates state is worse
+than none.
+<<<

@@ -1,0 +1,59 @@
+# Qubes OS Management Tooling Requirements
+
+A [StrictDoc](https://strictdoc.readthedocs.io/) specification of what Qubes OS
+management tooling is required to do, and how far each tool actually implements
+it.
+
+| Path | What |
+|---|---|
+| `spec/` | The specification: `.sdoc` documents, the shared grammar, and authoring conventions |
+| `tools/audit_spec.py` | Consistency audit of the specification |
+| `tools/parity_matrix.py`, `.css` | Renders the feature-parity matrix screen |
+| `strictdoc_config.py` | StrictDoc project configuration |
+| `qubes-*/` | Upstream sources, as git submodules. Read-only here; requirement anchors point into them |
+
+## Running
+
+Requires Python, [uv](https://docs.astral.sh/uv/) and git.
+
+**Fetch the upstream sources first.** Requirement anchors resolve into the
+submodules, and the export fails on a path that does not exist:
+
+```bash
+git submodule update --init
+```
+
+Build the HTML:
+
+```bash
+uv run strictdoc export .          # → output/html/index.html
+```
+
+Or serve it, which adds the search screen:
+
+```bash
+uv run strictdoc server .          # → http://127.0.0.1:5111
+```
+
+The **Statistics** screen in the navigation is the feature-parity matrix:
+product requirements down the side, products across the top, coloured by
+implementation status, with per-product progress bars above it.
+
+## Checking the specification
+
+```bash
+uv run python tools/audit_spec.py  # expect: audit: clean
+```
+
+Run this before committing. It checks things StrictDoc does not — most
+importantly that every anchor's `ID:` actually exists in the file it names. A
+wrong `ID:` produces no marker, no warning and a green build, so the audit is
+the only thing standing between a typo and a requirement that silently traces to
+nothing.
+
+## Further reading
+
+- `spec/CONVENTIONS.md` — the conventions for this specification: levels and
+  UIDs, the fan-out rule, EARS patterns, anchor style.
+- [StrictDoc documentation](https://strictdoc.readthedocs.io/) — the tool
+  itself, including how to write `.sdoc` documents.

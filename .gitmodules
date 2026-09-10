@@ -1,0 +1,15 @@
+[submodule "qubes-ansible"]
+	path = qubes-ansible
+	url = https://github.com/QubesOS/qubes-ansible
+[submodule "qubes-core-admin"]
+	path = qubes-core-admin
+	url = https://github.com/QubesOS/qubes-core-admin
+[submodule "qubes-core-admin-client"]
+	path = qubes-core-admin-client
+	url = https://github.com/QubesOS/qubes-core-admin-client
+[submodule "qubes-mgmt-salt"]
+	path = qubes-mgmt-salt
+	url = https://github.com/QubesOS/qubes-mgmt-salt
+[submodule "qubes-mgmt-salt-dom0-qvm"]
+	path = qubes-mgmt-salt-dom0-qvm
+	url = https://github.com/QubesOS/qubes-mgmt-salt-dom0-qvm
