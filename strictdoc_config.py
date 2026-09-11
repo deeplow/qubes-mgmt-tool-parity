@@ -38,6 +38,12 @@ def create_config() -> ProjectConfig:
             # library (app.py, backup/, vm/, ...) is deliberately not indexed;
             # widening this is a decision.
             "qubes-core-admin-client/qubesadmin/tools/**",
+            # TF — qubes-terraform. Includes the vendored qubes-ansible copy
+            # under qubes_provider/utils/qubes_ansible/, which the provider runs.
+            "qubes-terraform/qubes_provider/**",
+            "qubes-terraform/tests/**",
+            # Examples back Workaround L3s (e.g. local-exec running qvm-run).
+            "qubes-terraform/examples/**",
             # Authority layer: the Admin API surface ONLY. One file.
             # Not qubes/vm/, not qubes/storage/, not device or firewall
             # internals, not api/internal.py or api/misc.py. Widening this is

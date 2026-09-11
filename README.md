@@ -51,6 +51,13 @@ wrong `ID:` produces no marker, no warning and a green build, so the audit is
 the only thing standing between a typo and a requirement that silently traces to
 nothing.
 
+```bash
+uv run python tools/source_coverage.py --prefix qubes-terraform/
+```
+
+Lists the functions no requirement traces to, using StrictDoc's own coverage
+index. A report, not a gate: use it to find missing anchors or requirements.
+
 ## Further reading
 
 - `spec/CONVENTIONS.md` — the conventions for this specification: levels and

@@ -13,3 +13,6 @@
 [submodule "qubes-mgmt-salt-dom0-qvm"]
 	path = qubes-mgmt-salt-dom0-qvm
 	url = https://github.com/QubesOS/qubes-mgmt-salt-dom0-qvm
+[submodule "qubes-terraform"]
+	path = qubes-terraform
+	url = ../qubes-terraform

@@ -82,10 +82,11 @@ class MatrixConfig:
     title: str = "Parity matrix"
     # Worst first. The grammar decides which statuses exist; this maps them to
     # a CSS class in tools/parity_matrix.css. Entries not present in the
-    # grammar are ignored, so this default suits any subset of the three.
+    # grammar are ignored, so this default suits any subset of these.
     status_classes: Tuple[Tuple[str, str], ...] = (
         ("Not Implemented", "none"),
         ("Partial", "partial"),
+        ("Workaround", "workaround"),
         ("Implemented", "full"),
     )
 

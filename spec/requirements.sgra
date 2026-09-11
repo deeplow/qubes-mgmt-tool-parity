@@ -40,7 +40,7 @@ ELEMENTS:
     TYPE: SingleChoice(Ubiquitous, Event-driven, State-driven, Optional-feature, Unwanted-behaviour, Complex)
     REQUIRED: True
   - TITLE: PRODUCT
-    TYPE: MultipleChoice(Ansible, Salt, QubesadminTools)
+    TYPE: MultipleChoice(Ansible, Salt, QubesadminTools, Terraform)
     REQUIRED: True
   - TITLE: RATIONALE
     TYPE: String
@@ -67,10 +67,10 @@ ELEMENTS:
     TYPE: SingleChoice(Ubiquitous, Event-driven, State-driven, Optional-feature, Unwanted-behaviour, Complex)
     REQUIRED: True
   - TITLE: PRODUCT
-    TYPE: SingleChoice(Ansible, Salt, QubesadminTools)
+    TYPE: SingleChoice(Ansible, Salt, QubesadminTools, Terraform)
     REQUIRED: True
   - TITLE: STATUS
-    TYPE: SingleChoice(Implemented, Partial, Not Implemented)
+    TYPE: SingleChoice(Implemented, Partial, Workaround, Not Implemented)
     REQUIRED: True
   - TITLE: RATIONALE
     TYPE: String

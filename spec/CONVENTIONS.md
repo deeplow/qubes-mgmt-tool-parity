@@ -15,10 +15,15 @@ This file deliberately does not restate those values.
 |---|---|---|---|
 | L1 system goals | `01_system_goals.sdoc` | `SYSTEM_GOAL` | `L1-<AREA>` |
 | L2 product requirements | `02_product_requirements.sdoc` | `PRODUCT_REQUIREMENT` | `L2-<AREA>-<NN>` |
-| L3 technical requirements | `03_technical_requirements.sdoc` | `TECHNICAL_REQUIREMENT` | `L3-<ANS\|SLS\|QTL>-<NNN>` |
+| L3 technical requirements | `03_technical_requirements.sdoc` | `TECHNICAL_REQUIREMENT` | `L3-<ANS\|SLS\|QTL\|TF>-<NNN>` |
 
 Sections use the composite form `[[SECTION]] … [[/SECTION]]`. Plain `[SECTION]`
 is rejected by current strictdoc.
+
+Requirements about the Qubes system as a whole rather than a single qube (global
+properties, qrexec policy, dom0 updates, qube listing, backup) belong in the
+**Qubes system** section, with UIDs of the form `L2-SYSTEM-<NN>`. In the L3 document,
+each product has a matching "Qubes system" subsection in the same position.
 
 ## Products
 
@@ -34,7 +39,9 @@ problem if they drift.
 
 Products map to trees as follows: **Ansible** → `qubes-ansible/`; **Salt** →
 `qubes-mgmt-salt-dom0-qvm/` *and* `qubes-mgmt-salt/` (one product, two repos);
-**QubesadminTools** → `qubes-core-admin-client/qubesadmin/tools/`.
+**QubesadminTools** → `qubes-core-admin-client/qubesadmin/tools/`; **Terraform** →
+`qubes-terraform/`, whose `qubes_vm` resource runs a vendored copy of qubes-ansible
+under `qubes_provider/utils/qubes_ansible/` (anchor that copy, not `qubes-ansible/`).
 
 `qubes-core-admin` is **not** a product. It is the authority layer, reached only
 through `ROLE: Authority`, and only `qubes/api/admin.py` is indexed.
@@ -54,7 +61,8 @@ Every `STATEMENT` uses exactly one pattern, declared in `EARS_PATTERN`:
 
 Subjects, used verbatim: `the qube module`, `the qubes_proxy strategy`,
 `the qvm execution module`, `the qvm state module`, `qubesctl`, `qvm-prefs`,
-and similar concrete names. At L2 use `the management tool`.
+`the qubes_vm resource`, `the qubes_prefs resource`, `the qubes_policy resource`,
+`the provider`, and similar concrete names. At L2 use `the management tool`.
 
 ## Writing style — less is more
 
@@ -142,3 +150,13 @@ distinguished from an oversight, whereas a `Not Implemented` node is a finding.
 
 Genuinely out-of-scope combinations are omitted from the L2's `PRODUCT` set — no
 node, no false gap.
+
+## Workaround status
+
+`STATUS: Workaround` means the product does not implement the requirement itself,
+but it can be met with the host tool's own features. Terraform's `local-exec`
+running `qvm-run` is the canonical case.
+
+- The `Implementation` anchor points at code showing the workaround, such as an
+  example in the product's `examples/` directory, not at product code.
+- `DEFECT` is optional. When present, it names the gap the workaround covers.

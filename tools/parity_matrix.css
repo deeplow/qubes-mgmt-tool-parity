@@ -20,6 +20,9 @@
   --parity-part-bg: #fdf3d6;
   --parity-part-fg: #85631a;
   --parity-part-br: #e8d193;
+  --parity-workaround-bg: #e3f1f6;
+  --parity-workaround-fg: #1d5f73;
+  --parity-workaround-br: #a9d3e0;
   --parity-none-bg: #fce9e7;
   --parity-none-fg: #a52a1f;
   --parity-none-br: #f0bcb6;
@@ -171,6 +174,7 @@
 
 .parity .cell.full { background: var(--parity-full-bg); }
 .parity .cell.partial { background: var(--parity-part-bg); }
+.parity .cell.workaround { background: var(--parity-workaround-bg); }
 .parity .cell.none { background: var(--parity-none-bg); }
 
 .parity .cell.out {
@@ -209,6 +213,7 @@
 
 .parity .chip.full { color: var(--parity-full-fg); border-color: var(--parity-full-br); }
 .parity .chip.partial { color: var(--parity-part-fg); border-color: var(--parity-part-br); }
+.parity .chip.workaround { color: var(--parity-workaround-fg); border-color: var(--parity-workaround-br); }
 .parity .chip.none { color: var(--parity-none-fg); border-color: var(--parity-none-br); }
 .parity .chip.out { color: var(--parity-out-fg); border-color: var(--parity-out-br); }
 
@@ -271,6 +276,11 @@
 .parity-bar-seg.partial {
   background: var(--parity-part-bg);
   color: var(--parity-part-fg);
+}
+
+.parity-bar-seg.workaround {
+  background: var(--parity-workaround-bg);
+  color: var(--parity-workaround-fg);
 }
 
 .parity-bar-seg.none {

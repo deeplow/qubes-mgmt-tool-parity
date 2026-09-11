@@ -62,6 +62,19 @@ def grammar_choices(element_tag: str, field_title: str) -> Set[str]:
     return {opt.strip() for opt in field_.group(1).split(",") if opt.strip()}
 
 
+def grammar_field_order(element_tag: str) -> List[str]:
+    """Field titles of a grammar element, in the order StrictDoc requires."""
+    text = GRAMMAR.read_text(encoding="utf-8")
+    block = re.search(
+        rf"^- TAG: {re.escape(element_tag)}$(.*?)(?=^- TAG: |\Z)",
+        text,
+        re.S | re.M,
+    )
+    if block is None:
+        raise SystemExit(f"audit: grammar has no element '{element_tag}'")
+    return re.findall(r"^  - TITLE: (\S+)$", block.group(1), re.M)
+
+
 # Single source of truth: everything below is read out of requirements.sgra.
 PRODUCTS = grammar_choices("TECHNICAL_REQUIREMENT", "PRODUCT")
 STATUSES = grammar_choices("TECHNICAL_REQUIREMENT", "STATUS")
@@ -70,6 +83,9 @@ EARS_KINDS = grammar_choices("TECHNICAL_REQUIREMENT", "EARS_PATTERN")
 STATUS_UNIMPLEMENTED = "Not Implemented"
 STATUS_IMPLEMENTED = "Implemented"
 STATUS_PARTIAL = "Partial"
+# Not implemented by the product, but achievable with the host tool's own
+# features; its Implementation anchor points at code showing the workaround.
+STATUS_WORKAROUND = "Workaround"
 
 MAX_STATEMENT_WORDS = 25
 MAX_TITLE_WORDS = 6
@@ -389,6 +405,25 @@ class Audit:
                     self.fail("anchor", f"{n.uid}: PATH does not exist: {r.path}")
                     continue
 
+                if r.line_range:
+                    try:
+                        begin, end = (int(x) for x in r.line_range.split(","))
+                    except ValueError:
+                        self.fail(
+                            "anchor",
+                            f"{n.uid}: LINE_RANGE '{r.line_range}' is not '<begin>, <end>'",
+                        )
+                        continue
+                    total = len(
+                        full.read_text(encoding="utf-8", errors="replace").splitlines()
+                    )
+                    if not 1 <= begin <= end <= total:
+                        self.fail(
+                            "anchor",
+                            f"{n.uid}: LINE_RANGE {begin}, {end} is outside {r.path} "
+                            f"(lines 1-{total})",
+                        )
+
                 if r.id:
                     if not r.path.endswith(".py"):
                         self.fail(
@@ -471,6 +506,7 @@ class Audit:
             defect = n.fields.get("DEFECT", "")
             if status in (STATUS_PARTIAL, STATUS_UNIMPLEMENTED) and not defect:
                 self.fail("fields", f"{n.uid}: STATUS is '{status}' but DEFECT is empty")
+            # STATUS_WORKAROUND: DEFECT is optional; when present it names the gap.
             if status == STATUS_IMPLEMENTED and defect:
                 self.fail(
                     "fields",
@@ -479,6 +515,24 @@ class Audit:
             for required in ("PRODUCT", "STATUS", "EARS_PATTERN"):
                 if not n.fields.get(required):
                     self.fail("fields", f"{n.uid}: missing {required}")
+
+
+    # -- field order ----------------------------------------------------
+    def check_field_order(self, nodes: List[Node], element_tag: str) -> None:
+        """Fields must follow the grammar's order, or StrictDoc refuses the file.
+
+        The export fails outright on a misordered node while this audit stayed
+        green, so catch it here.
+        """
+        order = grammar_field_order(element_tag)
+        for n in nodes:
+            present = [f for f in n.fields if f in order]
+            if present != sorted(present, key=order.index):
+                self.fail(
+                    "fields",
+                    f"{n.uid}: fields out of grammar order {present}; "
+                    f"grammar order is {[f for f in order if f in present]}",
+                )
 
 
 def main() -> int:
@@ -502,6 +556,7 @@ def main() -> int:
         audit.check_anchors(nodes)
         audit.check_style(nodes, MAX_STATEMENT_WORDS)
         audit.check_fields(nodes)
+        audit.check_field_order(nodes, "TECHNICAL_REQUIREMENT")
         print(f"fragment {args.fragment}: {len(nodes)} requirement(s)")
         if not audit.problems:
             print("fragment audit: clean")
@@ -521,6 +576,9 @@ def main() -> int:
     audit.check_style(l2, MAX_STATEMENT_WORDS)
     audit.check_style(l3, MAX_STATEMENT_WORDS)
     audit.check_fields(l3)
+    audit.check_field_order(l1, "SYSTEM_GOAL")
+    audit.check_field_order(l2, "PRODUCT_REQUIREMENT")
+    audit.check_field_order(l3, "TECHNICAL_REQUIREMENT")
 
     print(f"L1 goals: {len(l1)}   L2 requirements: {len(l2)}   L3 requirements: {len(l3)}")
 

@@ -281,6 +281,31 @@ RELATIONS:
   ID: test_properties_and_features_set_and_tag_vm
 
 [TECHNICAL_REQUIREMENT]
+UID: L3-ANS-056
+TITLE: Disposable template validation
+STATEMENT: >>>
+If default_dispvm or management_dispvm names a qube that is not an AppVM serving
+as a disposable template, then the qube module shall fail the task.
+<<<
+EARS_PATTERN: Unwanted-behaviour
+PRODUCT: Ansible
+STATUS: Implemented
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-CONFIG-01
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-ansible/ansible_collections/qubesos/core/plugins/module_utils/qubes_module_qube.py
+  ELEMENT: function
+  ID: QubeModule.validate_properties
+- TYPE: File
+  ROLE: Authority
+  PATH: qubes-core-admin/qubes/api/admin.py
+  ELEMENT: function
+  ID: QubesAdminAPI.vm_property_set
+
+[TECHNICAL_REQUIREMENT]
 UID: L3-ANS-010
 TITLE: Property reset to default
 STATEMENT: >>>
@@ -918,31 +943,6 @@ RELATIONS:
 TITLE: Inspection
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-ANS-034
-TITLE: Qube listing
-STATEMENT: >>>
-The command module shall list the qubes whose power state matches the requested
-state.
-<<<
-EARS_PATTERN: Ubiquitous
-PRODUCT: Ansible
-STATUS: Implemented
-RELATIONS:
-- TYPE: Parent
-  VALUE: L2-INSPECT-01
-  ROLE: Refines
-- TYPE: File
-  ROLE: Implementation
-  PATH: qubes-ansible/ansible_collections/qubesos/core/plugins/module_utils/qubes_helper.py
-  ELEMENT: function
-  ID: QubesHelper.list_vms
-- TYPE: File
-  ROLE: Verification
-  PATH: qubes-ansible/tests/qubes/test_module_command.py
-  ELEMENT: function
-  ID: test_list_vms_command
-
-[TECHNICAL_REQUIREMENT]
 UID: L3-ANS-035
 TITLE: Power state reporting
 STATEMENT: >>>
@@ -1148,31 +1148,6 @@ RELATIONS:
 TITLE: Software and templates
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-ANS-042
-TITLE: dom0 package update
-STATEMENT: >>>
-The qubes_dom0_update module shall upgrade the dom0 packages named in the
-desired state.
-<<<
-EARS_PATTERN: Ubiquitous
-PRODUCT: Ansible
-STATUS: Implemented
-RELATIONS:
-- TYPE: Parent
-  VALUE: L2-SW-01
-  ROLE: Refines
-- TYPE: File
-  ROLE: Implementation
-  PATH: qubes-ansible/ansible_collections/qubesos/core/plugins/modules/qubes_dom0_update.py
-  ELEMENT: function
-  ID: QubesDom0UpdateModule._process_update
-- TYPE: File
-  ROLE: Verification
-  PATH: qubes-ansible/tests/qubes/test_module_dom0_update_units.py
-  ELEMENT: function
-  ID: test_process_update_returns_transaction_history
-
-[TECHNICAL_REQUIREMENT]
 UID: L3-ANS-043
 TITLE: Template installation
 STATEMENT: >>>
@@ -1211,6 +1186,61 @@ RELATIONS:
 - TYPE: Parent
   VALUE: L2-SW-03
   ROLE: Refines
+
+[[/SECTION]]
+
+[[SECTION]]
+TITLE: Qubes system
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-ANS-034
+TITLE: Qube listing
+STATEMENT: >>>
+The command module shall list the qubes whose power state matches the requested
+state.
+<<<
+EARS_PATTERN: Ubiquitous
+PRODUCT: Ansible
+STATUS: Implemented
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-SYSTEM-03
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-ansible/ansible_collections/qubesos/core/plugins/module_utils/qubes_helper.py
+  ELEMENT: function
+  ID: QubesHelper.list_vms
+- TYPE: File
+  ROLE: Verification
+  PATH: qubes-ansible/tests/qubes/test_module_command.py
+  ELEMENT: function
+  ID: test_list_vms_command
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-ANS-042
+TITLE: dom0 package update
+STATEMENT: >>>
+The qubes_dom0_update module shall upgrade the dom0 packages named in the
+desired state.
+<<<
+EARS_PATTERN: Ubiquitous
+PRODUCT: Ansible
+STATUS: Implemented
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-SYSTEM-04
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-ansible/ansible_collections/qubesos/core/plugins/modules/qubes_dom0_update.py
+  ELEMENT: function
+  ID: QubesDom0UpdateModule._process_update
+- TYPE: File
+  ROLE: Verification
+  PATH: qubes-ansible/tests/qubes/test_module_dom0_update_units.py
+  ELEMENT: function
+  ID: test_process_update_returns_transaction_history
 
 [[/SECTION]]
 
@@ -1501,31 +1531,6 @@ RELATIONS:
   ID: QubesPlayExecutor._verbose
 
 [[/SECTION]]
-
-[TECHNICAL_REQUIREMENT]
-UID: L3-ANS-056
-TITLE: Disposable template validation
-STATEMENT: >>>
-If default_dispvm or management_dispvm names a qube that is not an AppVM serving
-as a disposable template, then the qube module shall fail the task.
-<<<
-EARS_PATTERN: Unwanted-behaviour
-PRODUCT: Ansible
-STATUS: Implemented
-RELATIONS:
-- TYPE: Parent
-  VALUE: L2-CONFIG-01
-  ROLE: Refines
-- TYPE: File
-  ROLE: Implementation
-  PATH: qubes-ansible/ansible_collections/qubesos/core/plugins/module_utils/qubes_module_qube.py
-  ELEMENT: function
-  ID: QubeModule.validate_properties
-- TYPE: File
-  ROLE: Authority
-  PATH: qubes-core-admin/qubes/api/admin.py
-  ELEMENT: function
-  ID: QubesAdminAPI.vm_property_set
 
 [[/SECTION]]
 
@@ -2363,25 +2368,6 @@ RELATIONS:
 TITLE: Inspection
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-SLS-033
-TITLE: Target selection
-STATEMENT: >>>
-qubesctl shall restrict a run to the qubes named by the caller's target and
-class selection options.
-<<<
-EARS_PATTERN: Ubiquitous
-PRODUCT: Salt
-STATUS: Implemented
-RELATIONS:
-- TYPE: Parent
-  VALUE: L2-INSPECT-01
-  ROLE: Refines
-- TYPE: File
-  ROLE: Implementation
-  PATH: qubes-mgmt-salt/qubesctl
-  LINE_RANGE: 76, 95
-
-[TECHNICAL_REQUIREMENT]
 UID: L3-SLS-034
 TITLE: Power state reporting
 STATEMENT: >>>
@@ -2535,33 +2521,6 @@ RELATIONS:
 TITLE: Software and templates
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-SLS-040
-TITLE: dom0 configuration run
-STATEMENT: >>>
-Where dom0 is not skipped, qubesctl shall apply the requested salt command
-locally in dom0 before targeting any qube.
-<<<
-EARS_PATTERN: Optional-feature
-PRODUCT: Salt
-STATUS: Implemented
-RATIONALE: >>>
-dom0 packages are updated by ordinary salt pkg states, which reach dom0 only
-through this local salt-call passthrough.
-<<<
-RELATIONS:
-- TYPE: Parent
-  VALUE: L2-SW-01
-  ROLE: Refines
-- TYPE: File
-  ROLE: Implementation
-  PATH: qubes-mgmt-salt/qubesctl
-  LINE_RANGE: 65, 71
-- TYPE: File
-  ROLE: Implementation
-  PATH: qubes-mgmt-salt/qubesctl
-  LINE_RANGE: 121, 130
-
-[TECHNICAL_REQUIREMENT]
 UID: L3-SLS-041
 TITLE: Template installation
 STATEMENT: >>>
@@ -2610,6 +2569,57 @@ RELATIONS:
   PATH: qubes-mgmt-salt-dom0-qvm/_modules/ext_module_qvm.py
   ELEMENT: function
   ID: template_install
+
+[[/SECTION]]
+
+[[SECTION]]
+TITLE: Qubes system
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-SLS-033
+TITLE: Target selection
+STATEMENT: >>>
+qubesctl shall restrict a run to the qubes named by the caller's target and
+class selection options.
+<<<
+EARS_PATTERN: Ubiquitous
+PRODUCT: Salt
+STATUS: Implemented
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-SYSTEM-03
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-mgmt-salt/qubesctl
+  LINE_RANGE: 76, 95
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-SLS-040
+TITLE: dom0 configuration run
+STATEMENT: >>>
+Where dom0 is not skipped, qubesctl shall apply the requested salt command
+locally in dom0 before targeting any qube.
+<<<
+EARS_PATTERN: Optional-feature
+PRODUCT: Salt
+STATUS: Implemented
+RATIONALE: >>>
+dom0 packages are updated by ordinary salt pkg states, which reach dom0 only
+through this local salt-call passthrough.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-SYSTEM-04
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-mgmt-salt/qubesctl
+  LINE_RANGE: 65, 71
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-mgmt-salt/qubesctl
+  LINE_RANGE: 121, 130
 
 [[/SECTION]]
 
@@ -3501,31 +3511,6 @@ RELATIONS:
 TITLE: Inspection
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-QTL-031
-TITLE: Qube listing and filtering
-STATEMENT: >>>
-The qvm-ls tool shall list the qubes matching the selection criteria given by
-the caller.
-<<<
-EARS_PATTERN: Ubiquitous
-PRODUCT: QubesadminTools
-STATUS: Implemented
-RELATIONS:
-- TYPE: Parent
-  VALUE: L2-INSPECT-01
-  ROLE: Refines
-- TYPE: File
-  ROLE: Implementation
-  PATH: qubes-core-admin-client/qubesadmin/tools/qvm_ls.py
-  ELEMENT: function
-  ID: main
-- TYPE: File
-  ROLE: Implementation
-  PATH: qubes-core-admin-client/qubesadmin/tools/__init__.py
-  ELEMENT: function
-  ID: VmNameAction.parse_qubes_app
-
-[TECHNICAL_REQUIREMENT]
 UID: L3-QTL-032
 TITLE: Power state reporting
 STATEMENT: >>>
@@ -3742,7 +3727,32 @@ RELATIONS:
 [[/SECTION]]
 
 [[SECTION]]
-TITLE: Backup and recovery
+TITLE: Qubes system
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-QTL-031
+TITLE: Qube listing and filtering
+STATEMENT: >>>
+The qvm-ls tool shall list the qubes matching the selection criteria given by
+the caller.
+<<<
+EARS_PATTERN: Ubiquitous
+PRODUCT: QubesadminTools
+STATUS: Implemented
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-SYSTEM-03
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-core-admin-client/qubesadmin/tools/qvm_ls.py
+  ELEMENT: function
+  ID: main
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-core-admin-client/qubesadmin/tools/__init__.py
+  ELEMENT: function
+  ID: VmNameAction.parse_qubes_app
 
 [TECHNICAL_REQUIREMENT]
 UID: L3-QTL-041
@@ -3760,7 +3770,7 @@ always encrypted under this passphrase.
 <<<
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2-BACKUP-01
+  VALUE: L2-SYSTEM-06
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -3785,7 +3795,7 @@ PRODUCT: QubesadminTools
 STATUS: Implemented
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2-BACKUP-02
+  VALUE: L2-SYSTEM-07
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -3805,7 +3815,7 @@ PRODUCT: QubesadminTools
 STATUS: Implemented
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2-BACKUP-02
+  VALUE: L2-SYSTEM-07
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -3825,7 +3835,7 @@ PRODUCT: QubesadminTools
 STATUS: Implemented
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2-BACKUP-03
+  VALUE: L2-SYSTEM-08
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -3916,6 +3926,2227 @@ RELATIONS:
   PATH: qubes-core-admin-client/qubesadmin/tools/__init__.py
   ELEMENT: function
   ID: QubesArgumentParser.get_loglevel_from_verbosity
+
+[[/SECTION]]
+
+[[/SECTION]]
+
+[[SECTION]]
+TITLE: Terraform
+
+[[SECTION]]
+TITLE: Qube lifecycle
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-TF-001
+TITLE: Qube creation
+STATEMENT: >>>
+When a declared qube does not exist, the qubes_vm resource shall create it with
+the declared class and template.
+<<<
+EARS_PATTERN: Event-driven
+PRODUCT: Terraform
+STATUS: Implemented
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-LIFECYCLE-01
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-terraform/qubes_provider/resources/qube.py
+  ELEMENT: function
+  ID: QubesVMResource.create
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-terraform/qubes_provider/utils/qubes_ansible/qubes_module_qube.py
+  ELEMENT: function
+  ID: QubeModule.enforce_existence
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-terraform/qubes_provider/utils/qubes_ansible/qubes_helper.py
+  ELEMENT: function
+  ID: QubesHelper.create
+- TYPE: File
+  ROLE: Verification
+  PATH: qubes-terraform/tests/test_qube.py
+  ELEMENT: function
+  ID: test_create_with_properties
+- TYPE: File
+  ROLE: Verification
+  PATH: qubes-terraform/tests/test_delegation.py
+  ELEMENT: function
+  ID: test_default_template_create_is_noop_then_present
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-TF-002
+TITLE: Qube cloning
+STATEMENT: >>>
+When a ``clone`` origin is declared for an absent qube, the qubes_vm resource
+shall create it as a copy of the source.
+<<<
+EARS_PATTERN: Event-driven
+PRODUCT: Terraform
+STATUS: Partial
+DEFECT: >>>
+The clone is taken with ``ignore_devices=True``, so the source qube's device
+assignments are not carried over to the copy
+(qubes-terraform/qubes_provider/utils/qubes_ansible/qubes_module_qube.py:252).
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-LIFECYCLE-02
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-terraform/qubes_provider/utils/qubes_adapter.py
+  ELEMENT: function
+  ID: QubesVmAdapter.desired_to_qube_params
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-terraform/qubes_provider/utils/qubes_ansible/qubes_module_qube.py
+  ELEMENT: function
+  ID: QubeModule.enforce_existence
+- TYPE: File
+  ROLE: Verification
+  PATH: qubes-terraform/tests/test_capabilities.py
+  ELEMENT: function
+  ID: test_create_via_origin_clone
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-TF-003
+TITLE: Qube removal
+STATEMENT: >>>
+When a qubes_vm resource is destroyed, the qubes_vm resource shall delete the
+qube together with its volumes.
+<<<
+EARS_PATTERN: Event-driven
+PRODUCT: Terraform
+STATUS: Partial
+DEFECT: >>>
+The wait for the killed qube to reach the shutdown state is an unbounded
+``while True`` loop with no timeout, so a qube that never halts hangs the apply
+(qubes-terraform/qubes_provider/utils/qubes_ansible/qubes_helper.py:319).
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-LIFECYCLE-03
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-terraform/qubes_provider/resources/qube.py
+  ELEMENT: function
+  ID: QubesVMResource.delete
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-terraform/qubes_provider/utils/qubes_adapter.py
+  ELEMENT: function
+  ID: QubesVmAdapter.delete
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-terraform/qubes_provider/utils/qubes_ansible/qubes_helper.py
+  ELEMENT: function
+  ID: QubesHelper.remove
+- TYPE: File
+  ROLE: Verification
+  PATH: qubes-terraform/tests/test_qube.py
+  ELEMENT: function
+  ID: test_delete_removes_vm
+- TYPE: File
+  ROLE: Verification
+  PATH: qubes-terraform/tests/test_delegation.py
+  ELEMENT: function
+  ID: test_delete_via_absent_state
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-terraform/qubes_provider/utils/qubes_ansible/qubes_helper.py
+  ELEMENT: function
+  ID: QubesHelper.destroy
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-terraform/qubes_provider/utils/qubes_ansible/qubes_helper.py
+  ELEMENT: function
+  ID: QubesHelper.__get_state
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-TF-034
+TITLE: Existing qube import
+STATEMENT: >>>
+When terraform import names an existing qube, the qubes_vm resource shall adopt it
+into state without recreating or modifying it.
+<<<
+EARS_PATTERN: Event-driven
+PRODUCT: Terraform
+STATUS: Implemented
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-LIFECYCLE-07
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-terraform/qubes_provider/resources/qube.py
+  ELEMENT: function
+  ID: QubesVMResource.import_
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-terraform/qubes_provider/utils/qubes_adapter.py
+  ELEMENT: function
+  ID: QubesVmAdapter._with_klass
+- TYPE: File
+  ROLE: Verification
+  PATH: qubes-terraform/tests/test_qube.py
+  ELEMENT: function
+  ID: test_import_existing
+- TYPE: File
+  ROLE: Verification
+  PATH: qubes-terraform/tests/test_capabilities.py
+  ELEMENT: function
+  ID: test_update_with_origin_clone_does_not_reclone
+- TYPE: File
+  ROLE: Verification
+  PATH: qubes-terraform/tests/test_capabilities.py
+  ELEMENT: function
+  ID: test_origin_does_not_force_replacement
+
+[[/SECTION]]
+
+[[SECTION]]
+TITLE: Qube configuration
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-TF-006
+TITLE: Property configuration
+STATEMENT: >>>
+The qubes_vm resource shall set the ``label``, ``template`` and each property named
+in ``properties`` to its declared value.
+<<<
+EARS_PATTERN: Ubiquitous
+PRODUCT: Terraform
+STATUS: Implemented
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-CONFIG-01
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-terraform/qubes_provider/utils/qubes_adapter.py
+  ELEMENT: function
+  ID: QubesVmAdapter.desired_to_qube_params
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-terraform/qubes_provider/utils/qubes_ansible/qubes_module_qube.py
+  ELEMENT: function
+  ID: QubeModule.enforce_properties
+- TYPE: File
+  ROLE: Verification
+  PATH: qubes-terraform/tests/test_qube.py
+  ELEMENT: function
+  ID: test_create_with_properties
+- TYPE: File
+  ROLE: Verification
+  PATH: qubes-terraform/tests/test_qube.py
+  ELEMENT: function
+  ID: test_update_changes_property
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-terraform/qubes_provider/utils/qubes_ansible/qubes_module_qube.py
+  ELEMENT: function
+  ID: QubeModule.__init__
+- TYPE: File
+  ROLE: Verification
+  PATH: qubes-terraform/tests/test_qube.py
+  ELEMENT: function
+  ID: test_template_change_halted_succeeds
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-TF-048
+TITLE: Disposable template validation
+STATEMENT: >>>
+If default_dispvm or management_dispvm names a qube that is not an AppVM serving
+as a disposable template, then the qubes_vm resource shall fail the apply.
+<<<
+EARS_PATTERN: Unwanted-behaviour
+PRODUCT: Terraform
+STATUS: Implemented
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-CONFIG-01
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-terraform/qubes_provider/utils/qubes_ansible/qubes_module_qube.py
+  ELEMENT: function
+  ID: QubeModule.validate_properties
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-TF-007
+TITLE: Property reset to default
+STATEMENT: >>>
+When a property or the template is declared as ``*default*``, the qubes_vm resource
+shall reset it to its Qubes default.
+<<<
+EARS_PATTERN: Event-driven
+PRODUCT: Terraform
+STATUS: Implemented
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-CONFIG-02
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-terraform/qubes_provider/utils/qubes_ansible/qubes_module_qube.py
+  ELEMENT: function
+  ID: QubeModule.enforce_properties
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-terraform/qubes_provider/utils/qubes_adapter.py
+  ELEMENT: function
+  ID: QubesVmAdapter._project_property
+- TYPE: File
+  ROLE: Verification
+  PATH: qubes-terraform/tests/test_qube.py
+  ELEMENT: function
+  ID: test_update_property_to_default
+- TYPE: File
+  ROLE: Verification
+  PATH: qubes-terraform/tests/test_qube.py
+  ELEMENT: function
+  ID: test_create_default_property_roundtrips
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-terraform/qubes_provider/utils/qubes_adapter.py
+  ELEMENT: function
+  ID: QubesVmAdapter.desired_to_qube_params
+- TYPE: File
+  ROLE: Verification
+  PATH: qubes-terraform/tests/test_qube.py
+  ELEMENT: function
+  ID: test_create_default_template_roundtrips
+- TYPE: File
+  ROLE: Verification
+  PATH: qubes-terraform/tests/test_adapter.py
+  ELEMENT: function
+  ID: test_mapping_default_template_becomes_none
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-TF-008
+TITLE: Feature configuration
+STATEMENT: >>>
+The qubes_vm resource shall bring each managed feature to its declared value,
+deleting a feature dropped from the declaration.
+<<<
+EARS_PATTERN: Ubiquitous
+PRODUCT: Terraform
+STATUS: Implemented
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-CONFIG-03
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-terraform/qubes_provider/utils/qubes_ansible/qubes_module_qube.py
+  ELEMENT: function
+  ID: QubeModule.enforce_features
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-terraform/qubes_provider/utils/qubes_adapter.py
+  ELEMENT: function
+  ID: QubesVmAdapter._prune_undeclared
+- TYPE: File
+  ROLE: Verification
+  PATH: qubes-terraform/tests/test_qube.py
+  ELEMENT: function
+  ID: test_create_features_and_tags
+- TYPE: File
+  ROLE: Verification
+  PATH: qubes-terraform/tests/test_qube.py
+  ELEMENT: function
+  ID: test_update_removes_dropped_feature_and_tag
+- TYPE: File
+  ROLE: Verification
+  PATH: qubes-terraform/tests/test_qube.py
+  ELEMENT: function
+  ID: test_features_block_deletion_removes
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-terraform/qubes_provider/utils/qubes_adapter.py
+  ELEMENT: function
+  ID: TerraformAnsibleAdapter.removed_items
+- TYPE: File
+  ROLE: Verification
+  PATH: qubes-terraform/tests/test_qube.py
+  ELEMENT: function
+  ID: test_features_managed_subset_ignores_system_features
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-TF-009
+TITLE: Service configuration
+STATEMENT: >>>
+The qubes_vm resource shall set the ``service.`` feature of each declared service
+to enabled or disabled as declared.
+<<<
+EARS_PATTERN: Ubiquitous
+PRODUCT: Terraform
+STATUS: Partial
+DEFECT: >>>
+``services`` holds names only, so it can enable a service but never record one
+as disabled, and a dropped name has its feature deleted instead
+(qubes-terraform/qubes_provider/utils/qubes_adapter.py:529).
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-CONFIG-04
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-terraform/qubes_provider/utils/qubes_ansible/qubes_module_qube.py
+  ELEMENT: function
+  ID: QubeModule.validate_services
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-terraform/qubes_provider/utils/qubes_adapter.py
+  ELEMENT: function
+  ID: QubesVmAdapter._prune_undeclared
+- TYPE: File
+  ROLE: Verification
+  PATH: qubes-terraform/tests/test_capabilities.py
+  ELEMENT: function
+  ID: test_services_enable_and_roundtrip
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-terraform/qubes_provider/utils/qubes_adapter.py
+  ELEMENT: function
+  ID: TerraformAnsibleAdapter.removed_items
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-TF-010
+TITLE: Tag configuration
+STATEMENT: >>>
+The qubes_vm resource shall bring its managed tags to the declared set, removing
+a tag dropped from the declaration.
+<<<
+EARS_PATTERN: Ubiquitous
+PRODUCT: Terraform
+STATUS: Implemented
+RATIONALE: >>>
+Tags never declared, including the Qubes ``created-by-*`` auto-tags, are left in
+place so that system tagging survives.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-CONFIG-05
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-terraform/qubes_provider/utils/qubes_ansible/qubes_module_qube.py
+  ELEMENT: function
+  ID: QubeModule.enforce_tags
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-terraform/qubes_provider/utils/qubes_adapter.py
+  ELEMENT: function
+  ID: QubesVmAdapter._prune_undeclared
+- TYPE: File
+  ROLE: Verification
+  PATH: qubes-terraform/tests/test_qube.py
+  ELEMENT: function
+  ID: test_update_removes_dropped_feature_and_tag
+- TYPE: File
+  ROLE: Verification
+  PATH: qubes-terraform/tests/test_qube.py
+  ELEMENT: function
+  ID: test_tags_managed_subset_ignores_auto_tags
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-terraform/qubes_provider/utils/qubes_adapter.py
+  ELEMENT: function
+  ID: TerraformAnsibleAdapter.removed_items
+- TYPE: File
+  ROLE: Verification
+  PATH: qubes-terraform/tests/test_qube.py
+  ELEMENT: function
+  ID: test_tags_block_deletion_removes
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-TF-011
+TITLE: Qube notes
+STATEMENT: >>>
+The qubes_vm resource shall set the qube's notes to the declared ``notes`` text.
+<<<
+EARS_PATTERN: Ubiquitous
+PRODUCT: Terraform
+STATUS: Implemented
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-CONFIG-06
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-terraform/qubes_provider/utils/qubes_ansible/qubes_module_qube.py
+  ELEMENT: function
+  ID: QubeModule.enforce_notes
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-terraform/qubes_provider/utils/qubes_adapter.py
+  ELEMENT: function
+  ID: QubesVmAdapter.read_vm
+- TYPE: File
+  ROLE: Verification
+  PATH: qubes-terraform/tests/test_capabilities.py
+  ELEMENT: function
+  ID: test_notes_set_and_roundtrip
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-TF-012
+TITLE: Notes size limit
+STATEMENT: >>>
+If the declared notes exceed 256 000 bytes, then the qubes_vm resource shall
+reject them before changing any other attribute.
+<<<
+EARS_PATTERN: Unwanted-behaviour
+PRODUCT: Terraform
+STATUS: Not Implemented
+DEFECT: >>>
+No provider or plan-time check bounds ``notes``, so oversized notes reach qubesd
+only at apply, after properties, volumes, devices and features were already changed
+(qubes-terraform/qubes_provider/utils/qubes_ansible/qubes_module_qube.py:288).
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-CONFIG-07
+  ROLE: Refines
+- TYPE: File
+  ROLE: Authority
+  PATH: qubes-core-admin/qubes/api/admin.py
+  ELEMENT: function
+  ID: QubesAdminAPI.vm_notes_set
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-TF-013
+TITLE: Qube class immutability
+STATEMENT: >>>
+If the declared class differs from the existing qube's class, then the qubes_vm
+resource shall reject the change.
+<<<
+EARS_PATTERN: Unwanted-behaviour
+PRODUCT: Terraform
+STATUS: Partial
+DEFECT: >>>
+``klass`` is ``requires_replace``, so a class change plans a destroy-and-recreate
+of the qube and its volumes instead of a rejection
+(qubes-terraform/qubes_provider/resources/qube.py:56).
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-CONFIG-08
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-terraform/qubes_provider/resources/qube.py
+  ELEMENT: function
+  ID: QubesVMResource.get_schema
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-terraform/qubes_provider/utils/qubes_ansible/qubes_module_qube.py
+  ELEMENT: function
+  ID: QubeModule.validate_module_parameters
+- TYPE: File
+  ROLE: Authority
+  PATH: qubes-core-admin/qubes/api/admin.py
+  ELEMENT: function
+  ID: QubesAdminAPI.vm_create
+
+[[/SECTION]]
+
+[[SECTION]]
+TITLE: Storage and volumes
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-TF-015
+TITLE: Volume resize
+STATEMENT: >>>
+The qubes_vm resource shall resize a declared ``private`` or ``root`` volume to
+the declared size.
+<<<
+EARS_PATTERN: Ubiquitous
+PRODUCT: Terraform
+STATUS: Partial
+DEFECT: >>>
+Enforcement compares sizes with ``!=``, so a live volume larger than declared
+triggers a shrink that qubesadmin refuses, failing every later update of the qube
+(qubes-terraform/qubes_provider/utils/qubes_ansible/qubes_module_qube.py:387).
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-STORAGE-01
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-terraform/qubes_provider/utils/qubes_ansible/qubes_module_qube.py
+  ELEMENT: function
+  ID: QubeModule.enforce_volumes
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-terraform/qubes_provider/utils/qubes_adapter.py
+  ELEMENT: function
+  ID: QubesVmAdapter._qube_volumes_to_state
+- TYPE: File
+  ROLE: Verification
+  PATH: qubes-terraform/tests/test_capabilities.py
+  ELEMENT: function
+  ID: test_volume_resize
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-TF-016
+TITLE: Volume revision retention
+STATEMENT: >>>
+The qubes_vm resource shall set a declared volume's retained revision count to
+the declared value.
+<<<
+EARS_PATTERN: Ubiquitous
+PRODUCT: Terraform
+STATUS: Implemented
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-STORAGE-02
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-terraform/qubes_provider/utils/qubes_ansible/qubes_module_qube.py
+  ELEMENT: function
+  ID: QubeModule.enforce_volumes
+- TYPE: File
+  ROLE: Verification
+  PATH: qubes-terraform/tests/test_capabilities.py
+  ELEMENT: function
+  ID: test_volume_revisions_to_keep_passthrough
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-TF-017
+TITLE: Storage pool selection
+STATEMENT: >>>
+Where a storage pool is declared, the qubes_vm resource shall create the qube's
+volumes in that pool.
+<<<
+EARS_PATTERN: Optional-feature
+PRODUCT: Terraform
+STATUS: Partial
+DEFECT: >>>
+Only a ``repo`` origin's ``repo_pool`` reaches a pool, because qube creation calls
+``add_new_vm`` without one and a volume ``pool`` key is ignored
+(qubes-terraform/qubes_provider/utils/qubes_ansible/qubes_helper.py:191).
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-STORAGE-03
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-terraform/qubes_provider/utils/qubes_adapter.py
+  ELEMENT: function
+  ID: QubesVmAdapter._ensure_installed
+- TYPE: File
+  ROLE: Verification
+  PATH: qubes-terraform/tests/test_capabilities.py
+  ELEMENT: function
+  ID: test_create_via_origin_repo_pool_argv_parses
+
+[[/SECTION]]
+
+[[SECTION]]
+TITLE: Device assignment
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-TF-018
+TITLE: Persistent device assignment
+STATEMENT: >>>
+When a device is declared in ``devices``, the qubes_vm resource shall
+persistently assign it to the qube.
+<<<
+EARS_PATTERN: Event-driven
+PRODUCT: Terraform
+STATUS: Partial
+DEFECT: >>>
+Read echoes ``devices`` from configuration instead of the live assignments, so an
+assignment removed outside Terraform is never re-applied
+(qubes-terraform/qubes_provider/utils/qubes_adapter.py:374).
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-DEVICE-02
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-terraform/qubes_provider/utils/qubes_ansible/qubes_module_qube.py
+  ELEMENT: function
+  ID: QubeModule.enforce_devices
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-terraform/qubes_provider/utils/qubes_ansible/qubes_helper.py
+  ELEMENT: function
+  ID: QubesHelper.assign
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-terraform/qubes_provider/utils/qubes_adapter.py
+  ELEMENT: function
+  ID: QubesVmAdapter.read_vm
+- TYPE: File
+  ROLE: Verification
+  PATH: qubes-terraform/tests/test_capabilities.py
+  ELEMENT: function
+  ID: test_device_assignment
+- TYPE: File
+  ROLE: Verification
+  PATH: qubes-terraform/tests/test_capabilities.py
+  ELEMENT: function
+  ID: test_device_flat_list_form
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-terraform/qubes_provider/utils/qubes_ansible/qubes_helper.py
+  ELEMENT: function
+  ID: QubesHelper.list_assigned_devices
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-terraform/qubes_provider/utils/qubes_ansible/qubes_helper.py
+  ELEMENT: function
+  ID: QubesHelper.parse_device
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-TF-049
+TITLE: Strict device strategy
+STATEMENT: >>>
+Where the ``strict`` device strategy applies, the qubes_vm resource shall unassign
+devices absent from the declaration.
+<<<
+EARS_PATTERN: Optional-feature
+PRODUCT: Terraform
+STATUS: Partial
+DEFECT: >>>
+Deleting the whole ``devices`` block passes no devices parameter, so every previously
+assigned device stays assigned
+(qubes-terraform/qubes_provider/utils/qubes_ansible/qubes_module_qube.py:199).
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-DEVICE-02
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-terraform/qubes_provider/utils/qubes_ansible/qubes_module_qube.py
+  ELEMENT: function
+  ID: QubeModule._enforce_device_class_strict_mode
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-terraform/qubes_provider/utils/qubes_ansible/qubes_helper.py
+  ELEMENT: function
+  ID: QubesHelper.sync_devices
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-terraform/qubes_provider/utils/qubes_ansible/qubes_helper.py
+  ELEMENT: function
+  ID: QubesHelper.unassign
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-TF-050
+TITLE: Append device strategy
+STATEMENT: >>>
+Where the ``append`` device strategy is declared, the qubes_vm resource shall leave
+undeclared assignments in place.
+<<<
+EARS_PATTERN: Optional-feature
+PRODUCT: Terraform
+STATUS: Implemented
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-DEVICE-02
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-terraform/qubes_provider/utils/qubes_ansible/qubes_module_qube.py
+  ELEMENT: function
+  ID: QubeModule._enforce_device_class_append_mode
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-terraform/qubes_provider/utils/qubes_ansible/qubes_module_qube.py
+  ELEMENT: function
+  ID: QubeModule.validate_devices
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-TF-019
+TITLE: Device assignment mode
+STATEMENT: >>>
+The qubes_vm resource shall assign each declared device in the mode given in its
+``devices`` entry.
+<<<
+EARS_PATTERN: Ubiquitous
+PRODUCT: Terraform
+STATUS: Implemented
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-DEVICE-03
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-terraform/qubes_provider/utils/qubes_ansible/qubes_module_qube.py
+  ELEMENT: function
+  ID: QubeModule.validate_devices
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-terraform/qubes_provider/utils/qubes_ansible/qubes_helper.py
+  ELEMENT: function
+  ID: QubesHelper.sync_devices
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-TF-020
+TITLE: PCI assignment mode
+STATEMENT: >>>
+Where no mode is declared for a pci device, the qubes_vm resource shall assign it
+as required.
+<<<
+EARS_PATTERN: Optional-feature
+PRODUCT: Terraform
+STATUS: Implemented
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-DEVICE-04
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-terraform/qubes_provider/utils/qubes_ansible/qubes_helper.py
+  ELEMENT: function
+  ID: QubesHelper.sync_devices
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-terraform/qubes_provider/utils/qubes_ansible/qubes_module_qube.py
+  ELEMENT: function
+  ID: QubeModule._enforce_device_class_append_mode
+- TYPE: File
+  ROLE: Authority
+  PATH: qubes-core-admin/qubes/api/admin.py
+  ELEMENT: function
+  ID: QubesAdminAPI.vm_device_assign
+
+[[/SECTION]]
+
+[[SECTION]]
+TITLE: Network and firewall
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-TF-021
+TITLE: Netvm validation
+STATEMENT: >>>
+If the qube declared as the ``netvm`` property does not provide network, then the
+qubes_vm resource shall fail the apply with an error diagnostic.
+<<<
+EARS_PATTERN: Unwanted-behaviour
+PRODUCT: Terraform
+STATUS: Implemented
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-NET-01
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-terraform/qubes_provider/utils/qubes_ansible/qubes_module_qube.py
+  ELEMENT: function
+  ID: QubeModule.validate_properties
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-terraform/qubes_provider/utils/qubes_adapter.py
+  ELEMENT: function
+  ID: AnsibleModuleShim.fail_json
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-terraform/qubes_provider/resources/qube.py
+  ELEMENT: function
+  ID: QubesVMResource.create
+- TYPE: File
+  ROLE: Verification
+  PATH: qubes-terraform/tests/test_qube.py
+  ELEMENT: function
+  ID: test_create_reports_error
+- TYPE: File
+  ROLE: Authority
+  PATH: qubes-core-admin/qubes/api/admin.py
+  ELEMENT: function
+  ID: QubesAdminAPI.vm_property_set
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-TF-022
+TITLE: Firewall rule set
+STATEMENT: >>>
+The qubes_vm resource shall replace a qube's firewall rules with the declared
+ordered rule set.
+<<<
+EARS_PATTERN: Ubiquitous
+PRODUCT: Terraform
+STATUS: Not Implemented
+DEFECT: >>>
+The qubes_vm schema has no firewall attribute and the provider registers no
+firewall resource, so firewall rules cannot be declared
+(qubes-terraform/qubes_provider/resources/qube.py:44).
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-NET-02
+  ROLE: Refines
+
+[[/SECTION]]
+
+[[SECTION]]
+TITLE: Convergence
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-TF-023
+TITLE: Idempotent attribute write
+STATEMENT: >>>
+When terraform apply updates a qube, the qubes_vm resource shall write only
+attributes whose live value differs from the declared value.
+<<<
+EARS_PATTERN: Event-driven
+PRODUCT: Terraform
+STATUS: Partial
+DEFECT: >>>
+A declared volume size below the live size reads back as matching, yet every
+later update re-applies it as a shrinking resize
+(qubes-terraform/qubes_provider/utils/qubes_ansible/qubes_module_qube.py:387).
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-CONV-01
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-terraform/qubes_provider/utils/qubes_ansible/qubes_module_qube.py
+  ELEMENT: function
+  ID: QubeModule.enforce_properties
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-terraform/qubes_provider/utils/qubes_ansible/qubes_module_qube.py
+  ELEMENT: function
+  ID: QubeModule.enforce_volumes
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-terraform/qubes_provider/utils/qubes_adapter.py
+  ELEMENT: function
+  ID: QubesVmAdapter._qube_volumes_to_state
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-TF-024
+TITLE: Change reporting
+STATEMENT: >>>
+When terraform apply updates a qube, the qubes_vm resource shall change nothing
+beyond the attribute differences reported in the plan.
+<<<
+EARS_PATTERN: Event-driven
+PRODUCT: Terraform
+STATUS: Partial
+DEFECT: >>>
+Every update re-enforces all declared attributes and discards the module's change
+report, so drifted device assignments absent from the plan are silently
+re-applied (qubes-terraform/qubes_provider/utils/qubes_adapter.py:233).
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-CONV-02
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-terraform/qubes_provider/resources/qube.py
+  ELEMENT: function
+  ID: QubesVMResource.update
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-terraform/qubes_provider/utils/qubes_adapter.py
+  ELEMENT: function
+  ID: QubesVmAdapter.create_or_update
+- TYPE: File
+  ROLE: Verification
+  PATH: qubes-terraform/tests/test_qube.py
+  ELEMENT: function
+  ID: test_update_changes_property
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-TF-025
+TITLE: Side-effect-free plan
+STATEMENT: >>>
+When terraform plan runs, the provider shall read qubes, global properties and
+policy files without modifying any of them.
+<<<
+EARS_PATTERN: Event-driven
+PRODUCT: Terraform
+STATUS: Implemented
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-CONV-03
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-terraform/qubes_provider/resources/qube.py
+  ELEMENT: function
+  ID: QubesVMResource.read
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-terraform/qubes_provider/utils/qubes_adapter.py
+  ELEMENT: function
+  ID: QubesVmAdapter.read_vm
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-terraform/qubes_provider/resources/prefs.py
+  ELEMENT: function
+  ID: QubesPrefsResource.read
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-terraform/qubes_provider/resources/policy.py
+  ELEMENT: function
+  ID: QubesPolicyResource.read
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-TF-026
+TITLE: Reference-ordered application
+STATEMENT: >>>
+Where a qube-valued attribute references another qubes_vm resource, the provider
+shall apply the referenced qube before the referencing resource.
+<<<
+EARS_PATTERN: Optional-feature
+PRODUCT: Terraform
+STATUS: Implemented
+RATIONALE: >>>
+Terraform core derives apply order from references; the provider contributes
+qube-valued string attributes (``template``, ``properties``, ``origin``) able to
+carry them.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-CONV-04
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-terraform/qubes_provider/resources/qube.py
+  ELEMENT: function
+  ID: QubesVMResource.get_schema
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-TF-051
+TITLE: Shutdown-first template change
+STATEMENT: >>>
+Where shutdown_if_required is set, the qubes_vm resource shall halt the qube and
+its running derived qubes before changing its template.
+<<<
+EARS_PATTERN: Optional-feature
+PRODUCT: Terraform
+STATUS: Implemented
+RATIONALE: >>>
+qubesd refuses a template change while the qube or a disposable based on it is
+running.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-CONV-04
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-terraform/qubes_provider/utils/qubes_adapter.py
+  ELEMENT: function
+  ID: QubesVmAdapter._shutdown_derived
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-terraform/qubes_provider/utils/qubes_ansible/qubes_module_qube.py
+  ELEMENT: function
+  ID: QubeModule._shutdown_for_template_update
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-terraform/qubes_provider/utils/qubes_ansible/qubes_helper.py
+  ELEMENT: function
+  ID: QubesHelper.shutdown
+- TYPE: File
+  ROLE: Verification
+  PATH: qubes-terraform/tests/test_adapter.py
+  ELEMENT: function
+  ID: test_shutdown_derived_halts_running_disposable
+- TYPE: File
+  ROLE: Verification
+  PATH: qubes-terraform/tests/test_adapter.py
+  ELEMENT: function
+  ID: test_shutdown_derived_noop_without_flag
+- TYPE: File
+  ROLE: Verification
+  PATH: qubes-terraform/tests/test_adapter.py
+  ELEMENT: function
+  ID: test_shutdown_derived_noop_when_template_unchanged
+- TYPE: File
+  ROLE: Verification
+  PATH: qubes-terraform/tests/test_qube.py
+  ELEMENT: function
+  ID: test_template_change_running_with_flag_shuts_down
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-TF-027
+TITLE: Plan-time configuration validation
+STATEMENT: >>>
+When terraform plan runs, the provider shall reject an invalid resource
+configuration before any resource is applied.
+<<<
+EARS_PATTERN: Event-driven
+PRODUCT: Terraform
+STATUS: Partial
+DEFECT: >>>
+The qubes_vm resource adds no plan-time validation, so an invalid origin, device,
+volume or netvm is rejected only mid-apply
+(qubes-terraform/qubes_provider/utils/qubes_adapter.py:229).
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-CONV-05
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-terraform/qubes_provider/resources/policy.py
+  ELEMENT: function
+  ID: QubesPolicyResource.validate
+- TYPE: File
+  ROLE: Verification
+  PATH: qubes-terraform/tests/test_policy.py
+  ELEMENT: function
+  ID: test_validate_both_set_errors
+- TYPE: File
+  ROLE: Verification
+  PATH: qubes-terraform/tests/test_policy.py
+  ELEMENT: function
+  ID: test_validate_neither_set_errors
+- TYPE: File
+  ROLE: Verification
+  PATH: qubes-terraform/tests/test_policy.py
+  ELEMENT: function
+  ID: test_validate_exactly_one_ok
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-TF-052
+TITLE: Precondition validation
+STATEMENT: >>>
+The qubes_vm resource shall validate every declared attribute before making any
+change to the qube.
+<<<
+EARS_PATTERN: Ubiquitous
+PRODUCT: Terraform
+STATUS: Partial
+DEFECT: >>>
+create_or_update installs an origin template and halts derived qubes before
+QubeModule validates the declaration, so a rejected apply has already changed the
+system (qubes-terraform/qubes_provider/utils/qubes_adapter.py:232).
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-CONV-05
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-terraform/qubes_provider/utils/qubes_ansible/qubes_module_qube.py
+  ELEMENT: function
+  ID: QubeModule.validate_module_parameters
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-terraform/qubes_provider/utils/qubes_ansible/qubes_module_qube.py
+  ELEMENT: function
+  ID: QubeModule.validate_volumes
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-terraform/qubes_provider/utils/qubes_adapter.py
+  ELEMENT: function
+  ID: QubesVmAdapter._validate_origin
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-terraform/qubes_provider/utils/qubes_ansible/qubes_module_qube.py
+  ELEMENT: function
+  ID: QubeModule._shutdown_for_template_update
+- TYPE: File
+  ROLE: Verification
+  PATH: qubes-terraform/tests/test_adapter.py
+  ELEMENT: function
+  ID: test_validate_origin_rejects_bad_type
+- TYPE: File
+  ROLE: Verification
+  PATH: qubes-terraform/tests/test_adapter.py
+  ELEMENT: function
+  ID: test_validate_origin_requires_name
+- TYPE: File
+  ROLE: Verification
+  PATH: qubes-terraform/tests/test_adapter.py
+  ELEMENT: function
+  ID: test_validate_origin_rejects_repo_keys_with_clone
+- TYPE: File
+  ROLE: Verification
+  PATH: qubes-terraform/tests/test_adapter.py
+  ELEMENT: function
+  ID: test_validate_origin_repo_requires_name_match
+- TYPE: File
+  ROLE: Verification
+  PATH: qubes-terraform/tests/test_capabilities.py
+  ELEMENT: function
+  ID: test_origin_rpm_requires_path
+- TYPE: File
+  ROLE: Verification
+  PATH: qubes-terraform/tests/test_capabilities.py
+  ELEMENT: function
+  ID: test_origin_rpm_name_must_match_qube_name
+- TYPE: File
+  ROLE: Verification
+  PATH: qubes-terraform/tests/test_qube.py
+  ELEMENT: function
+  ID: test_template_change_running_without_flag_errors
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-TF-028
+TITLE: Refresh drift detection
+STATEMENT: >>>
+When terraform plan refreshes a resource, the provider shall report each declared
+attribute whose live value differs from the recorded state.
+<<<
+EARS_PATTERN: Event-driven
+PRODUCT: Terraform
+STATUS: Partial
+DEFECT: >>>
+The qubes_vm read echoes ``devices`` and volume ``revisions_to_keep`` from
+configuration, so their out-of-band changes never appear in the plan
+(qubes-terraform/qubes_provider/utils/qubes_adapter.py:374).
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-CONV-06
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-terraform/qubes_provider/utils/qubes_adapter.py
+  ELEMENT: function
+  ID: QubesVmAdapter.read_vm
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-terraform/qubes_provider/utils/qubes_adapter.py
+  ELEMENT: function
+  ID: QubesVmAdapter.qube_facts_to_state
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-terraform/qubes_provider/resources/prefs.py
+  ELEMENT: function
+  ID: QubesPrefs.project
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-terraform/qubes_provider/utils/policy.py
+  ELEMENT: function
+  ID: read_text_state
+- TYPE: File
+  ROLE: Verification
+  PATH: qubes-terraform/tests/test_policy.py
+  ELEMENT: function
+  ID: test_read_content_surfaces_real_drift
+- TYPE: File
+  ROLE: Verification
+  PATH: qubes-terraform/tests/test_capabilities.py
+  ELEMENT: function
+  ID: test_disabled_service_not_reported
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-terraform/qubes_provider/utils/policy.py
+  ELEMENT: function
+  ID: parse_to_maps
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-terraform/qubes_provider/utils/policy.py
+  ELEMENT: function
+  ID: QubesPolicy.read
+- TYPE: File
+  ROLE: Verification
+  PATH: qubes-terraform/tests/test_policy.py
+  ELEMENT: function
+  ID: test_read_missing_file_returns_none
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-TF-055
+TITLE: No false drift
+STATEMENT: >>>
+While a declared object's live state is equivalent to its declaration, the provider shall report no
+difference on refresh.
+<<<
+EARS_PATTERN: State-driven
+PRODUCT: Terraform
+STATUS: Implemented
+RATIONALE: >>>
+Terraform list and map attributes have no semantic-equality hook, so a cosmetic mismatch would show
+as a perpetual diff.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-CONV-06
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-terraform/qubes_provider/utils/policy.py
+  ELEMENT: function
+  ID: _canonical
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-terraform/qubes_provider/utils/policy.py
+  ELEMENT: function
+  ID: read_text_state
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-terraform/qubes_provider/utils/policy.py
+  ELEMENT: function
+  ID: read_state
+- TYPE: File
+  ROLE: Verification
+  PATH: qubes-terraform/tests/test_policy.py
+  ELEMENT: function
+  ID: test_read_content_ignores_cosmetic_drift
+- TYPE: File
+  ROLE: Verification
+  PATH: qubes-terraform/tests/test_policy.py
+  ELEMENT: function
+  ID: test_read_echoes_declared_without_diff
+- TYPE: File
+  ROLE: Verification
+  PATH: qubes-terraform/tests/test_policy.py
+  ELEMENT: function
+  ID: test_read_content_echoes_without_diff
+- TYPE: File
+  ROLE: Verification
+  PATH: qubes-terraform/tests/test_policy.py
+  ELEMENT: function
+  ID: test_parse_drops_wildcard_argument_and_defaults
+- TYPE: File
+  ROLE: Verification
+  PATH: qubes-terraform/tests/test_prefs.py
+  ELEMENT: function
+  ID: test_read_projects_declared_subset
+- TYPE: File
+  ROLE: Verification
+  PATH: qubes-terraform/tests/test_capabilities.py
+  ELEMENT: function
+  ID: test_volume_already_big_enough_roundtrips
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-TF-029
+TITLE: Drift correction
+STATEMENT: >>>
+When a managed qube was changed or removed outside Terraform, the qubes_vm
+resource shall restore its declared configuration on the next apply.
+<<<
+EARS_PATTERN: Event-driven
+PRODUCT: Terraform
+STATUS: Partial
+DEFECT: >>>
+``klass`` is echoed from configuration, so a same-named qube recreated outside
+Terraform with another class is never replaced and every later update fails
+(qubes-terraform/qubes_provider/utils/qubes_adapter.py:466).
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-CONV-07
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-terraform/qubes_provider/resources/qube.py
+  ELEMENT: function
+  ID: QubesVMResource.read
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-terraform/qubes_provider/utils/qubes_adapter.py
+  ELEMENT: function
+  ID: QubesVmAdapter._fetch_facts
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-terraform/qubes_provider/resources/qube.py
+  ELEMENT: function
+  ID: QubesVMResource.update
+- TYPE: File
+  ROLE: Verification
+  PATH: qubes-terraform/tests/test_qube.py
+  ELEMENT: function
+  ID: test_read_missing_returns_none
+- TYPE: File
+  ROLE: Verification
+  PATH: qubes-terraform/tests/test_delegation.py
+  ELEMENT: function
+  ID: test_read_absent_returns_none
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-TF-030
+TITLE: Failed-create rollback scope
+STATEMENT: >>>
+If creating a qube fails during apply, then the qubes_vm resource shall remove
+only a qube that the failed create itself brought into existence.
+<<<
+EARS_PATTERN: Unwanted-behaviour
+PRODUCT: Terraform
+STATUS: Partial
+DEFECT: >>>
+Rollback deletes the named qube unconditionally, including a pre-existing qube or
+template that the create adopted rather than created
+(qubes-terraform/qubes_provider/resources/qube.py:169).
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-CONV-08
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-terraform/qubes_provider/resources/qube.py
+  ELEMENT: function
+  ID: QubesVMResource.create
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-terraform/qubes_provider/utils/qubes_adapter.py
+  ELEMENT: function
+  ID: QubesVmAdapter.try_delete
+- TYPE: File
+  ROLE: Verification
+  PATH: qubes-terraform/tests/test_qube.py
+  ELEMENT: function
+  ID: test_create_rolls_back_on_enforce_failure
+
+[[/SECTION]]
+
+[[SECTION]]
+TITLE: Inspection
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-TF-033
+TITLE: Qube fact reporting
+STATEMENT: >>>
+The qubes_vm resource shall report the qube's current property, feature and tag
+values in its state.
+<<<
+EARS_PATTERN: Ubiquitous
+PRODUCT: Terraform
+STATUS: Partial
+DEFECT: >>>
+Only keys declared in configuration are projected into state and no data source
+reads an unmanaged qube, so undeclared values are never reported
+(qubes-terraform/qubes_provider/utils/qubes_adapter.py:469).
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-INSPECT-03
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-terraform/qubes_provider/utils/qubes_adapter.py
+  ELEMENT: function
+  ID: QubesVmAdapter.qube_facts_to_state
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-terraform/qubes_provider/utils/qubes_adapter.py
+  ELEMENT: function
+  ID: QubesVmAdapter._fetch_facts
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-terraform/qubes_provider/utils/qubes_ansible/qube_facts.py
+  ELEMENT: function
+  ID: core
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-terraform/qubes_provider/utils/qubes_ansible/qube_facts.py
+  ELEMENT: function
+  ID: get_qube_properties
+- TYPE: File
+  ROLE: Verification
+  PATH: qubes-terraform/tests/test_delegation.py
+  ELEMENT: function
+  ID: test_create_enforce_and_read_back
+- TYPE: File
+  ROLE: Verification
+  PATH: qubes-terraform/tests/test_qube.py
+  ELEMENT: function
+  ID: test_create_features_and_tags
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-TF-053
+TITLE: Service fact reporting
+STATEMENT: >>>
+The qubes_vm resource shall report each declared service as enabled or disabled in
+its state.
+<<<
+EARS_PATTERN: Ubiquitous
+PRODUCT: Terraform
+STATUS: Partial
+DEFECT: >>>
+State lists only the declared services that are enabled, so a disabled service is
+reported the same as an unset one
+(qubes-terraform/qubes_provider/utils/qubes_adapter.py:509).
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-INSPECT-03
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-terraform/qubes_provider/utils/qubes_adapter.py
+  ELEMENT: function
+  ID: QubesVmAdapter._qube_services_to_state
+- TYPE: File
+  ROLE: Verification
+  PATH: qubes-terraform/tests/test_capabilities.py
+  ELEMENT: function
+  ID: test_services_enable_and_roundtrip
+
+[[/SECTION]]
+
+[[SECTION]]
+TITLE: Command execution
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-TF-035
+TITLE: Command execution in qube
+STATEMENT: >>>
+The provider shall run a declared command inside a qube and report that
+command's exit status.
+<<<
+EARS_PATTERN: Ubiquitous
+PRODUCT: Terraform
+STATUS: Workaround
+DEFECT: >>>
+The provider registers no execution resource, so a command runs only through
+Terraform's generic local-exec provisioner invoking qvm-run from the Terraform host
+(qubes-terraform/qubes_provider/provider/provider.py:45).
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-EXEC-01
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-terraform/examples/local-exec/main.tf
+  LINE_RANGE: 28, 35
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-TF-037
+TITLE: Execution user selection
+STATEMENT: >>>
+Where a command user is declared, the provider shall run the command inside the
+qube as that user.
+<<<
+EARS_PATTERN: Optional-feature
+PRODUCT: Terraform
+STATUS: Workaround
+DEFECT: >>>
+The provider registers no execution resource, so the user is chosen only by a
+local-exec provisioner passing qvm-run --user from the Terraform host
+(qubes-terraform/qubes_provider/provider/provider.py:45).
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-EXEC-03
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-terraform/examples/local-exec/main.tf
+  LINE_RANGE: 28, 35
+
+[[/SECTION]]
+
+[[SECTION]]
+TITLE: Software and templates
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-TF-038
+TITLE: Template installation
+STATEMENT: >>>
+Where a repo origin is declared, the qubes_vm resource shall install the named
+template from the configured template repositories when it is absent.
+<<<
+EARS_PATTERN: Optional-feature
+PRODUCT: Terraform
+STATUS: Partial
+DEFECT: >>>
+The install forces an empty update VM, so qvm-template downloads from the
+provider's own host and fails when the provider runs in network-less dom0
+(qubes-terraform/qubes_provider/utils/qubes_adapter.py:343).
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-SW-02
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-terraform/qubes_provider/utils/qubes_adapter.py
+  ELEMENT: function
+  ID: QubesVmAdapter._ensure_installed
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-terraform/qubes_provider/utils/qubes_adapter.py
+  ELEMENT: function
+  ID: QubesVmAdapter.create_or_update
+- TYPE: File
+  ROLE: Verification
+  PATH: qubes-terraform/tests/test_capabilities.py
+  ELEMENT: function
+  ID: test_create_via_origin_repo_installs_when_absent
+- TYPE: File
+  ROLE: Verification
+  PATH: qubes-terraform/tests/test_capabilities.py
+  ELEMENT: function
+  ID: test_create_via_origin_repo_idempotent_when_present
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-TF-039
+TITLE: Template signature verification
+STATEMENT: >>>
+When the qubes_vm resource installs a template, the qubes_vm resource shall
+reject a template package whose signature does not verify.
+<<<
+EARS_PATTERN: Event-driven
+PRODUCT: Terraform
+STATUS: Partial
+RATIONALE: >>>
+Repository downloads are verified by qvm-template itself, which ignores
+--nogpgcheck for downloaded templates.
+<<<
+DEFECT: >>>
+An rpm origin always passes --nogpgcheck, so a local template package installs
+with no signature check
+(qubes-terraform/qubes_provider/utils/qubes_adapter.py:341).
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-SW-03
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-terraform/qubes_provider/utils/qubes_adapter.py
+  ELEMENT: function
+  ID: QubesVmAdapter._ensure_installed
+
+[[/SECTION]]
+
+[[SECTION]]
+TITLE: Qubes system
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-TF-014
+TITLE: Global property configuration
+STATEMENT: >>>
+The qubes_prefs resource shall set each declared global Qubes property to its
+declared value.
+<<<
+EARS_PATTERN: Ubiquitous
+PRODUCT: Terraform
+STATUS: Implemented
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-SYSTEM-01
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-terraform/qubes_provider/resources/prefs.py
+  ELEMENT: function
+  ID: QubesPrefs.enforce
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-terraform/qubes_provider/resources/prefs.py
+  ELEMENT: function
+  ID: QubesPrefsResource.create
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-terraform/qubes_provider/resources/prefs.py
+  ELEMENT: function
+  ID: QubesPrefsResource.update
+- TYPE: File
+  ROLE: Verification
+  PATH: qubes-terraform/tests/test_prefs.py
+  ELEMENT: function
+  ID: test_create_sets_declared_only
+- TYPE: File
+  ROLE: Verification
+  PATH: qubes-terraform/tests/test_prefs.py
+  ELEMENT: function
+  ID: test_update_changes_value
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-TF-058
+TITLE: Global property reset
+STATEMENT: >>>
+When a managed global property is undeclared or the resource destroyed, the qubes_prefs resource
+shall reset it to its Qubes default.
+<<<
+EARS_PATTERN: Event-driven
+PRODUCT: Terraform
+STATUS: Implemented
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-SYSTEM-01
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-terraform/qubes_provider/resources/prefs.py
+  ELEMENT: function
+  ID: QubesPrefs.reset
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-terraform/qubes_provider/resources/prefs.py
+  ELEMENT: function
+  ID: QubesPrefsResource.delete
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-terraform/qubes_provider/resources/prefs.py
+  ELEMENT: function
+  ID: QubesPrefsResource.update
+- TYPE: File
+  ROLE: Verification
+  PATH: qubes-terraform/tests/test_prefs.py
+  ELEMENT: function
+  ID: test_removing_a_property_resets_it_to_default
+- TYPE: File
+  ROLE: Verification
+  PATH: qubes-terraform/tests/test_prefs.py
+  ELEMENT: function
+  ID: test_delete_resets_managed_only
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-TF-059
+TITLE: Global property import
+STATEMENT: >>>
+When terraform import runs for qubes_prefs, the qubes_prefs resource shall adopt every non-default
+global property into state.
+<<<
+EARS_PATTERN: Event-driven
+PRODUCT: Terraform
+STATUS: Implemented
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-SYSTEM-01
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-terraform/qubes_provider/resources/prefs.py
+  ELEMENT: function
+  ID: QubesPrefsResource.import_
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-terraform/qubes_provider/resources/prefs.py
+  ELEMENT: function
+  ID: QubesPrefs.customized
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-TF-056
+TITLE: System catalogue data sources
+STATEMENT: >>>
+The provider shall report the system's available labels, storage pools, pool drivers, qube classes
+and device classes through data sources.
+<<<
+EARS_PATTERN: Ubiquitous
+PRODUCT: Terraform
+STATUS: Implemented
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-SYSTEM-02
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-terraform/qubes_provider/data_sources/system.py
+  ELEMENT: function
+  ID: QubesSystem.read_label
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-terraform/qubes_provider/data_sources/system.py
+  ELEMENT: function
+  ID: QubesSystem.read_pool
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-terraform/qubes_provider/data_sources/system.py
+  ELEMENT: function
+  ID: QubesSystem.read_vmclass
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-terraform/qubes_provider/data_sources/system.py
+  ELEMENT: function
+  ID: QubesSystem.read_deviceclass
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-terraform/qubes_provider/data_sources/system.py
+  ELEMENT: function
+  ID: _SystemDataSource._read
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-terraform/qubes_provider/data_sources/system.py
+  ELEMENT: function
+  ID: QubesLabelDataSource.read
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-terraform/qubes_provider/data_sources/system.py
+  ELEMENT: function
+  ID: QubesPoolDataSource.read
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-terraform/qubes_provider/data_sources/system.py
+  ELEMENT: function
+  ID: QubesVMClassDataSource.read
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-terraform/qubes_provider/data_sources/system.py
+  ELEMENT: function
+  ID: QubesDeviceClassDataSource.read
+- TYPE: File
+  ROLE: Verification
+  PATH: qubes-terraform/tests/test_system.py
+  ELEMENT: function
+  ID: test_labels
+- TYPE: File
+  ROLE: Verification
+  PATH: qubes-terraform/tests/test_system.py
+  ELEMENT: function
+  ID: test_pools
+- TYPE: File
+  ROLE: Verification
+  PATH: qubes-terraform/tests/test_system.py
+  ELEMENT: function
+  ID: test_vmclass_and_deviceclass
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-TF-057
+TITLE: Global property data source
+STATEMENT: >>>
+The provider shall report the current value of every global Qubes property through the
+qubes_property data source.
+<<<
+EARS_PATTERN: Ubiquitous
+PRODUCT: Terraform
+STATUS: Partial
+DEFECT: >>>
+A property the Admin API refuses to read is reported as null, indistinguishable from an unset
+property (qubes-terraform/qubes_provider/data_sources/system.py:42).
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-SYSTEM-02
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-terraform/qubes_provider/data_sources/system.py
+  ELEMENT: function
+  ID: QubesSystem.read_property
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-terraform/qubes_provider/data_sources/system.py
+  ELEMENT: function
+  ID: QubesSystem._str
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-terraform/qubes_provider/data_sources/system.py
+  ELEMENT: function
+  ID: global_property_names
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-terraform/qubes_provider/data_sources/system.py
+  ELEMENT: function
+  ID: QubesPropertyDataSource.get_schema
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-terraform/qubes_provider/data_sources/system.py
+  ELEMENT: function
+  ID: QubesPropertyDataSource.read
+- TYPE: File
+  ROLE: Verification
+  PATH: qubes-terraform/tests/test_system.py
+  ELEMENT: function
+  ID: test_property_typed_attrs_resolve
+- TYPE: File
+  ROLE: Verification
+  PATH: qubes-terraform/tests/test_system.py
+  ELEMENT: function
+  ID: test_property_schema_is_dynamic
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-TF-042
+TITLE: qrexec policy file management
+STATEMENT: >>>
+When a qubes_policy resource is applied, the qubes_policy resource shall replace
+the named policy file with the declared rules.
+<<<
+EARS_PATTERN: Event-driven
+PRODUCT: Terraform
+STATUS: Implemented
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-SYSTEM-05
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-terraform/qubes_provider/resources/policy.py
+  ELEMENT: function
+  ID: QubesPolicyResource.create
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-terraform/qubes_provider/resources/policy.py
+  ELEMENT: function
+  ID: QubesPolicyResource.update
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-terraform/qubes_provider/utils/policy.py
+  ELEMENT: function
+  ID: write_text
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-terraform/qubes_provider/utils/policy.py
+  ELEMENT: function
+  ID: QubesPolicy.replace
+- TYPE: File
+  ROLE: Verification
+  PATH: qubes-terraform/tests/test_policy.py
+  ELEMENT: function
+  ID: test_create_writes_file_and_echoes_rules
+- TYPE: File
+  ROLE: Verification
+  PATH: qubes-terraform/tests/test_policy.py
+  ELEMENT: function
+  ID: test_update_changes_rules
+- TYPE: File
+  ROLE: Verification
+  PATH: qubes-terraform/tests/test_policy.py
+  ELEMENT: function
+  ID: test_create_content_writes_verbatim_and_echoes
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-terraform/qubes_provider/utils/policy.py
+  ELEMENT: function
+  ID: render_rule
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-terraform/qubes_provider/utils/policy.py
+  ELEMENT: function
+  ID: render_file
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-terraform/qubes_provider/resources/policy.py
+  ELEMENT: function
+  ID: QubesPolicyResource._text
+- TYPE: File
+  ROLE: Verification
+  PATH: qubes-terraform/tests/test_policy.py
+  ELEMENT: function
+  ID: test_all_params_render
+- TYPE: File
+  ROLE: Verification
+  PATH: qubes-terraform/tests/test_policy.py
+  ELEMENT: function
+  ID: test_order_is_preserved
+- TYPE: File
+  ROLE: Verification
+  PATH: qubes-terraform/tests/test_policy.py
+  ELEMENT: function
+  ID: test_params_round_trip_via_import
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-TF-060
+TITLE: Policy file removal
+STATEMENT: >>>
+When a qubes_policy resource is destroyed, the qubes_policy resource shall remove the named policy
+file.
+<<<
+EARS_PATTERN: Event-driven
+PRODUCT: Terraform
+STATUS: Implemented
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-SYSTEM-05
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-terraform/qubes_provider/resources/policy.py
+  ELEMENT: function
+  ID: QubesPolicyResource.delete
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-terraform/qubes_provider/utils/policy.py
+  ELEMENT: function
+  ID: QubesPolicy.remove
+- TYPE: File
+  ROLE: Verification
+  PATH: qubes-terraform/tests/test_policy.py
+  ELEMENT: function
+  ID: test_delete_removes_file
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-TF-061
+TITLE: Existing policy file protection
+STATEMENT: >>>
+If the named policy file already exists when the resource is created, then the qubes_policy
+resource shall fail the apply without overwriting it.
+<<<
+EARS_PATTERN: Unwanted-behaviour
+PRODUCT: Terraform
+STATUS: Not Implemented
+RATIONALE: >>>
+An overwritten policy file silently changes qrexec access control that no declaration owns.
+<<<
+DEFECT: >>>
+Create replaces the file with the ``any`` token, so an existing file of that name is silently
+overwritten (qubes-terraform/qubes_provider/utils/policy.py:144).
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-SYSTEM-05
+  ROLE: Refines
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-TF-062
+TITLE: Policy file import
+STATEMENT: >>>
+When terraform import names an existing policy file, the qubes_policy resource shall adopt its
+content into state without modifying it.
+<<<
+EARS_PATTERN: Event-driven
+PRODUCT: Terraform
+STATUS: Implemented
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-SYSTEM-05
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-terraform/qubes_provider/resources/policy.py
+  ELEMENT: function
+  ID: QubesPolicyResource.import_
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-terraform/qubes_provider/utils/policy.py
+  ELEMENT: function
+  ID: read_text_state
+- TYPE: File
+  ROLE: Verification
+  PATH: qubes-terraform/tests/test_policy.py
+  ELEMENT: function
+  ID: test_import_returns_content
+- TYPE: File
+  ROLE: Verification
+  PATH: qubes-terraform/tests/test_policy.py
+  ELEMENT: function
+  ID: test_import_missing_errors
+
+[[/SECTION]]
+
+[[SECTION]]
+TITLE: Security and isolation
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-TF-040
+TITLE: Opaque qube-reported values
+STATEMENT: >>>
+The qubes_vm resource shall handle feature values read from a qube only as opaque
+strings for comparison, never parsing or executing them.
+<<<
+EARS_PATTERN: Ubiquitous
+PRODUCT: Terraform
+STATUS: Implemented
+RATIONALE: >>>
+Some features are set at a qube's own request, so their values are untrusted
+input reaching the provider's host.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-SEC-01
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-terraform/qubes_provider/utils/qubes_adapter.py
+  ELEMENT: function
+  ID: QubesVmAdapter.qube_facts_to_state
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-terraform/qubes_provider/utils/qubes_ansible/qube_facts.py
+  ELEMENT: function
+  ID: core
+
+[[/SECTION]]
+
+[[SECTION]]
+TITLE: Diagnostics
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-TF-043
+TITLE: Failure diagnostics
+STATEMENT: >>>
+If a resource or data source operation fails, then the provider shall return an
+error diagnostic for that operation.
+<<<
+EARS_PATTERN: Unwanted-behaviour
+PRODUCT: Terraform
+STATUS: Implemented
+RATIONALE: >>>
+Terraform core turns any error diagnostic into a non-zero exit status.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-DIAG-01
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-terraform/qubes_provider/resources/qube.py
+  ELEMENT: function
+  ID: QubesVMResource.create
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-terraform/qubes_provider/resources/qube.py
+  ELEMENT: function
+  ID: QubesVMResource.update
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-terraform/qubes_provider/resources/prefs.py
+  ELEMENT: function
+  ID: QubesPrefsResource.update
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-terraform/qubes_provider/resources/policy.py
+  ELEMENT: function
+  ID: QubesPolicyResource.create
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-terraform/qubes_provider/utils/qubes_adapter.py
+  ELEMENT: function
+  ID: AnsibleModuleShim.fail_json
+- TYPE: File
+  ROLE: Verification
+  PATH: qubes-terraform/tests/test_qube.py
+  ELEMENT: function
+  ID: test_create_reports_error
+- TYPE: File
+  ROLE: Verification
+  PATH: qubes-terraform/tests/test_qube.py
+  ELEMENT: function
+  ID: test_read_reports_error
+- TYPE: File
+  ROLE: Verification
+  PATH: qubes-terraform/tests/test_prefs.py
+  ELEMENT: function
+  ID: test_reset_propagates_failures
+- TYPE: File
+  ROLE: Verification
+  PATH: qubes-terraform/tests/test_policy.py
+  ELEMENT: function
+  ID: test_create_reports_invalid_rule
+- TYPE: File
+  ROLE: Verification
+  PATH: qubes-terraform/tests/test_adapter.py
+  ELEMENT: function
+  ID: test_fail_json_raises_with_msg
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-terraform/qubes_provider/data_sources/system.py
+  ELEMENT: function
+  ID: _SystemDataSource._read
+- TYPE: File
+  ROLE: Verification
+  PATH: qubes-terraform/tests/test_system.py
+  ELEMENT: function
+  ID: test_read_reports_error
+- TYPE: File
+  ROLE: Verification
+  PATH: qubes-terraform/tests/test_capabilities.py
+  ELEMENT: function
+  ID: test_create_via_origin_repo_argparse_error_fails_resource
+- TYPE: File
+  ROLE: Verification
+  PATH: qubes-terraform/tests/test_adapter.py
+  ELEMENT: function
+  ID: test_fail_json_without_msg_still_raises
+- TYPE: File
+  ROLE: Verification
+  PATH: qubes-terraform/tests/test_capabilities.py
+  ELEMENT: function
+  ID: test_clone_missing_source_errors
+- TYPE: File
+  ROLE: Verification
+  PATH: qubes-terraform/tests/test_policy.py
+  ELEMENT: function
+  ID: test_import_missing_errors
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-TF-044
+TITLE: Error attribution
+STATEMENT: >>>
+If a qubes_vm operation fails, then the qubes_vm resource shall report an error
+diagnostic naming the failed operation and the qube.
+<<<
+EARS_PATTERN: Unwanted-behaviour
+PRODUCT: Terraform
+STATUS: Partial
+DEFECT: >>>
+Read, update and delete diagnostics carry only the exception text, omitting the
+qube name that the create diagnostic includes
+(qubes-terraform/qubes_provider/resources/qube.py:191).
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-DIAG-02
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-terraform/qubes_provider/resources/qube.py
+  ELEMENT: function
+  ID: QubesVMResource.create
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-terraform/qubes_provider/resources/qube.py
+  ELEMENT: function
+  ID: QubesVMResource.read
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-terraform/qubes_provider/resources/qube.py
+  ELEMENT: function
+  ID: QubesVMResource.update
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-terraform/qubes_provider/resources/qube.py
+  ELEMENT: function
+  ID: QubesVMResource.delete
+- TYPE: File
+  ROLE: Verification
+  PATH: qubes-terraform/tests/test_qube.py
+  ELEMENT: function
+  ID: test_create_reports_error
+- TYPE: File
+  ROLE: Verification
+  PATH: qubes-terraform/tests/test_qube.py
+  ELEMENT: function
+  ID: test_import_missing
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-TF-054
+TITLE: Missing dependency reporting
+STATEMENT: >>>
+If qubesadmin cannot be imported, then the provider shall fail with a message
+naming that dependency.
+<<<
+EARS_PATTERN: Unwanted-behaviour
+PRODUCT: Terraform
+STATUS: Not Implemented
+DEFECT: >>>
+provider.py imports data_sources/system.py first, whose unguarded qubesadmin import
+crashes plugin startup with a bare ModuleNotFoundError before the guarded message in
+qubes_adapter.py can run (qubes-terraform/qubes_provider/data_sources/system.py:15).
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-DIAG-02
+  ROLE: Refines
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-TF-045
+TITLE: Diagnostic verbosity control
+STATEMENT: >>>
+Where Terraform logging is enabled, the provider shall log each Qubes Admin API
+operation it performs.
+<<<
+EARS_PATTERN: Optional-feature
+PRODUCT: Terraform
+STATUS: Not Implemented
+DEFECT: >>>
+The provider contains no logging calls and its Ansible shim makes debug output a
+no-op, so TF_LOG surfaces no provider detail
+(qubes-terraform/qubes_provider/utils/qubes_adapter.py:112).
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2-DIAG-03
+  ROLE: Refines
 
 [[/SECTION]]
 
