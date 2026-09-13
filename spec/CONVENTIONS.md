@@ -3,7 +3,7 @@
 Prose conventions for everyone writing `.sdoc` files here.
 
 **The machine-readable definitions live in `spec/requirements.sgra`** — node
-types, field sets, choice enumerations and relation roles. All three documents
+types, field sets, choice enumerations and relation roles. All documents
 import it with `[GRAMMAR]` / `IMPORT_FROM_FILE: requirements.sgra`, and
 `tools/audit_spec.py` reads its enumerations rather than hardcoding them. To add
 a product, edit that one file; the documents and the audit follow automatically.
@@ -13,17 +13,49 @@ This file deliberately does not restate those values.
 
 | Level | Document | Node tag | UID form |
 |---|---|---|---|
-| L1 system goals | `01_system_goals.sdoc` | `SYSTEM_GOAL` | `L1-<AREA>` |
-| L2 product requirements | `02_product_requirements.sdoc` | `PRODUCT_REQUIREMENT` | `L2-<AREA>-<NN>` |
-| L3 technical requirements | `03_technical_requirements.sdoc` | `TECHNICAL_REQUIREMENT` | `L3-<ANS\|SLS\|QTL\|TF>-<NNN>` |
+| L1 system goals | `L1_Goals.sdoc` | `SYSTEM_GOAL` | `L1-<AREA>` |
+| L2 provisioning | `L2_Provisioning.sdoc` | `PRODUCT_REQUIREMENT` | `L2P-<AREA>-<NN>` |
+| L2 configuration management | `L2_Configuration.sdoc` | `PRODUCT_REQUIREMENT` | `L2C-<AREA>-<NN>` |
+| L2 common | `L2_Common.sdoc` | `PRODUCT_REQUIREMENT` | `L2S-<AREA>-<NN>` |
+| L3 technical requirements | `L3_Technical.sdoc` | `TECHNICAL_REQUIREMENT` | `L3-<ANS\|SLS\|QTL\|TF>-<NNN>` |
 
 Sections use the composite form `[[SECTION]] … [[/SECTION]]`. Plain `[SECTION]`
 is rejected by current strictdoc.
 
 Requirements about the Qubes system as a whole rather than a single qube (global
-properties, qrexec policy, dom0 updates, qube listing, backup) belong in the
-**Qubes system** section, with UIDs of the form `L2-SYSTEM-<NN>`. In the L3 document,
-each product has a matching "Qubes system" subsection in the same position.
+properties, qrexec policy, qube listing) go in a **Qubes system** section of the
+set they belong to, with the UID area `SYSTEM`. In the L3 document, each product
+section is grouped into Provisioning / Configuration / Common, and each group
+mirrors the area sections of its L2 document.
+
+## Requirement sets
+
+L2 is split by what a requirement is about: the infrastructure objects, or what
+runs inside them.
+
+- **Provisioning** (`L2_Provisioning.sdoc`): qubes and their dom0-side
+  attributes (create, clone, remove, class, properties, features, tags, notes,
+  volumes, pools, devices, netvm, firewall, templates, global properties, qrexec
+  policy), plus runtime operations (power state, transient device attachment).
+- **Configuration** (`L2_Configuration.sdoc`): what runs inside qubes. That is
+  commands and files in qubes, the management DisposableVM mechanics, and
+  delegation from a provisioning tool to a configuration tool.
+- **Common** (`L2_Common.sdoc`): what every management tool is measured on,
+  namely convergence, inspection, untrusted-data confinement and diagnostics.
+
+Out of scope for now: recoverability (backup and restore) and dom0 software.
+
+Every L2 that realises state in Provisioning or Configuration refines
+`L1-MANAGE`, plus each quality goal it genuinely serves. Multiple parents are
+expected at L2 as at L3; list the purpose goal first.
+
+Products:
+- **Terraform** is a provisioning tool. In Configuration it appears only on
+  delegation.
+- **Ansible and Salt** cover both sets, and configure a qube through a
+  disposable management qube.
+- **QubesadminTools** is mostly provisioning. The exception is `qvm-run`, which
+  runs commands inside qubes but has no desired-state convergence.
 
 ## Products
 
@@ -79,7 +111,7 @@ Enforced mechanically by `tools/audit_spec.py`, not left to taste.
   look arbitrary — a security reason, a Qubes constraint, a non-obvious
   ordering. Never a restatement. Two sentences maximum.
 - **`DEFECT`: one sentence plus `file:line`.** The divergence, not its history.
-- **Never restate the parent.** An L3 under `L2-CONV-01` does not re-explain
+- **Never restate the parent.** An L3 under `L2S-CONV-01` does not re-explain
   idempotency.
 - **Banned filler:** "in order to", "be able to", "it should be noted that",
   "as appropriate", "etc.", "and/or", "successfully". One "shall" per statement.
@@ -95,7 +127,7 @@ component that differ only in wording are one requirement.
 ```
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2-CONFIG-01
+  VALUE: L2P-CONFIG-01
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation

@@ -1,0 +1,255 @@
+[DOCUMENT]
+TITLE: L2 — Common
+UID: QMGMT-L2S
+VERSION: 0.1
+OPTIONS:
+  MARKUP: RST
+  AUTO_LEVELS: On
+
+[GRAMMAR]
+IMPORT_FROM_FILE: requirements.sgra
+
+[[SECTION]]
+TITLE: Convergence
+
+[PRODUCT_REQUIREMENT]
+UID: L2S-CONV-01
+TITLE: Idempotent application
+STATEMENT: >>>
+The management tool shall make no change to a qube that already matches the
+declared desired state.
+<<<
+EARS_PATTERN: Ubiquitous
+PRODUCT: Ansible, Salt, Terraform
+RATIONALE: >>>
+A Qubes install is rebuilt often — after hardware changes, template migrations or
+recovery. Reproducing it must not depend on the order or count of past operations.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: L1-MANAGE
+  ROLE: Refines
+
+[PRODUCT_REQUIREMENT]
+UID: L2S-CONV-02
+TITLE: Change reporting
+STATEMENT: >>>
+The management tool shall report, for each managed object, whether the run
+changed it.
+<<<
+EARS_PATTERN: Ubiquitous
+PRODUCT: Ansible, Salt, Terraform
+RELATIONS:
+- TYPE: Parent
+  VALUE: L1-OBSERVABILITY
+  ROLE: Refines
+
+[PRODUCT_REQUIREMENT]
+UID: L2S-CONV-03
+TITLE: Dry-run preview
+STATEMENT: >>>
+Where a dry run is requested, the management tool shall report the changes it
+would make without applying any of them.
+<<<
+EARS_PATTERN: Optional-feature
+PRODUCT: Ansible, Salt, QubesadminTools, Terraform
+RATIONALE: >>>
+A preview that mutates state is worse than no preview, because the
+administrator acts on the assumption that nothing happened.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: L1-OBSERVABILITY
+  ROLE: Refines
+
+[PRODUCT_REQUIREMENT]
+UID: L2S-CONV-04
+TITLE: Dependency-ordered application
+STATEMENT: >>>
+The management tool shall apply changes in an order that satisfies the
+dependencies between the qubes being configured.
+<<<
+EARS_PATTERN: Ubiquitous
+PRODUCT: Ansible, Salt, Terraform
+RELATIONS:
+- TYPE: Parent
+  VALUE: L1-MANAGE
+  ROLE: Refines
+
+[PRODUCT_REQUIREMENT]
+UID: L2S-CONV-05
+TITLE: Precondition validation
+STATEMENT: >>>
+The management tool shall validate the declared desired state before applying
+any part of it.
+<<<
+EARS_PATTERN: Ubiquitous
+PRODUCT: Ansible, Salt, Terraform
+RATIONALE: >>>
+A run that fails halfway leaves the system in a state that is neither the
+previous one nor the declared one.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: L1-MANAGE
+  ROLE: Refines
+
+[[/SECTION]]
+
+[[SECTION]]
+TITLE: Inspection
+
+[PRODUCT_REQUIREMENT]
+UID: L2S-INSPECT-03
+TITLE: Qube fact reporting
+STATEMENT: >>>
+The management tool shall report a qube's current property, feature and tag
+values.
+<<<
+EARS_PATTERN: Ubiquitous
+PRODUCT: Ansible, Salt, QubesadminTools, Terraform
+RELATIONS:
+- TYPE: Parent
+  VALUE: L1-OBSERVABILITY
+  ROLE: Refines
+- TYPE: File
+  ROLE: Authority
+  PATH: qubes-core-admin/qubes/api/admin.py
+  ELEMENT: function
+  ID: QubesAdminAPI.vm_property_get_all
+- TYPE: File
+  ROLE: Authority
+  PATH: qubes-core-admin/qubes/api/admin.py
+  ELEMENT: function
+  ID: QubesAdminAPI.vm_feature_list
+- TYPE: File
+  ROLE: Authority
+  PATH: qubes-core-admin/qubes/api/admin.py
+  ELEMENT: function
+  ID: QubesAdminAPI.vm_tag_list
+
+[PRODUCT_REQUIREMENT]
+UID: L2S-SYSTEM-02
+TITLE: System configuration reporting
+STATEMENT: >>>
+The management tool shall report the system's global property values and its available labels,
+storage pools, qube classes and device classes.
+<<<
+EARS_PATTERN: Ubiquitous
+PRODUCT: Terraform
+RELATIONS:
+- TYPE: Parent
+  VALUE: L1-OBSERVABILITY
+  ROLE: Refines
+- TYPE: File
+  ROLE: Authority
+  PATH: qubes-core-admin/qubes/api/admin.py
+  ELEMENT: function
+  ID: QubesAdminAPI.property_get_all
+- TYPE: File
+  ROLE: Authority
+  PATH: qubes-core-admin/qubes/api/admin.py
+  ELEMENT: function
+  ID: QubesAdminAPI.label_list
+- TYPE: File
+  ROLE: Authority
+  PATH: qubes-core-admin/qubes/api/admin.py
+  ELEMENT: function
+  ID: QubesAdminAPI.pool_list
+- TYPE: File
+  ROLE: Authority
+  PATH: qubes-core-admin/qubes/api/admin.py
+  ELEMENT: function
+  ID: QubesAdminAPI.vmclass_list
+- TYPE: File
+  ROLE: Authority
+  PATH: qubes-core-admin/qubes/api/admin.py
+  ELEMENT: function
+  ID: QubesAdminAPI.deviceclass_list
+
+[PRODUCT_REQUIREMENT]
+UID: L2S-SYSTEM-03
+TITLE: Qube listing and filtering
+STATEMENT: >>>
+The management tool shall list the qubes present on the system, restricted by
+caller-supplied selection criteria.
+<<<
+EARS_PATTERN: Ubiquitous
+PRODUCT: Ansible, Salt, QubesadminTools
+RELATIONS:
+- TYPE: Parent
+  VALUE: L1-OBSERVABILITY
+  ROLE: Refines
+- TYPE: File
+  ROLE: Authority
+  PATH: qubes-core-admin/qubes/api/admin.py
+  ELEMENT: function
+  ID: QubesAdminAPI.vm_list
+
+[[/SECTION]]
+
+[[SECTION]]
+TITLE: Security
+
+[PRODUCT_REQUIREMENT]
+UID: L2S-SEC-01
+TITLE: Untrusted data confinement
+STATEMENT: >>>
+The management tool shall not parse non-trivial data originating from a managed qube
+in a management qube.
+<<<
+EARS_PATTERN: Ubiquitous
+PRODUCT: Ansible, Salt, Terraform
+RELATIONS:
+- TYPE: Parent
+  VALUE: L1-ISOLATION
+  ROLE: Refines
+
+[[/SECTION]]
+
+[[SECTION]]
+TITLE: Diagnostics
+
+[PRODUCT_REQUIREMENT]
+UID: L2S-DIAG-01
+TITLE: Failure exit status
+STATEMENT: >>>
+The management tool shall exit with a non-zero status when any requested
+operation fails.
+<<<
+EARS_PATTERN: Ubiquitous
+PRODUCT: Ansible, Salt, QubesadminTools, Terraform
+RELATIONS:
+- TYPE: Parent
+  VALUE: L1-OBSERVABILITY
+  ROLE: Refines
+
+[PRODUCT_REQUIREMENT]
+UID: L2S-DIAG-02
+TITLE: Error attribution
+STATEMENT: >>>
+The management tool shall attribute each reported failure to the qube and the
+operation that produced it.
+<<<
+EARS_PATTERN: Ubiquitous
+PRODUCT: Ansible, Salt, QubesadminTools, Terraform
+RELATIONS:
+- TYPE: Parent
+  VALUE: L1-OBSERVABILITY
+  ROLE: Refines
+
+[PRODUCT_REQUIREMENT]
+UID: L2S-DIAG-03
+TITLE: Diagnostic verbosity control
+STATEMENT: >>>
+Where increased verbosity is requested, the management tool shall emit
+additional detail about each operation it performs.
+<<<
+EARS_PATTERN: Optional-feature
+PRODUCT: Ansible, Salt, QubesadminTools, Terraform
+RELATIONS:
+- TYPE: Parent
+  VALUE: L1-OBSERVABILITY
+  ROLE: Refines
+
+[[/SECTION]]

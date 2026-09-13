@@ -6,7 +6,7 @@ it.
 
 | Path | What |
 |---|---|
-| `spec/` | The specification: `.sdoc` documents, the shared grammar, and authoring conventions |
+| `spec/` | The specification: L1 goals, the three L2 requirement sets (`L2_Provisioning`, `L2_Configuration`, `L2_Common`), L3 technical requirements, the shared grammar, and authoring conventions |
 | `tools/audit_spec.py` | Consistency audit of the specification |
 | `tools/parity_matrix.py`, `.css` | Renders the feature-parity matrix screen |
 | `strictdoc_config.py` | StrictDoc project configuration |

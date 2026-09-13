@@ -1,0 +1,177 @@
+[DOCUMENT]
+TITLE: L2 — Configuration
+UID: QMGMT-L2C
+VERSION: 0.1
+OPTIONS:
+  MARKUP: RST
+  AUTO_LEVELS: On
+
+[GRAMMAR]
+IMPORT_FROM_FILE: requirements.sgra
+
+[[SECTION]]
+TITLE: Command execution
+
+[PRODUCT_REQUIREMENT]
+UID: L2C-EXEC-01
+TITLE: Command execution in qube
+STATEMENT: >>>
+The management tool shall run a caller-supplied command inside a qube and
+return that command's exit status.
+<<<
+EARS_PATTERN: Ubiquitous
+PRODUCT: Ansible, Salt, QubesadminTools
+RELATIONS:
+- TYPE: Parent
+  VALUE: L1-MANAGE
+  ROLE: Refines
+- TYPE: Parent
+  VALUE: L1-ADMINAPI
+  ROLE: Refines
+
+[PRODUCT_REQUIREMENT]
+UID: L2C-EXEC-02
+TITLE: File transfer
+STATEMENT: >>>
+The management tool shall transfer a file between the qube it is running in and the one being managed.
+<<<
+EARS_PATTERN: Ubiquitous
+PRODUCT: Ansible, Salt, QubesadminTools
+RELATIONS:
+- TYPE: Parent
+  VALUE: L1-MANAGE
+  ROLE: Refines
+- TYPE: Parent
+  VALUE: L1-ADMINAPI
+  ROLE: Refines
+
+[PRODUCT_REQUIREMENT]
+UID: L2C-EXEC-03
+TITLE: Execution user selection
+STATEMENT: >>>
+The management tool shall run a command in a qube under a caller-specified user
+account.
+<<<
+EARS_PATTERN: Ubiquitous
+PRODUCT: Ansible, Salt, QubesadminTools
+RATIONALE: >>>
+Running as root where the unprivileged user suffices widens the blast radius of
+a compromised or malicious guest command.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: L1-MANAGE
+  ROLE: Refines
+- TYPE: Parent
+  VALUE: L1-ADMINAPI
+  ROLE: Refines
+
+[[/SECTION]]
+
+[[SECTION]]
+TITLE: Management isolation
+
+[PRODUCT_REQUIREMENT]
+UID: L2C-SEC-02
+TITLE: Management qube isolation
+STATEMENT: >>>
+The management tool shall carry out a target's configuration work inside a
+disposable qube dedicated to that target.
+<<<
+EARS_PATTERN: Ubiquitous
+PRODUCT: Ansible, Salt
+RATIONALE: >>>
+A disposable qube shared between targets would let one managed qube observe or
+influence the configuration of another.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: L1-ISOLATION
+  ROLE: Refines
+- TYPE: Parent
+  VALUE: L1-ADMINAPI
+  ROLE: Refines
+- TYPE: File
+  ROLE: Authority
+  PATH: qubes-core-admin/qubes/api/admin.py
+  ELEMENT: function
+  ID: QubesAdminAPI.vm_create
+
+[PRODUCT_REQUIREMENT]
+UID: L2C-SEC-03
+TITLE: Management policy lifetime
+STATEMENT: >>>
+When a management run over a target ends, the management tool shall revoke the administrative policy granted for that target for any ephemeral management qubes created in the process.
+<<<
+EARS_PATTERN: Event-driven
+PRODUCT: Ansible, Salt
+RELATIONS:
+- TYPE: Parent
+  VALUE: L1-ADMINAPI
+  ROLE: Refines
+- TYPE: Parent
+  VALUE: L1-ISOLATION
+  ROLE: Refines
+
+[PRODUCT_REQUIREMENT]
+UID: L2C-SEC-04
+TITLE: Output sanitisation
+STATEMENT: >>>
+The management tool shall sanitise text received from a managed qube before
+writing it to a dom0 terminal.
+<<<
+EARS_PATTERN: Ubiquitous
+PRODUCT: Ansible, Salt
+RATIONALE: >>>
+Terminal escape sequences in qube-supplied output are an injection path into
+the administrator's dom0 session.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: L1-ISOLATION
+  ROLE: Refines
+
+[PRODUCT_REQUIREMENT]
+UID: L2C-SEC-05
+TITLE: Disposable qube bypass prevention
+STATEMENT: >>>
+If a run is configured to bypass the management disposable qube, then the
+management tool shall refuse to start that run.
+<<<
+EARS_PATTERN: Unwanted-behaviour
+PRODUCT: Ansible, Salt
+RATIONALE: >>>
+The isolation boundary is only worth anything if it cannot be turned off by a
+configuration setting the administrator may not have reviewed.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: L1-ISOLATION
+  ROLE: Refines
+
+[[/SECTION]]
+
+[[SECTION]]
+TITLE: Delegation
+
+[PRODUCT_REQUIREMENT]
+UID: L2C-DELEG-01
+TITLE: Configuration delegation
+STATEMENT: >>>
+The management tool shall hand a provisioned qube to a configuration management tool to configure
+that qube's contents.
+<<<
+EARS_PATTERN: Ubiquitous
+PRODUCT: Terraform
+RELATIONS:
+- TYPE: Parent
+  VALUE: L1-MANAGE
+  ROLE: Refines
+- TYPE: Parent
+  VALUE: L1-ADMINAPI
+  ROLE: Refines
+- TYPE: Parent
+  VALUE: L1-ISOLATION
+  ROLE: Refines
+
+[[/SECTION]]

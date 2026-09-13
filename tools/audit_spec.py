@@ -28,6 +28,13 @@ GRAMMAR = SPEC / "requirements.sgra"
 
 AUTHORITY_PATH = "qubes-core-admin/qubes/api/admin.py"
 
+# Each L2 requirement set lives in its own document with its own UID prefix.
+L2_PREFIX_BY_FILE = {
+    "L2_Provisioning.sdoc": "L2P-",
+    "L2_Configuration.sdoc": "L2C-",
+    "L2_Common.sdoc": "L2S-",
+}
+
 
 def grammar_choices(element_tag: str, field_title: str) -> Set[str]:
     """Option list of a SingleChoice/MultipleChoice field in the shared grammar.
@@ -217,15 +224,16 @@ def parse_sdoc(path: Path) -> List[Node]:
 
 
 def collect() -> Tuple[List[Node], List[Node], List[Node]]:
-    l1 = [n for n in parse_sdoc(SPEC / "01_system_goals.sdoc") if n.tag == "SYSTEM_GOAL"]
+    l1 = [n for n in parse_sdoc(SPEC / "L1_Goals.sdoc") if n.tag == "SYSTEM_GOAL"]
     l2 = [
         n
-        for n in parse_sdoc(SPEC / "02_product_requirements.sdoc")
+        for path in sorted(SPEC.glob("L2_*.sdoc"))
+        for n in parse_sdoc(path)
         if n.tag == "PRODUCT_REQUIREMENT"
     ]
     l3 = [
         n
-        for n in parse_sdoc(SPEC / "03_technical_requirements.sdoc")
+        for n in parse_sdoc(SPEC / "L3_Technical.sdoc")
         if n.tag == "TECHNICAL_REQUIREMENT"
     ]
     return l1, l2, l3
@@ -308,6 +316,15 @@ class Audit:
     def check_structure(self, l1: List[Node], l2: List[Node], l3: List[Node]) -> None:
         l1_uids = {n.uid for n in l1}
         l2_uids = {n.uid for n in l2}
+
+        if not l2:
+            self.fail("structure", "no L2 requirements found in spec/L2_*.sdoc")
+        for n in l2:
+            prefix = L2_PREFIX_BY_FILE.get(n.doc)
+            if prefix is None:
+                self.fail("structure", f"{n.uid}: {n.doc} is not a known L2 document")
+            elif not n.uid.startswith(prefix):
+                self.fail("structure", f"{n.uid}: UID in {n.doc} must start with {prefix}")
 
         for n in l2:
             parents = [r for r in n.relations if r.type == "Parent"]

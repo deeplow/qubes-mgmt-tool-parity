@@ -311,6 +311,7 @@ class Row:
     group: str
     scope: Set[str]
     cells: Dict[str, List[Chip]] = field(default_factory=dict)
+    document: str = ""
 
 
 def _node_href(node: SDocNode, link_renderer: LinkRenderer) -> str:
@@ -402,6 +403,7 @@ class ParityMatrixGenerator:
                         title=node_.reserved_title or "",
                         group=_group_of(node_),
                         scope=scope,
+                        document=getattr(document_, "title", "") or "",
                         cells={column_: [] for column_ in cfg.columns},
                     )
                 elif node_.node_type == cfg.cell_node_type:
@@ -427,7 +429,7 @@ class ParityMatrixGenerator:
             traceability_index=traceability_index,
             project_config=project_config,
             link_renderer=link_renderer,
-            metrics=_build_metrics(cfg, list(rows.values())),
+            metrics=_build_all_metrics(cfg, list(rows.values())),
         )
         return view_object.render_screen(html_templates.jinja_environment())
 
@@ -533,8 +535,32 @@ def _render_bar(
     )
 
 
-def _build_metrics(
+def _build_all_metrics(
     cfg: _Resolved, rows: List[Row]
+) -> List[Union[Metric, MetricSection]]:
+    """One self-contained summary and matrix per row document.
+
+    A project that keeps its rows in several documents (e.g. separate
+    requirement sets) gets one matrix per document, in document order; a
+    single document renders exactly as before.
+    """
+    by_document: "OrderedDict[str, List[Row]]" = OrderedDict()
+    for row_ in rows:
+        by_document.setdefault(row_.document, []).append(row_)
+    if len(by_document) <= 1:
+        return _build_metrics(cfg, rows)
+    metrics: List[Union[Metric, MetricSection]] = []
+    for document_title, document_rows in by_document.items():
+        metrics.extend(_build_metrics(cfg, document_rows, heading=document_title))
+    return metrics
+
+
+def _named(heading: str, name: str) -> str:
+    return f"{heading} — {name}" if heading else name
+
+
+def _build_metrics(
+    cfg: _Resolved, rows: List[Row], heading: str = ""
 ) -> List[Union[Metric, MetricSection]]:
     """
     Summary rows use the key-value component as intended; only the grid is
@@ -564,7 +590,7 @@ def _build_metrics(
     total_cells = len(rows) * len(cfg.columns)
     metrics: List[Union[Metric, MetricSection]] = []
 
-    scope_section = MetricSection(name="Scope", metrics=[])
+    scope_section = MetricSection(name=_named(heading, "Scope"), metrics=[])
     metrics.append(scope_section)
     scope_section.metrics.append(
         Metric(
@@ -587,7 +613,7 @@ def _build_metrics(
     )
 
     per_column = MetricSection(
-        name=f"Per {cfg.column_field.lower()}", metrics=[]
+        name=_named(heading, f"Per {cfg.column_field.lower()}"), metrics=[]
     )
     metrics.append(per_column)
     for column_ in cfg.columns:
@@ -606,18 +632,18 @@ def _build_metrics(
             Metric(name=column_, value=Markup(_render_bar(segments)))
         )
 
-    matrix_section = MetricSection(name=cfg.title, metrics=[])
+    matrix_section = MetricSection(name=_named(heading, cfg.title), metrics=[])
     metrics.append(matrix_section)
     matrix_section.metrics.append(
         Metric(
             name=f"{cfg.row_header} × {cfg.column_field.lower()}",
-            value=Markup(_render_matrix(cfg, rows)),
+            value=Markup(_render_matrix(cfg, rows, id_prefix=_slug(heading) if heading else "")),
         )
     )
     return metrics
 
 
-def _render_matrix(cfg: _Resolved, rows: List[Row]) -> str:
+def _render_matrix(cfg: _Resolved, rows: List[Row], id_prefix: str = "") -> str:
     parts = ['<div class="parity">']
 
     parts.append('<div class="parity-legend">')
@@ -653,7 +679,8 @@ def _render_matrix(cfg: _Resolved, rows: List[Row]) -> str:
                 parts.append("</tbody>")
             current_group = row_.group
             parts.append(
-                f'<tbody><tr class="area" id="group-{_slug(current_group)}">'
+                f'<tbody><tr class="area" id="group-{id_prefix + "-" if id_prefix else ""}'
+                f'{_slug(current_group)}">'
                 f'<td colspan="{len(cfg.columns) + 1}">'
                 f"{escape(current_group)}</td></tr>"
             )

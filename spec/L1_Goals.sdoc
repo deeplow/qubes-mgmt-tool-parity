@@ -10,6 +10,18 @@ OPTIONS:
 IMPORT_FROM_FILE: requirements.sgra
 
 [SYSTEM_GOAL]
+UID: L1-MANAGE
+TITLE: Managed system state
+STATEMENT: >>>
+An administrator shall be able to define the intended state of a Qubes system, its qubes,
+system resources and their contents, and have the system brought to it.
+<<<
+RATIONALE: >>>
+Covers both provisioning the infrastructure and configuring what runs inside it; that split is
+made at L2.
+<<<
+
+[SYSTEM_GOAL]
 UID: L1-ISOLATION
 TITLE: Management qube security
 STATEMENT: >>>
@@ -17,35 +29,20 @@ Administering a qube shall never cause data originating from that qube to be
 interpreted by a management qube, unless it is trivial to parse.
 <<<
 RATIONALE: >>>
-A management qube has control of the qubes it manages, so any parser it runs over
-qube-supplied data is a total-compromise path. QSB #45 established the
-countermeasure now common to the tooling: configuration work runs inside a
-per-target management DisposableVM rather than in dom0 / management qubes.
+A management qube has control of the qubes it manages, so vulnerabilities in the parsing of managed-qube-supplied data may lead to total compromise of all qubes under its management. `QSB #45 <https://www.qubes-os.org/news/2018/12/03/qsb-45/>`__ established the
+countermeasure now common to the tooling: configuration work runs inside a per-target management disposable qube rather than in dom0 / management qubes.
 
 Trivial-to-parse data such as progress information can be used directly without an intermediate disposable, so long as the parsing is hardened.
 <<<
 
 [SYSTEM_GOAL]
 UID: L1-ADMINAPI
-TITLE: Admin API through policy system
+TITLE: Admin API through policy system in management qube
 STATEMENT: >>>
-Every administrative action shall reach the system through a qrexec-mediated
-interface: the Admin API for configuration, qrexec services for in-qube
-execution.
+Every administrative action shall be performed through a qrexec-mediated interface from a management qube with the necessary `Qubes Admin API <https://doc.qubes-os.org/en/latest/developer/services/admin-api.html>`__ calls and `policies <https://www.qubes-os.org/news/2020/06/22/new-qrexec-policy-system/>`__.
 <<<
 RATIONALE: >>>
 Qrexec policy is the authoritative access control over administration in Qubes OS.
-<<<
-
-[SYSTEM_GOAL]
-UID: L1-IDEMPOTENT
-TITLE: Idempotent Configuration
-STATEMENT: >>>
-The configuration of a Qubes system shall convergs to the same result however many times it is applied.
-<<<
-RATIONALE: >>>
-A Qubes install is rebuilt often — after hardware changes, template migrations or recovery. Reproducing it must not depend on the order or count of past
-operations.
 <<<
 
 [SYSTEM_GOAL]
