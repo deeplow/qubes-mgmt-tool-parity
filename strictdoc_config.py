@@ -5,7 +5,7 @@ def create_config() -> ProjectConfig:
     return ProjectConfig(
         project_title="Qubes OS Management Tooling Requirements",
         source_root_path=".",
-        statistics_generator="tools.parity_matrix.ParityMatrixGenerator",
+        statistics_generator="tools.qubes_matrix.QubesParityMatrixGenerator",
         custom_css_path="tools/parity_matrix.css",
         project_features=[
             "TABLE_SCREEN",

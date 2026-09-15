@@ -13,7 +13,7 @@ IMPORT_FROM_FILE: requirements.sgra
 TITLE: Convergence
 
 [PRODUCT_REQUIREMENT]
-UID: L2S-CONV-01
+UID: L2S-CONV-010
 TITLE: Idempotent application
 STATEMENT: >>>
 The management tool shall make no change to a qube that already matches the
@@ -27,11 +27,11 @@ recovery. Reproducing it must not depend on the order or count of past operation
 <<<
 RELATIONS:
 - TYPE: Parent
-  VALUE: L1-MANAGE
+  VALUE: L1-STATE
   ROLE: Refines
 
 [PRODUCT_REQUIREMENT]
-UID: L2S-CONV-02
+UID: L2S-CONV-020
 TITLE: Change reporting
 STATEMENT: >>>
 The management tool shall report, for each managed object, whether the run
@@ -45,7 +45,7 @@ RELATIONS:
   ROLE: Refines
 
 [PRODUCT_REQUIREMENT]
-UID: L2S-CONV-03
+UID: L2S-CONV-030
 TITLE: Dry-run preview
 STATEMENT: >>>
 Where a dry run is requested, the management tool shall report the changes it
@@ -63,7 +63,7 @@ RELATIONS:
   ROLE: Refines
 
 [PRODUCT_REQUIREMENT]
-UID: L2S-CONV-04
+UID: L2S-CONV-040
 TITLE: Dependency-ordered application
 STATEMENT: >>>
 The management tool shall apply changes in an order that satisfies the
@@ -73,11 +73,11 @@ EARS_PATTERN: Ubiquitous
 PRODUCT: Ansible, Salt, Terraform
 RELATIONS:
 - TYPE: Parent
-  VALUE: L1-MANAGE
+  VALUE: L1-STATE
   ROLE: Refines
 
 [PRODUCT_REQUIREMENT]
-UID: L2S-CONV-05
+UID: L2S-CONV-050
 TITLE: Precondition validation
 STATEMENT: >>>
 The management tool shall validate the declared desired state before applying
@@ -91,7 +91,7 @@ previous one nor the declared one.
 <<<
 RELATIONS:
 - TYPE: Parent
-  VALUE: L1-MANAGE
+  VALUE: L1-STATE
   ROLE: Refines
 
 [[/SECTION]]
@@ -100,7 +100,7 @@ RELATIONS:
 TITLE: Inspection
 
 [PRODUCT_REQUIREMENT]
-UID: L2S-INSPECT-03
+UID: L2S-INSPECT-030
 TITLE: Qube fact reporting
 STATEMENT: >>>
 The management tool shall report a qube's current property, feature and tag
@@ -129,7 +129,7 @@ RELATIONS:
   ID: QubesAdminAPI.vm_tag_list
 
 [PRODUCT_REQUIREMENT]
-UID: L2S-SYSTEM-02
+UID: L2S-SYSTEM-020
 TITLE: System configuration reporting
 STATEMENT: >>>
 The management tool shall report the system's global property values and its available labels,
@@ -168,7 +168,7 @@ RELATIONS:
   ID: QubesAdminAPI.deviceclass_list
 
 [PRODUCT_REQUIREMENT]
-UID: L2S-SYSTEM-03
+UID: L2S-SYSTEM-030
 TITLE: Qube listing and filtering
 STATEMENT: >>>
 The management tool shall list the qubes present on the system, restricted by
@@ -192,7 +192,7 @@ RELATIONS:
 TITLE: Security
 
 [PRODUCT_REQUIREMENT]
-UID: L2S-SEC-01
+UID: L2S-SEC-010
 TITLE: Untrusted data confinement
 STATEMENT: >>>
 The management tool shall not parse non-trivial data originating from a managed qube
@@ -211,7 +211,7 @@ RELATIONS:
 TITLE: Diagnostics
 
 [PRODUCT_REQUIREMENT]
-UID: L2S-DIAG-01
+UID: L2S-DIAG-010
 TITLE: Failure exit status
 STATEMENT: >>>
 The management tool shall exit with a non-zero status when any requested
@@ -225,7 +225,7 @@ RELATIONS:
   ROLE: Refines
 
 [PRODUCT_REQUIREMENT]
-UID: L2S-DIAG-02
+UID: L2S-DIAG-020
 TITLE: Error attribution
 STATEMENT: >>>
 The management tool shall attribute each reported failure to the qube and the
@@ -239,7 +239,7 @@ RELATIONS:
   ROLE: Refines
 
 [PRODUCT_REQUIREMENT]
-UID: L2S-DIAG-03
+UID: L2S-DIAG-030
 TITLE: Diagnostic verbosity control
 STATEMENT: >>>
 Where increased verbosity is requested, the management tool shall emit

@@ -23,6 +23,7 @@ custom HTML, styled by tools/parity_matrix.css via `custom_css_path`.
 
 import re
 from collections import OrderedDict
+from itertools import groupby
 from dataclasses import dataclass, field, replace
 from typing import Dict, List, Optional, Sequence, Set, Tuple, Union
 
@@ -76,6 +77,17 @@ class MatrixConfig:
     status_field: Optional[str] = None
     # Free-text field shown in chip tooltips. Inferred when None; "" disables.
     note_field: Optional[str] = None
+    # Row filter: UIDs of parent nodes offered as a selector (labelled with
+    # their titles); choosing one keeps only the rows refining it.
+    # Empty: no selector.
+    row_filter_parents: Tuple[str, ...] = ()
+    # Tabs (with column groups): row-document titles in the wanted order,
+    # others following, and a prefix to drop from the tab labels.
+    tab_order: Tuple[str, ...] = ()
+    tab_label_prefix: str = ""
+    # Label of the row filter's "every row" option, and of its filter group.
+    row_filter_all_label: str = "All"
+    row_filter_label: str = "Filter"
 
     # Presentation. Not inferable.
     row_header: str = "Requirement"
@@ -106,6 +118,11 @@ class _Resolved:
     status_rank: Dict[str, int]
     row_header: str
     title: str
+    row_filter_parents: Tuple[str, ...] = ()
+    tab_order: Tuple[str, ...] = ()
+    tab_label_prefix: str = ""
+    row_filter_all_label: str = "All"
+    row_filter_label: str = "Filter"
 
 
 def _grammar_fields(
@@ -211,6 +228,11 @@ def _resolve(config: MatrixConfig, grammar: Dict[str, Dict[str, object]]) -> _Re
         status_rank={status_: rank for rank, status_ in enumerate(statuses)},
         row_header=config.row_header,
         title=config.title,
+        row_filter_parents=tuple(config.row_filter_parents),
+        tab_order=tuple(config.tab_order),
+        tab_label_prefix=config.tab_label_prefix,
+        row_filter_all_label=config.row_filter_all_label,
+        row_filter_label=config.row_filter_label,
     )
 
 
@@ -312,6 +334,7 @@ class Row:
     scope: Set[str]
     cells: Dict[str, List[Chip]] = field(default_factory=dict)
     document: str = ""
+    parents: Tuple[str, ...] = ()
 
 
 def _node_href(node: SDocNode, link_renderer: LinkRenderer) -> str:
@@ -382,6 +405,7 @@ class ParityMatrixGenerator:
 
         rows: "OrderedDict[str, Row]" = OrderedDict()
         cell_nodes: List[SDocNode] = []
+        filter_titles: Dict[str, str] = {}
 
         for document_ in traceability_index.document_tree.document_list:
             iterator = SDocDocumentIterator(document_)
@@ -391,6 +415,8 @@ class ParityMatrixGenerator:
                 uid = node_.reserved_uid
                 if uid is None:
                     continue
+                if uid in cfg.row_filter_parents:
+                    filter_titles[uid] = node_.reserved_title or uid
 
                 if node_.node_type == cfg.row_node_type:
                     scope = {
@@ -404,6 +430,7 @@ class ParityMatrixGenerator:
                         group=_group_of(node_),
                         scope=scope,
                         document=getattr(document_, "title", "") or "",
+                        parents=tuple(_parent_uids(node_)),
                         cells={column_: [] for column_ in cfg.columns},
                     )
                 elif node_.node_type == cfg.cell_node_type:
@@ -429,7 +456,11 @@ class ParityMatrixGenerator:
             traceability_index=traceability_index,
             project_config=project_config,
             link_renderer=link_renderer,
-            metrics=_build_all_metrics(cfg, list(rows.values())),
+            metrics=(
+                _build_toggle_metrics(cfg, list(rows.values()), filter_titles)
+                if cfg.row_filter_parents or cfg.tab_order
+                else _build_all_metrics(cfg, list(rows.values()))
+            ),
         )
         return view_object.render_screen(html_templates.jinja_environment())
 
@@ -643,56 +674,311 @@ def _build_metrics(
     return metrics
 
 
-def _render_matrix(cfg: _Resolved, rows: List[Row], id_prefix: str = "") -> str:
+def _render_matrix(
+    cfg: _Resolved,
+    rows: List[Row],
+    id_prefix: str = "",
+    columns: Optional[Sequence[str]] = None,
+    row_classes: Optional[Dict[str, str]] = None,
+    column_classes: Optional[Dict[str, str]] = None,
+    legend: bool = True,
+) -> str:
+    columns = tuple(columns) if columns is not None else cfg.columns
+    row_classes = row_classes or {}
+    column_classes = column_classes or {}
     parts = ['<div class="parity">']
 
-    parts.append('<div class="parity-legend">')
-    for status_ in reversed(cfg.statuses):
-        parts.append(
-            f'<span class="chip {_class_of(cfg, status_)}">'
-            f"{escape(status_)}</span>"
-        )
-    parts.append(
-        f'<span class="chip {OUT_OF_SCOPE_CLASS}">Out of scope</span>'
-    )
-    hint = "Cell background shows the worst status it contains."
-    if cfg.note_field:
-        hint += f" Hover a chip for its {cfg.note_field}."
-    parts.append(f'<span class="parity-hint">{escape(hint)}</span></div>')
+    if legend:
+        parts.append(_legend_html(cfg))
 
     parts.append(
         '<table class="parity-table"><thead><tr>'
         f"<th>{escape(cfg.row_header)}</th>"
     )
-    for column_ in cfg.columns:
-        parts.append(f"<th>{escape(column_)}</th>")
+    for column_ in columns:
+        column_class_ = column_classes.get(column_, "")
+        class_attr = f' class="{column_class_}"' if column_class_ else ""
+        parts.append(f"<th{class_attr}>{escape(column_)}</th>")
     parts.append("</tr></thead>")
 
     # One <tbody> per group. A sticky table cell is constrained by its section,
     # so this is what makes each group label pin only while its own group is on
     # screen and get pushed out by the next one. A single tbody would pin them
     # all at the same offset, stacked.
-    current_group = None
-    for row_ in rows:
-        if row_.group != current_group:
-            if current_group is not None:
-                parts.append("</tbody>")
-            current_group = row_.group
-            parts.append(
-                f'<tbody><tr class="area" id="group-{id_prefix + "-" if id_prefix else ""}'
-                f'{_slug(current_group)}">'
-                f'<td colspan="{len(cfg.columns) + 1}">'
-                f"{escape(current_group)}</td></tr>"
-            )
-        parts.append(
-            '<tr><th class="req"><span class="uid">'
-            f"{escape(row_.uid)}</span>"
-            f'<span class="rt">{escape(row_.title)}</span></th>'
+    for group_, group_rows in groupby(rows, key=lambda r: r.group):
+        group_rows = list(group_rows)
+        # Tag the section with the row-filter options its rows match (row
+        # class "rp-0" -> section class "tp-0"), so the filter can hide a
+        # section it empties.
+        needed = sorted(
+            {
+                token[3:]
+                for row_ in group_rows
+                for token in row_classes.get(row_.uid, "").split()
+                if token.startswith("rp-")
+            }
         )
-        for column_ in cfg.columns:
-            parts.append(_render_cell(cfg, row_, column_))
-        parts.append("</tr>")
-    if current_group is not None:
+        tbody_attr = f' class="{" ".join("tp-" + i for i in needed)}"' if needed else ""
+        # One cell per column rather than a colspan: hiding a column must drop
+        # its cell from every row, or the table keeps an empty column slot.
+        filler = "".join(
+            f'<td class="{column_classes[c]}"></td>' if column_classes.get(c) else "<td></td>"
+            for c in columns
+        )
+        parts.append(
+            f'<tbody{tbody_attr}><tr class="area" '
+            f'id="group-{id_prefix + "-" if id_prefix else ""}{_slug(group_)}">'
+            f"<td>{escape(group_)}</td>{filler}</tr>"
+        )
+        for row_ in group_rows:
+            row_class_ = row_classes.get(row_.uid, "")
+            tr_attr = f' class="{row_class_}"' if row_class_ else ""
+            parts.append(
+                f'<tr{tr_attr}><th class="req"><span class="uid">'
+                f"{escape(row_.uid)}</span>"
+                f'<span class="rt">{escape(row_.title)}</span></th>'
+            )
+            for column_ in columns:
+                cell = _render_cell(cfg, row_, column_)
+                if column_classes.get(column_):
+                    cell = cell.replace('<td class="', f'<td class="{column_classes[column_]} ', 1)
+                parts.append(cell)
+            parts.append("</tr>")
         parts.append("</tbody>")
     parts.append("</table></div>")
     return "".join(parts)
+
+
+def _legend_html(cfg: _Resolved) -> str:
+    """Static legend: one chip per status, then out of scope."""
+    parts = ['<div class="parity-legend">']
+    for status_ in reversed(cfg.statuses):
+        parts.append(
+            f'<span class="chip {_class_of(cfg, status_)}">'
+            f"{escape(status_)}</span>"
+        )
+    parts.append(f'<span class="chip {OUT_OF_SCOPE_CLASS}">Out of scope</span>')
+    hint = "Cell background shows the worst status it contains."
+    if cfg.note_field:
+        hint += f" Hover a chip for its {cfg.note_field}."
+    parts.append(f'<span class="parity-hint">{escape(hint)}</span></div>')
+    return "".join(parts)
+
+
+def _filter_chip(input_id: str, css_class: str, label: str) -> str:
+    """A legend chip that is a checkbox, ticked by default."""
+    return (
+        f'<label class="{css_class} parity-filter">'
+        f'<input type="checkbox" id="{input_id}" checked>{escape(label)}</label>'
+    )
+
+
+def _row_filter_selector(cfg: _Resolved, titles: Dict[str, str]) -> str:
+    """Breadcrumb-style radio pills: one per filter parent, then "all"."""
+    options = [
+        (f"pf-{index_}", titles.get(uid_, uid_), uid_)
+        for index_, uid_ in enumerate(cfg.row_filter_parents)
+    ]
+    options.append(("pf-all", cfg.row_filter_all_label, ""))
+    parts = ['<span class="parity-selector">']
+    for input_id, label_, uid_ in options:
+        checked = " checked" if input_id == "pf-all" else ""
+        title_attr = f' title="{escape(uid_)}"' if uid_ else ""
+        parts.append(
+            f'<input type="radio" name="parity-row-filter" id="{input_id}"{checked}>'
+            f'<label for="{input_id}"{title_attr}>{escape(label_)}</label>'
+        )
+    parts.append("</span>")
+    return "".join(parts)
+
+
+def _column_segments(
+    cfg: _Resolved, rows: List[Row], column_: str
+) -> List[Tuple[str, str, int]]:
+    """Bar segments for one column: each status (worst per cell), then out of scope."""
+    counts = {status_: 0 for status_ in cfg.statuses}
+    out_of_scope = 0
+    for row_ in rows:
+        if column_ not in row_.scope:
+            out_of_scope += 1
+            continue
+        worst = _worst(cfg, row_.cells.get(column_, []))
+        if worst in counts:
+            counts[worst] += 1
+    segments = [
+        (status_, _class_of(cfg, status_), counts[status_])
+        for status_ in reversed(cfg.statuses)
+    ]
+    segments.append(("Out of scope", OUT_OF_SCOPE_CLASS, out_of_scope))
+    return segments
+
+
+def _build_toggle_metrics(
+    cfg: _Resolved, rows: List[Row], filter_titles: Dict[str, str]
+) -> List[Union[Metric, MetricSection]]:
+    """Overall bars, then one tab per row document under a filtering legend.
+
+    CSS-only filters, each a generated :has() rule:
+    - a legend chip (checkbox) hides rows containing none of the highlighted
+      statuses;
+    - the row filter (radios after the tabs) keeps only the rows refining the
+      chosen parent, and hides the sections it empties.
+    """
+    missing = [uid_ for uid_ in cfg.row_filter_parents if uid_ not in filter_titles]
+    if missing:
+        raise MatrixConfigError(
+            f"parity matrix: row_filter_parents {missing} are not nodes of this project."
+        )
+
+    row_classes = {}
+    status_keys = set()
+    for row_ in rows:
+        classes = [
+            f"rp-{index_}"
+            for index_, uid_ in enumerate(cfg.row_filter_parents)
+            if uid_ in row_.parents
+        ]
+        statuses = set()
+        for column_ in cfg.columns:
+            if column_ not in row_.scope:
+                statuses.add(OUT_OF_SCOPE_CLASS)
+            else:
+                statuses |= {_class_of(cfg, c.status) for c in row_.cells.get(column_, [])}
+        if statuses:
+            classes.append("ss-" + "-".join(sorted(statuses)))
+            status_keys.add(classes[-1])
+        row_classes[row_.uid] = " ".join(classes)
+
+    hide = [
+        ".parity-view"
+        + "".join(f":has(#fs-{s}:not(:checked))" for s in key[3:].split("-"))
+        + f" tr.{key}"
+        for key in sorted(status_keys)
+    ]
+    for index_ in range(len(cfg.row_filter_parents)):
+        chosen = f".parity-view:has(#pf-{index_}:checked)"
+        hide.append(f"{chosen} tbody tr:not(.area):not(.rp-{index_})")
+        hide.append(f"{chosen} tbody:not(.tp-{index_})")
+    style = f"{', '.join(hide)} {{ display: none; }}" if hide else ""
+
+    # Filter box: one labelled group per filter, shown under the tabs.
+    status_chips = [
+        _filter_chip(f"fs-{_class_of(cfg, s)}", f"chip {_class_of(cfg, s)}", s)
+        for s in reversed(cfg.statuses)
+    ]
+    status_chips.append(
+        _filter_chip(f"fs-{OUT_OF_SCOPE_CLASS}", f"chip {OUT_OF_SCOPE_CLASS}", "Out of scope")
+    )
+    groups = [(cfg.status_field.title(), f'<div class="parity-legend">{"".join(status_chips)}</div>')]
+    if cfg.row_filter_parents:
+        groups.append((cfg.row_filter_label, _row_filter_selector(cfg, filter_titles)))
+    hint = "Click to filter. Cell background shows the worst status it contains."
+    if cfg.note_field:
+        hint += f" Hover a requirement for its {cfg.note_field}."
+    filters_html = (
+        '<section class="parity-filters">'
+        + "".join(
+            f'<div class="parity-filter-group"><span class="parity-filter-label">'
+            f"{escape(label_)}</span>{body_}</div>"
+            for label_, body_ in groups
+        )
+        + f'<p class="parity-hint">{escape(hint)}</p></section>'
+    )
+
+    by_document: "OrderedDict[str, List[Row]]" = OrderedDict()
+    for row_ in rows:
+        by_document.setdefault(row_.document, []).append(row_)
+    order = [t for t in cfg.tab_order if t in by_document]
+    order += [t for t in by_document if t not in order]
+    prefix = cfg.tab_label_prefix
+
+    def label_of(title_: str) -> str:
+        return title_[len(prefix):] if prefix and title_.startswith(prefix) else title_
+
+    parts = ['<div class="parity parity-view">']
+    if style:
+        parts.append(f"<style>{style}</style>")
+    matrices = [
+        (
+            label_of(title_),
+            _render_matrix(
+                cfg,
+                by_document[title_],
+                id_prefix=_slug(title_),
+                row_classes=row_classes,
+                legend=False,
+            ),
+        )
+        for title_ in order
+    ]
+    if len(matrices) > 1:
+        # An "All" tab first: every row, grouped by document then section.
+        all_rows = [
+            replace(row_, group=f"{label_of(title_)} › {row_.group}")
+            for title_ in order
+            for row_ in by_document[title_]
+        ]
+        matrices.insert(
+            0,
+            (
+                "All",
+                _render_matrix(
+                    cfg, all_rows, id_prefix="all", row_classes=row_classes, legend=False
+                ),
+            ),
+        )
+        # CSS-only tabs: the nth checked radio shows the nth panel.
+        parts.append('<div class="parity-tabs">')
+        for index_, (label_, _) in enumerate(matrices):
+            checked = " checked" if index_ == 0 else ""
+            parts.append(
+                f'<input type="radio" name="parity-doc" id="pd-{index_}"{checked}>'
+                f'<label for="pd-{index_}">{escape(label_)}</label>'
+            )
+        # A <section>, not a <div>, so the panels' nth-of-type count holds.
+        parts.append(filters_html)
+        for _, matrix_ in matrices:
+            parts.append(f'<div class="parity-panel">{matrix_}</div>')
+        parts.append("</div>")
+    else:
+        parts.append(filters_html)
+        parts.extend(matrix_ for _, matrix_ in matrices)
+    parts.append("</div>")
+
+    in_scope = sum(len(row_.scope) for row_ in rows)
+    total_cells = len(rows) * len(cfg.columns)
+    scope_section = MetricSection(
+        name="Scope",
+        metrics=[
+            Metric(
+                name="Cells in scope",
+                value=Markup(
+                    f"{in_scope} of {total_cells} "
+                    f"({len(rows)} rows &times; {len(cfg.columns)} "
+                    f"{escape(cfg.column_field)} values)"
+                ),
+            ),
+            Metric(
+                name="Deliberately out of scope",
+                value=Markup(
+                    f"{total_cells - in_scope} &mdash; a value omitted from a "
+                    f"row's {escape(cfg.column_field)} set is not a gap"
+                ),
+            ),
+        ],
+    )
+    per_column = MetricSection(
+        name=f"Per {cfg.column_field.lower()}",
+        metrics=[
+            Metric(
+                name=column_,
+                value=Markup(_render_bar(_column_segments(cfg, rows, column_))),
+            )
+            for column_ in cfg.columns
+        ],
+    )
+    view_section = MetricSection(
+        name=cfg.title,
+        metrics=[Metric(name="Requirements", value=Markup("".join(parts)))],
+    )
+    return [scope_section, per_column, view_section]

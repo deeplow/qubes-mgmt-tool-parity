@@ -87,6 +87,14 @@ PRODUCTS = grammar_choices("TECHNICAL_REQUIREMENT", "PRODUCT")
 STATUSES = grammar_choices("TECHNICAL_REQUIREMENT", "STATUS")
 EARS_KINDS = grammar_choices("TECHNICAL_REQUIREMENT", "EARS_PATTERN")
 
+# Product name -> the code used in L3 UIDs (L3-<CODE>-<NNN>).
+PRODUCT_CODES = {
+    "Ansible": "ANS",
+    "Salt": "SLS",
+    "QubesadminTools": "QTL",
+    "Terraform": "TF",
+}
+
 STATUS_UNIMPLEMENTED = "Not Implemented"
 STATUS_IMPLEMENTED = "Implemented"
 STATUS_PARTIAL = "Partial"
@@ -294,6 +302,13 @@ class Audit:
         meaningless unless the two option lists are identical, and nothing in
         strictdoc enforces that.
         """
+        l1_products = grammar_choices("SYSTEM_GOAL", "PRODUCT")
+        if l1_products != PRODUCTS:
+            self.fail(
+                "grammar",
+                "PRODUCT option lists have drifted: "
+                f"SYSTEM_GOAL {sorted(l1_products)} vs TECHNICAL_REQUIREMENT {sorted(PRODUCTS)}",
+            )
         l2_products = grammar_choices("PRODUCT_REQUIREMENT", "PRODUCT")
         if l2_products != PRODUCTS:
             only_l2 = sorted(l2_products - PRODUCTS)
@@ -325,6 +340,22 @@ class Audit:
                 self.fail("structure", f"{n.uid}: {n.doc} is not a known L2 document")
             elif not n.uid.startswith(prefix):
                 self.fail("structure", f"{n.uid}: UID in {n.doc} must start with {prefix}")
+
+        # Three-digit numbers (see CONVENTIONS "Numbering"); a trailing 0 is
+        # not enforced, so numbers inserted between existing ones stay valid.
+        missing_codes = sorted(PRODUCTS - set(PRODUCT_CODES))
+        if missing_codes:
+            self.fail("grammar", f"no L3 UID code for product(s) {missing_codes}")
+        l2_prefixes = "|".join(re.escape(p) for p in L2_PREFIX_BY_FILE.values())
+        l2_form = re.compile(rf"(?:{l2_prefixes})[A-Z]+-\d{{3}}")
+        l3_codes = "|".join(sorted(PRODUCT_CODES[p] for p in PRODUCTS if p in PRODUCT_CODES))
+        l3_form = re.compile(rf"L3-(?:{l3_codes})-\d{{3}}")
+        for n in l2:
+            if not l2_form.fullmatch(n.uid):
+                self.fail("structure", f"{n.uid}: L2 UID must be <prefix><AREA>-<NNN>")
+        for n in l3:
+            if not l3_form.fullmatch(n.uid):
+                self.fail("structure", f"{n.uid}: L3 UID must be L3-<PRODUCT>-<NNN>")
 
         for n in l2:
             parents = [r for r in n.relations if r.type == "Parent"]
@@ -393,6 +424,42 @@ class Audit:
             for comp in sorted(comps):
                 if not have.get((uid, comp)):
                     self.fail("fan-out", f"missing cell: ({uid}, {comp}) has no L3")
+
+    # -- L1 -> L2 applicability -----------------------------------------
+    def check_l1_fanout(self, l1: List[Node], l2: List[Node]) -> None:
+        """PRODUCT narrows downwards, as it does from L2 to L3.
+
+        An L2 may apply only to products that every L1 parent applies to, and
+        every (goal x product) pair must be realised by at least one L2.
+        """
+        goal_products: Dict[str, Set[str]] = {}
+        for g in l1:
+            ps = {p.strip() for p in g.fields.get("PRODUCT", "").split(",") if p.strip()}
+            if not ps:
+                self.fail("fan-out", f"{g.uid}: no PRODUCT")
+            unknown = ps - PRODUCTS
+            if unknown:
+                self.fail("fan-out", f"{g.uid}: unknown PRODUCT value(s) {sorted(unknown)}")
+            goal_products[g.uid] = ps
+
+        realised: Set[Tuple[str, str]] = set()
+        for n in l2:
+            ps = {p.strip() for p in n.fields.get("PRODUCT", "").split(",") if p.strip()}
+            for r in n.relations:
+                if r.type != "Parent" or r.value not in goal_products:
+                    continue
+                outside = ps - goal_products[r.value]
+                if outside:
+                    self.fail(
+                        "fan-out",
+                        f"{n.uid}: PRODUCT {sorted(outside)} is outside {r.value}'s PRODUCT set",
+                    )
+                realised |= {(r.value, p) for p in ps & goal_products[r.value]}
+
+        for goal, ps in goal_products.items():
+            for p in sorted(ps):
+                if (goal, p) not in realised:
+                    self.fail("fan-out", f"missing L2: ({goal}, {p}) has no L2 refining it")
 
     # -- anchors --------------------------------------------------------
     def check_anchors(self, nodes: List[Node]) -> None:
@@ -589,6 +656,7 @@ def main() -> int:
     audit.check_grammar()
     audit.check_structure(l1, l2, l3)
     audit.check_fanout(l2, l3)
+    audit.check_l1_fanout(l1, l2)
     audit.check_anchors(l2 + l3)
     audit.check_style(l2, MAX_STATEMENT_WORDS)
     audit.check_style(l3, MAX_STATEMENT_WORDS)

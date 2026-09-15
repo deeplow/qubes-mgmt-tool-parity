@@ -20,6 +20,9 @@ ELEMENTS:
   - TITLE: STATEMENT
     TYPE: String
     REQUIRED: True
+  - TITLE: PRODUCT
+    TYPE: MultipleChoice(Ansible, Salt, QubesadminTools, Terraform)
+    REQUIRED: True
   - TITLE: RATIONALE
     TYPE: String
     REQUIRED: False

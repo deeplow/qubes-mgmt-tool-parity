@@ -156,6 +156,20 @@
   padding: 4px 8px;
 }
 
+/*
+ * A section row has one cell per column; hide the joins so it reads as one
+ * bar. The label stays on one line and paints over its empty neighbours
+ * (z-index 1 vs 0), still below the pinned header (z-index 2).
+ */
+.parity-table tr.area td:not(:first-child) {
+  border-left-style: hidden;
+  z-index: 0;
+}
+
+.parity-table tr.area td:first-child {
+  white-space: nowrap;
+}
+
 .parity-table th.req {
   text-align: left;
   font-weight: 400;
@@ -298,6 +312,173 @@
   border-right: 1px solid var(--parity-line);
 }
 
+
+/*
+ * Legend filters (see _build_toggle_metrics): each chip is a label around a
+ * visually hidden checkbox. An unticked chip fades; its effect on rows and
+ * columns comes from rules generated on the page.
+ */
+.parity-filter {
+  cursor: pointer;
+  user-select: none;
+}
+
+.parity-filter > input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.parity-filter:has(> input:not(:checked)) {
+  opacity: 0.4;
+  text-decoration: line-through;
+}
+
+.parity-filter:has(> input:focus-visible) {
+  outline: 2px solid var(--parity-line);
+}
+
+/*
+ * Goal filter (radio pills) inside the filter box; the chosen one keeps only
+ * the rows (and sections) refining it, via rules generated on the page.
+ */
+.parity-selector {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+}
+
+.parity-selector > input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.parity-selector > label {
+  padding: 3px 10px;
+  border: 1px solid var(--parity-line);
+  border-radius: 999px;
+  background: #f7f7f9;
+  color: #6b6b74;
+  cursor: pointer;
+  font-size: 0.9em;
+}
+
+.parity-selector > input:checked + label {
+  background: #fff;
+  color: inherit;
+  font-weight: 600;
+}
+
+.parity-selector > input:focus-visible + label {
+  outline: 2px solid var(--parity-line);
+}
+
+/*
+ * Filter box under the tabs: one labelled group per filter (status chips,
+ * goal pills), with the hint underneath.
+ */
+.parity-filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 12px 32px;
+  margin: 8px 0 0;
+  padding: 10px 12px 8px;
+  border: 1px solid var(--parity-line);
+  border-radius: 4px;
+  background: #fff;
+}
+
+.parity-filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.parity-filter-label {
+  color: #6b6b74;
+  font-size: 0.7em;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.parity-filters .parity-legend {
+  margin-bottom: 0;
+}
+
+.parity-filters .parity-hint {
+  flex-basis: 100%;
+  margin: 0;
+}
+
+/*
+ * Document tabs. Each tab is a visually hidden radio followed by its label;
+ * panels follow all the labels in the same order, so the nth checked radio
+ * shows the nth panel. Rules cover up to eight tabs.
+ */
+.parity-tabs > input[type="radio"] {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/*
+ * Tab labels and the filter box sit above the sticky header (z-index 2) so
+ * no browser can paint its ::before band over them, whatever containing
+ * block it gives that band.
+ */
+.parity-tabs > label,
+.parity-filters {
+  position: relative;
+  z-index: 3;
+}
+
+.parity-tabs > label {
+  display: inline-block;
+  margin: 0 4px 0 0;
+  padding: 4px 12px;
+  border: 1px solid var(--parity-line);
+  border-bottom: none;
+  border-radius: 4px 4px 0 0;
+  background: #f7f7f9;
+  color: #6b6b74;
+  cursor: pointer;
+}
+
+.parity-tabs > input:checked + label {
+  background: #fff;
+  color: inherit;
+  font-weight: 600;
+}
+
+.parity-tabs > input:focus-visible + label {
+  outline: 2px solid var(--parity-line);
+}
+
+/*
+ * The sticky header's ::before band reaches --base-gap + --base-rhythm above
+ * the table to cover .main's padding while pinned. Pad each panel by that
+ * much so the band never paints over the tab labels.
+ */
+.parity-tabs > .parity-panel {
+  display: none;
+  border-top: 1px solid var(--parity-line);
+  padding-top: calc(var(--base-gap) + var(--base-rhythm) + 4px);
+}
+
+.parity-tabs > input:nth-of-type(1):checked ~ .parity-panel:nth-of-type(1),
+.parity-tabs > input:nth-of-type(2):checked ~ .parity-panel:nth-of-type(2),
+.parity-tabs > input:nth-of-type(3):checked ~ .parity-panel:nth-of-type(3),
+.parity-tabs > input:nth-of-type(4):checked ~ .parity-panel:nth-of-type(4),
+.parity-tabs > input:nth-of-type(5):checked ~ .parity-panel:nth-of-type(5),
+.parity-tabs > input:nth-of-type(6):checked ~ .parity-panel:nth-of-type(6),
+.parity-tabs > input:nth-of-type(7):checked ~ .parity-panel:nth-of-type(7),
+.parity-tabs > input:nth-of-type(8):checked ~ .parity-panel:nth-of-type(8) {
+  display: block;
+}
 
 /*
  * Drop the key cell beside the matrix.

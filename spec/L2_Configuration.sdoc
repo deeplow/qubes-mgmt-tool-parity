@@ -13,7 +13,7 @@ IMPORT_FROM_FILE: requirements.sgra
 TITLE: Command execution
 
 [PRODUCT_REQUIREMENT]
-UID: L2C-EXEC-01
+UID: L2C-EXEC-010
 TITLE: Command execution in qube
 STATEMENT: >>>
 The management tool shall run a caller-supplied command inside a qube and
@@ -23,14 +23,14 @@ EARS_PATTERN: Ubiquitous
 PRODUCT: Ansible, Salt, QubesadminTools
 RELATIONS:
 - TYPE: Parent
-  VALUE: L1-MANAGE
+  VALUE: L1-OPERATE
   ROLE: Refines
 - TYPE: Parent
   VALUE: L1-ADMINAPI
   ROLE: Refines
 
 [PRODUCT_REQUIREMENT]
-UID: L2C-EXEC-02
+UID: L2C-EXEC-020
 TITLE: File transfer
 STATEMENT: >>>
 The management tool shall transfer a file between the qube it is running in and the one being managed.
@@ -39,14 +39,14 @@ EARS_PATTERN: Ubiquitous
 PRODUCT: Ansible, Salt, QubesadminTools
 RELATIONS:
 - TYPE: Parent
-  VALUE: L1-MANAGE
+  VALUE: L1-OPERATE
   ROLE: Refines
 - TYPE: Parent
   VALUE: L1-ADMINAPI
   ROLE: Refines
 
 [PRODUCT_REQUIREMENT]
-UID: L2C-EXEC-03
+UID: L2C-EXEC-030
 TITLE: Execution user selection
 STATEMENT: >>>
 The management tool shall run a command in a qube under a caller-specified user
@@ -60,7 +60,7 @@ a compromised or malicious guest command.
 <<<
 RELATIONS:
 - TYPE: Parent
-  VALUE: L1-MANAGE
+  VALUE: L1-OPERATE
   ROLE: Refines
 - TYPE: Parent
   VALUE: L1-ADMINAPI
@@ -72,7 +72,7 @@ RELATIONS:
 TITLE: Management isolation
 
 [PRODUCT_REQUIREMENT]
-UID: L2C-SEC-02
+UID: L2C-SEC-020
 TITLE: Management qube isolation
 STATEMENT: >>>
 The management tool shall carry out a target's configuration work inside a
@@ -98,7 +98,7 @@ RELATIONS:
   ID: QubesAdminAPI.vm_create
 
 [PRODUCT_REQUIREMENT]
-UID: L2C-SEC-03
+UID: L2C-SEC-030
 TITLE: Management policy lifetime
 STATEMENT: >>>
 When a management run over a target ends, the management tool shall revoke the administrative policy granted for that target for any ephemeral management qubes created in the process.
@@ -114,7 +114,7 @@ RELATIONS:
   ROLE: Refines
 
 [PRODUCT_REQUIREMENT]
-UID: L2C-SEC-04
+UID: L2C-SEC-040
 TITLE: Output sanitisation
 STATEMENT: >>>
 The management tool shall sanitise text received from a managed qube before
@@ -132,7 +132,7 @@ RELATIONS:
   ROLE: Refines
 
 [PRODUCT_REQUIREMENT]
-UID: L2C-SEC-05
+UID: L2C-SEC-050
 TITLE: Disposable qube bypass prevention
 STATEMENT: >>>
 If a run is configured to bypass the management disposable qube, then the
@@ -155,7 +155,7 @@ RELATIONS:
 TITLE: Delegation
 
 [PRODUCT_REQUIREMENT]
-UID: L2C-DELEG-01
+UID: L2C-DELEG-010
 TITLE: Configuration delegation
 STATEMENT: >>>
 The management tool shall hand a provisioned qube to a configuration management tool to configure
@@ -163,9 +163,12 @@ that qube's contents.
 <<<
 EARS_PATTERN: Ubiquitous
 PRODUCT: Terraform
+RATIONALE: >>>
+Delegation is achieved by invoking operations inside the qube, as its L3s show.
+<<<
 RELATIONS:
 - TYPE: Parent
-  VALUE: L1-MANAGE
+  VALUE: L1-RECONCILE
   ROLE: Refines
 - TYPE: Parent
   VALUE: L1-ADMINAPI

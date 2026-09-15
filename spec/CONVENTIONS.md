@@ -14,10 +14,16 @@ This file deliberately does not restate those values.
 | Level | Document | Node tag | UID form |
 |---|---|---|---|
 | L1 system goals | `L1_Goals.sdoc` | `SYSTEM_GOAL` | `L1-<AREA>` |
-| L2 provisioning | `L2_Provisioning.sdoc` | `PRODUCT_REQUIREMENT` | `L2P-<AREA>-<NN>` |
-| L2 configuration management | `L2_Configuration.sdoc` | `PRODUCT_REQUIREMENT` | `L2C-<AREA>-<NN>` |
-| L2 common | `L2_Common.sdoc` | `PRODUCT_REQUIREMENT` | `L2S-<AREA>-<NN>` |
+| L2 provisioning | `L2_Provisioning.sdoc` | `PRODUCT_REQUIREMENT` | `L2P-<AREA>-<NNN>` |
+| L2 configuration management | `L2_Configuration.sdoc` | `PRODUCT_REQUIREMENT` | `L2C-<AREA>-<NNN>` |
+| L2 common | `L2_Common.sdoc` | `PRODUCT_REQUIREMENT` | `L2S-<AREA>-<NNN>` |
 | L3 technical requirements | `L3_Technical.sdoc` | `TECHNICAL_REQUIREMENT` | `L3-<ANS\|SLS\|QTL\|TF>-<NNN>` |
+
+**Numbering.** L2 and L3 numbers have three digits, counting in tens (`010`, `020`, `030` …).
+- A new requirement related to existing ones goes between them (`035` between `030` and `040`).
+- An unrelated one goes at the end, with the next ten.
+
+Existing numbers never change. L1 goals are named and carry no number.
 
 Sections use the composite form `[[SECTION]] … [[/SECTION]]`. Plain `[SECTION]`
 is rejected by current strictdoc.
@@ -45,9 +51,20 @@ runs inside them.
 
 Out of scope for now: recoverability (backup and restore) and dom0 software.
 
-Every L2 that realises state in Provisioning or Configuration refines
-`L1-MANAGE`, plus each quality goal it genuinely serves. Multiple parents are
-expected at L2 as at L3; list the purpose goal first.
+Every L2 that realises something refines one purpose goal, listed first:
+- `L1-STATE` (Enforce State): declared state;
+- `L1-OPERATE` (Transient Action): actions that don't persist across reboots;
+- `L1-RECONCILE` (Reconcile State): keeping declared state true, through drift detection and
+  correction, adoption and rollback.
+
+It also refines each quality goal it genuinely serves. Multiple parents are
+expected at L2 as at L3.
+
+The product scope of those goals makes one tree serve two kinds of tool:
+- **Declarative tools** (Terraform) meet the STATE and RECONCILE branches.
+- **Imperative tools** (Ansible, Salt, QubesadminTools) meet STATE and OPERATE.
+
+The shared STATE branch is the same requirements in both views, not a copy.
 
 Products:
 - **Terraform** is a provisioning tool. In Configuration it appears only on
@@ -59,15 +76,18 @@ Products:
 
 ## Products
 
-The `PRODUCT` field names the management products in scope. It is declared twice
-in the grammar, and the two declarations differ only in multiplicity:
+The `PRODUCT` field names the management products in scope. It is declared at
+all three levels, with the same option list:
 
+- **L1** — `MultipleChoice`. The products a goal applies to.
 - **L2** — `MultipleChoice`. Every product the requirement applies to. This is
   the input to the fan-out rule below.
 - **L3** — `SingleChoice`. The one product this requirement describes.
 
-The option lists must be identical; `audit_spec.py` fails with a `grammar`
-problem if they drift.
+**Applicability narrows downwards.** A requirement's products must lie within
+the `PRODUCT` of each of its parents, and every (goal × product) pair needs at
+least one L2. The option lists must be identical; `audit_spec.py` fails with a
+`grammar` problem if they drift.
 
 Products map to trees as follows: **Ansible** → `qubes-ansible/`; **Salt** →
 `qubes-mgmt-salt-dom0-qvm/` *and* `qubes-mgmt-salt/` (one product, two repos);
@@ -111,7 +131,7 @@ Enforced mechanically by `tools/audit_spec.py`, not left to taste.
   look arbitrary — a security reason, a Qubes constraint, a non-obvious
   ordering. Never a restatement. Two sentences maximum.
 - **`DEFECT`: one sentence plus `file:line`.** The divergence, not its history.
-- **Never restate the parent.** An L3 under `L2S-CONV-01` does not re-explain
+- **Never restate the parent.** An L3 under `L2S-CONV-010` does not re-explain
   idempotency.
 - **Banned filler:** "in order to", "be able to", "it should be noted that",
   "as appropriate", "etc.", "and/or", "successfully". One "shall" per statement.
@@ -127,7 +147,7 @@ component that differ only in wording are one requirement.
 ```
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2P-CONFIG-01
+  VALUE: L2P-CONFIG-010
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation

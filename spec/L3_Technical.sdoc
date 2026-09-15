@@ -19,7 +19,7 @@ TITLE: Provisioning
 TITLE: Qube lifecycle
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-ANS-001
+UID: L3-ANS-010
 TITLE: Qube creation
 STATEMENT: >>>
 When the declared qube does not exist, the qube module shall create it with the
@@ -30,7 +30,7 @@ PRODUCT: Ansible
 STATUS: Implemented
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2P-LIFECYCLE-01
+  VALUE: L2P-LIFECYCLE-010
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -49,7 +49,7 @@ RELATIONS:
   ID: test_lifecycle_full_create_start_shutdown_remove
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-ANS-002
+UID: L3-ANS-020
 TITLE: Qube cloning
 STATEMENT: >>>
 When a clone source is declared and the qube does not exist, the qube module
@@ -65,7 +65,7 @@ assignments are not carried over to the copy
 <<<
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2P-LIFECYCLE-02
+  VALUE: L2P-LIFECYCLE-020
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -79,7 +79,7 @@ RELATIONS:
   ID: test_create_clone_vmtype_combinations
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-ANS-003
+UID: L3-ANS-030
 TITLE: Qube removal
 STATEMENT: >>>
 When state ``absent`` is declared, the qube module shall delete the qube
@@ -95,7 +95,7 @@ loop with no timeout, so a qube that never halts hangs the play
 <<<
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2P-LIFECYCLE-03
+  VALUE: L2P-LIFECYCLE-030
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -109,7 +109,7 @@ RELATIONS:
   ID: test_lifecycle_create_and_absent
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-ANS-004
+UID: L3-ANS-040
 TITLE: Qube start
 STATEMENT: >>>
 When state ``running`` is declared for a halted qube, the qube module shall
@@ -120,7 +120,7 @@ PRODUCT: Ansible
 STATUS: Implemented
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2P-LIFECYCLE-04
+  VALUE: L2P-LIFECYCLE-040
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -134,7 +134,7 @@ RELATIONS:
   ID: test_lifecycle_create_running_vm
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-ANS-005
+UID: L3-ANS-050
 TITLE: Graceful shutdown
 STATEMENT: >>>
 When state ``halted`` is declared for a running qube, the qube module shall shut
@@ -145,7 +145,7 @@ PRODUCT: Ansible
 STATUS: Implemented
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2P-LIFECYCLE-05
+  VALUE: L2P-LIFECYCLE-050
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -164,7 +164,7 @@ RELATIONS:
   ID: test_lifecycle_full_create_start_shutdown_remove
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-ANS-006
+UID: L3-ANS-060
 TITLE: Forced shutdown
 STATEMENT: >>>
 Where ``force`` is declared, the qube module shall shut the qube down regardless
@@ -175,7 +175,7 @@ PRODUCT: Ansible
 STATUS: Implemented
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2P-LIFECYCLE-05
+  VALUE: L2P-LIFECYCLE-050
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -189,7 +189,7 @@ RELATIONS:
   ID: test_lifecycle_shutdown_force_with_dependent
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-ANS-007
+UID: L3-ANS-070
 TITLE: Qube kill
 STATEMENT: >>>
 When state ``destroyed`` is declared, the qube module shall kill the qube
@@ -210,7 +210,7 @@ path, so the documented ``qvm-kill`` equivalent never reaches ``admin.vm.Kill``
 <<<
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2P-LIFECYCLE-05
+  VALUE: L2P-LIFECYCLE-050
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -229,7 +229,7 @@ RELATIONS:
   ID: QubesAdminAPI.vm_kill
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-ANS-008
+UID: L3-ANS-080
 TITLE: Pause and resume
 STATEMENT: >>>
 The qube module shall move the qube between the running and paused states to
@@ -240,7 +240,7 @@ PRODUCT: Ansible
 STATUS: Implemented
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2P-LIFECYCLE-06
+  VALUE: L2P-LIFECYCLE-060
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -259,7 +259,7 @@ RELATIONS:
 TITLE: Qube attributes
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-ANS-009
+UID: L3-ANS-090
 TITLE: Property configuration
 STATEMENT: >>>
 The qube module shall set each property named in the ``properties`` parameter to
@@ -270,7 +270,7 @@ PRODUCT: Ansible
 STATUS: Implemented
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2P-CONFIG-01
+  VALUE: L2P-CONFIG-010
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -284,7 +284,7 @@ RELATIONS:
   ID: test_properties_and_features_set_and_tag_vm
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-ANS-056
+UID: L3-ANS-560
 TITLE: Disposable template validation
 STATEMENT: >>>
 If default_dispvm or management_dispvm names a qube that is not an app qube serving
@@ -295,7 +295,7 @@ PRODUCT: Ansible
 STATUS: Implemented
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2P-CONFIG-01
+  VALUE: L2P-CONFIG-010
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -309,7 +309,7 @@ RELATIONS:
   ID: QubesAdminAPI.vm_property_set
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-ANS-010
+UID: L3-ANS-100
 TITLE: Property reset to default
 STATEMENT: >>>
 When a property is declared as ``*default*``, the qube module shall restore that
@@ -320,7 +320,7 @@ PRODUCT: Ansible
 STATUS: Implemented
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2P-CONFIG-02
+  VALUE: L2P-CONFIG-020
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -334,7 +334,7 @@ RELATIONS:
   ID: test_properties_reset_to_default_netvm
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-ANS-011
+UID: L3-ANS-110
 TITLE: Feature configuration
 STATEMENT: >>>
 The qube module shall set each feature named in the ``features`` parameter to
@@ -345,7 +345,7 @@ PRODUCT: Ansible
 STATUS: Implemented
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2P-CONFIG-03
+  VALUE: L2P-CONFIG-030
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -359,7 +359,7 @@ RELATIONS:
   ID: test_features_vm
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-ANS-012
+UID: L3-ANS-120
 TITLE: Service enablement
 STATEMENT: >>>
 The qube module shall enable each name in the ``services`` parameter through its
@@ -370,7 +370,7 @@ PRODUCT: Ansible
 STATUS: Implemented
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2P-CONFIG-04
+  VALUE: L2P-CONFIG-040
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -384,7 +384,7 @@ RELATIONS:
   ID: test_services_aliased_to_features_only
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-ANS-013
+UID: L3-ANS-130
 TITLE: Tag configuration
 STATEMENT: >>>
 The qube module shall bring the qube's tag set to the tags declared in the
@@ -400,7 +400,7 @@ declared set is never removed, so a tag set cannot be converged
 <<<
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2P-CONFIG-05
+  VALUE: L2P-CONFIG-050
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -414,7 +414,7 @@ RELATIONS:
   ID: test_properties_and_features_set_and_tag_vm
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-ANS-014
+UID: L3-ANS-140
 TITLE: Tag removal command
 STATEMENT: >>>
 When the ``removetags`` command is issued, the command module shall remove every
@@ -430,7 +430,7 @@ not present aborts every remaining removal
 <<<
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2P-CONFIG-05
+  VALUE: L2P-CONFIG-050
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -444,7 +444,7 @@ RELATIONS:
   ID: test_removetags_errors_if_no_tags_present
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-ANS-015
+UID: L3-ANS-150
 TITLE: Qube notes
 STATEMENT: >>>
 The qube module shall set the qube's notes to the text declared in the ``notes``
@@ -455,7 +455,7 @@ PRODUCT: Ansible
 STATUS: Implemented
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2P-CONFIG-06
+  VALUE: L2P-CONFIG-060
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -469,7 +469,7 @@ RELATIONS:
   ID: test_notes
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-ANS-016
+UID: L3-ANS-160
 TITLE: Notes size limit
 STATEMENT: >>>
 If the declared notes exceed 256 000 bytes, then the qube module shall reject the
@@ -485,11 +485,11 @@ qubesd and the limit is enforced only there
 <<<
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2P-CONFIG-07
+  VALUE: L2P-CONFIG-070
   ROLE: Refines
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-ANS-017
+UID: L3-ANS-170
 TITLE: Qube class immutability
 STATEMENT: >>>
 If the declared class differs from the existing qube's class, then the qube
@@ -500,7 +500,7 @@ PRODUCT: Ansible
 STATUS: Implemented
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2P-CONFIG-08
+  VALUE: L2P-CONFIG-080
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -524,7 +524,7 @@ RELATIONS:
 TITLE: Storage and volumes
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-ANS-018
+UID: L3-ANS-180
 TITLE: Volume resize
 STATEMENT: >>>
 The qube module shall resize a declared volume to the declared size.
@@ -534,7 +534,7 @@ PRODUCT: Ansible
 STATUS: Implemented
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2P-STORAGE-01
+  VALUE: L2P-STORAGE-010
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -548,7 +548,7 @@ RELATIONS:
   ID: test_volumes_list_for_standalonevm
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-ANS-019
+UID: L3-ANS-190
 TITLE: Volume revision retention
 STATEMENT: >>>
 The qube module shall set a declared volume's retained revision count to the
@@ -559,7 +559,7 @@ PRODUCT: Ansible
 STATUS: Implemented
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2P-STORAGE-02
+  VALUE: L2P-STORAGE-020
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -573,7 +573,7 @@ RELATIONS:
   ID: test_volumes_list_for_standalonevm
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-ANS-020
+UID: L3-ANS-200
 TITLE: Storage pool selection
 STATEMENT: >>>
 The qube module shall place a qube's volumes in the declared storage pool.
@@ -588,7 +588,7 @@ There is no pool parameter, and volume enforcement recognises only ``size`` and
 <<<
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2P-STORAGE-03
+  VALUE: L2P-STORAGE-030
   ROLE: Refines
 
 [[/SECTION]]
@@ -597,7 +597,7 @@ RELATIONS:
 TITLE: Device assignment
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-ANS-021
+UID: L3-ANS-210
 TITLE: Persistent device assignment
 STATEMENT: >>>
 The qube module shall assign each device declared in the ``devices`` parameter
@@ -608,7 +608,7 @@ PRODUCT: Ansible
 STATUS: Implemented
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2P-DEVICE-02
+  VALUE: L2P-DEVICE-020
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -627,7 +627,7 @@ RELATIONS:
   ID: test_devices_strict_single_pci_assignment
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-ANS-022
+UID: L3-ANS-220
 TITLE: Strict device strategy
 STATEMENT: >>>
 Where the ``strict`` device strategy applies, the qube module shall unassign
@@ -638,7 +638,7 @@ PRODUCT: Ansible
 STATUS: Implemented
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2P-DEVICE-02
+  VALUE: L2P-DEVICE-020
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -652,7 +652,7 @@ RELATIONS:
   ID: test_devices_strict_unassign_all
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-ANS-023
+UID: L3-ANS-230
 TITLE: Append device strategy
 STATEMENT: >>>
 Where the ``append`` device strategy is declared, the qube module shall leave
@@ -663,7 +663,7 @@ PRODUCT: Ansible
 STATUS: Implemented
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2P-DEVICE-02
+  VALUE: L2P-DEVICE-020
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -677,7 +677,7 @@ RELATIONS:
   ID: test_devices_append_strategy_adds_without_removal
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-ANS-024
+UID: L3-ANS-240
 TITLE: Device assignment mode
 STATEMENT: >>>
 The qube module shall assign a device in the mode declared for that device.
@@ -687,7 +687,7 @@ PRODUCT: Ansible
 STATUS: Implemented
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2P-DEVICE-03
+  VALUE: L2P-DEVICE-030
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -706,7 +706,7 @@ RELATIONS:
   ID: test_devices_per_device_mode_and_options
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-ANS-025
+UID: L3-ANS-250
 TITLE: PCI assignment mode
 STATEMENT: >>>
 Where no mode is declared for a pci device, the qube module shall assign it as
@@ -717,7 +717,7 @@ PRODUCT: Ansible
 STATUS: Implemented
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2P-DEVICE-04
+  VALUE: L2P-DEVICE-040
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -741,7 +741,7 @@ RELATIONS:
 TITLE: Network and firewall
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-ANS-026
+UID: L3-ANS-260
 TITLE: Netvm validation
 STATEMENT: >>>
 If the qube declared as ``netvm`` does not provide network, then the qube module
@@ -752,7 +752,7 @@ PRODUCT: Ansible
 STATUS: Implemented
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2P-NET-01
+  VALUE: L2P-NET-010
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -771,7 +771,7 @@ RELATIONS:
   ID: QubesAdminAPI.vm_property_set
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-ANS-027
+UID: L3-ANS-270
 TITLE: Firewall rule set
 STATEMENT: >>>
 The qube module shall replace a qube's firewall rules with the declared ordered
@@ -787,7 +787,7 @@ declared at all
 <<<
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2P-NET-02
+  VALUE: L2P-NET-020
   ROLE: Refines
 
 [[/SECTION]]
@@ -796,7 +796,7 @@ RELATIONS:
 TITLE: Software and templates
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-ANS-043
+UID: L3-ANS-430
 TITLE: Template installation
 STATEMENT: >>>
 The Ansible collection shall install a template from a configured template
@@ -812,11 +812,11 @@ exposes only dom0 package states
 <<<
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2P-SW-02
+  VALUE: L2P-SW-020
   ROLE: Refines
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-ANS-044
+UID: L3-ANS-440
 TITLE: Template signature verification
 STATEMENT: >>>
 The Ansible collection shall verify a downloaded template's signature before
@@ -832,7 +832,7 @@ performed anywhere in it
 <<<
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2P-SW-03
+  VALUE: L2P-SW-030
   ROLE: Refines
 
 [[/SECTION]]
@@ -841,7 +841,7 @@ RELATIONS:
 TITLE: Inspection
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-ANS-035
+UID: L3-ANS-350
 TITLE: Power state reporting
 STATEMENT: >>>
 The command module shall report the current power state of a named qube.
@@ -851,7 +851,7 @@ PRODUCT: Ansible
 STATUS: Implemented
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2P-INSPECT-02
+  VALUE: L2P-INSPECT-020
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -875,7 +875,7 @@ TITLE: Configuration
 TITLE: Command execution
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-ANS-038
+UID: L3-ANS-380
 TITLE: Command execution in qube
 STATEMENT: >>>
 The qubes connection plugin shall return the exit status of the command it runs
@@ -886,7 +886,7 @@ PRODUCT: Ansible
 STATUS: Implemented
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2C-EXEC-01
+  VALUE: L2C-EXEC-010
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -900,7 +900,7 @@ RELATIONS:
   ID: test_vm_connection
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-ANS-039
+UID: L3-ANS-390
 TITLE: File upload to qube
 STATEMENT: >>>
 The qubes connection plugin shall copy a dom0 file into the target qube at the
@@ -911,7 +911,7 @@ PRODUCT: Ansible
 STATUS: Implemented
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2C-EXEC-02
+  VALUE: L2C-EXEC-020
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -925,7 +925,7 @@ RELATIONS:
   ID: test_vm_connection
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-ANS-040
+UID: L3-ANS-400
 TITLE: File retrieval from qube
 STATEMENT: >>>
 The qubes connection plugin shall copy a file out of the target qube to the
@@ -941,10 +941,10 @@ so a file readable only by root cannot be fetched
 <<<
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2C-EXEC-02
+  VALUE: L2C-EXEC-020
   ROLE: Refines
 - TYPE: Parent
-  VALUE: L2C-EXEC-03
+  VALUE: L2C-EXEC-030
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -958,7 +958,7 @@ RELATIONS:
   ID: test_minimalvm_connection
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-ANS-041
+UID: L3-ANS-410
 TITLE: Execution user selection
 STATEMENT: >>>
 The qubes connection plugin shall run a command as the qube user named by
@@ -973,7 +973,7 @@ root and ``qubes.VMShell`` otherwise.
 <<<
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2C-EXEC-03
+  VALUE: L2C-EXEC-030
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -992,7 +992,7 @@ RELATIONS:
 TITLE: Management isolation
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-ANS-046
+UID: L3-ANS-460
 TITLE: Management disposable qube isolation
 STATEMENT: >>>
 The qubes_proxy strategy shall run each target's play in a management disposable qube
@@ -1008,7 +1008,7 @@ sharing their first 21 characters are managed through the same disposable qube
 <<<
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2C-SEC-02
+  VALUE: L2C-SEC-020
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -1027,7 +1027,7 @@ RELATIONS:
   ID: test_proxy_with_target_appvm
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-ANS-047
+UID: L3-ANS-470
 TITLE: Management disposable qube teardown
 STATEMENT: >>>
 Where the management disposable qube was not already running, the qubes_proxy strategy
@@ -1038,7 +1038,7 @@ PRODUCT: Ansible
 STATUS: Implemented
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2C-SEC-02
+  VALUE: L2C-SEC-020
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -1047,7 +1047,7 @@ RELATIONS:
   ID: QubesPlayExecutor.run
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-ANS-048
+UID: L3-ANS-480
 TITLE: Management policy revocation
 STATEMENT: >>>
 When a play over a target ends, the qubes_proxy strategy shall remove the RPC
@@ -1058,7 +1058,7 @@ PRODUCT: Ansible
 STATUS: Implemented
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2C-SEC-03
+  VALUE: L2C-SEC-030
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -1071,7 +1071,7 @@ RELATIONS:
   LINE_RANGE: 62, 78
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-ANS-049
+UID: L3-ANS-490
 TITLE: Output sanitisation
 STATEMENT: >>>
 The qubes_proxy strategy shall replace control characters in a qube's output
@@ -1086,7 +1086,7 @@ other control byte becomes an underscore.
 <<<
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2C-SEC-04
+  VALUE: L2C-SEC-040
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -1095,7 +1095,7 @@ RELATIONS:
   ID: filter_control_chars
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-ANS-050
+UID: L3-ANS-500
 TITLE: Strategy bypass guard
 STATEMENT: >>>
 If a play uses the qubes connection without the qubes_proxy strategy, then the
@@ -1112,7 +1112,7 @@ unprotected
 <<<
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2C-SEC-05
+  VALUE: L2C-SEC-050
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -1126,7 +1126,7 @@ RELATIONS:
   ID: test_guard_callback_blocking_execution
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-ANS-051
+UID: L3-ANS-510
 TITLE: Default strategy installation
 STATEMENT: >>>
 The Ansible package shall set the qubes_proxy strategy as the default in
@@ -1143,7 +1143,7 @@ overwrites the previous ``.rpmsave`` backup
 <<<
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2C-SEC-05
+  VALUE: L2C-SEC-050
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -1161,7 +1161,7 @@ TITLE: Common
 TITLE: Convergence
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-ANS-028
+UID: L3-ANS-280
 TITLE: Idempotent property write
 STATEMENT: >>>
 The qube module shall write a property only when its current value differs from
@@ -1172,7 +1172,7 @@ PRODUCT: Ansible
 STATUS: Implemented
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2S-CONV-01
+  VALUE: L2S-CONV-010
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -1186,7 +1186,7 @@ RELATIONS:
   ID: test_change_properties_should_occur_only_when_necessary
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-ANS-029
+UID: L3-ANS-290
 TITLE: Change reporting
 STATEMENT: >>>
 The qube module shall report the attributes it changed, with their values before
@@ -1197,7 +1197,7 @@ PRODUCT: Ansible
 STATUS: Implemented
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2S-CONV-02
+  VALUE: L2S-CONV-020
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -1211,7 +1211,7 @@ RELATIONS:
   ID: test_change_properties_should_occur_only_when_necessary
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-ANS-030
+UID: L3-ANS-300
 TITLE: Dry-run forwarding
 STATEMENT: >>>
 Where a check run is requested, the qubes_proxy strategy shall pass ``--check``
@@ -1222,7 +1222,7 @@ PRODUCT: Ansible
 STATUS: Implemented
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2S-CONV-03
+  VALUE: L2S-CONV-030
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -1231,7 +1231,7 @@ RELATIONS:
   ID: QubesPlayExecutor._build_ansible_args
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-ANS-031
+UID: L3-ANS-310
 TITLE: Module check mode
 STATEMENT: >>>
 Where a check run is requested, the qube module shall report the changes it
@@ -1248,11 +1248,11 @@ reaches it
 <<<
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2S-CONV-03
+  VALUE: L2S-CONV-030
   ROLE: Refines
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-ANS-032
+UID: L3-ANS-320
 TITLE: Ordered enforcement
 STATEMENT: >>>
 The qube module shall apply a qube's declared configuration before bringing it
@@ -1267,7 +1267,7 @@ a run that started the qube first could never converge.
 <<<
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2S-CONV-04
+  VALUE: L2S-CONV-040
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -1281,7 +1281,7 @@ RELATIONS:
   ID: QubeModule._shutdown_for_template_update
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-ANS-033
+UID: L3-ANS-330
 TITLE: Precondition validation
 STATEMENT: >>>
 The qube module shall validate every declared parameter before making any change
@@ -1292,7 +1292,7 @@ PRODUCT: Ansible
 STATUS: Implemented
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2S-CONV-05
+  VALUE: L2S-CONV-050
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -1311,7 +1311,7 @@ RELATIONS:
 TITLE: Inspection
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-ANS-036
+UID: L3-ANS-360
 TITLE: Qube fact reporting
 STATEMENT: >>>
 The qube_facts module shall report the qube's properties, features and tags.
@@ -1321,7 +1321,7 @@ PRODUCT: Ansible
 STATUS: Implemented
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2S-INSPECT-03
+  VALUE: L2S-INSPECT-030
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -1340,7 +1340,7 @@ RELATIONS:
   ID: test_facts_contains_properties
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-ANS-037
+UID: L3-ANS-370
 TITLE: Service fact reporting
 STATEMENT: >>>
 The qube_facts module shall report each of the qube's services as enabled or
@@ -1356,7 +1356,7 @@ string ``"0"`` — a disabled service — is reported as enabled
 <<<
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2S-INSPECT-03
+  VALUE: L2S-INSPECT-030
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -1370,7 +1370,7 @@ RELATIONS:
   ID: test_services_are_subset_of_features
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-ANS-034
+UID: L3-ANS-340
 TITLE: Qube listing
 STATEMENT: >>>
 The command module shall list the qubes whose power state matches the requested
@@ -1381,7 +1381,7 @@ PRODUCT: Ansible
 STATUS: Implemented
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2S-SYSTEM-03
+  VALUE: L2S-SYSTEM-030
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -1400,7 +1400,7 @@ RELATIONS:
 TITLE: Security
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-ANS-045
+UID: L3-ANS-450
 TITLE: Policy grant authorisation
 STATEMENT: >>>
 If a calling qube asks for policies naming a disposable qube it did not create, then the
@@ -1415,7 +1415,7 @@ handled with dom0 privileges.
 <<<
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2S-SEC-01
+  VALUE: L2S-SEC-010
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -1428,7 +1428,7 @@ RELATIONS:
 TITLE: Diagnostics
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-ANS-052
+UID: L3-ANS-520
 TITLE: Failure exit status
 STATEMENT: >>>
 If a target's playbook run exits non-zero, then the qubes_proxy strategy shall
@@ -1439,7 +1439,7 @@ PRODUCT: Ansible
 STATUS: Implemented
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2S-DIAG-01
+  VALUE: L2S-DIAG-010
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -1453,7 +1453,7 @@ RELATIONS:
   ID: test_playbook_execution_stops_whole_playbook_execution_when_all_hosts_fail
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-ANS-053
+UID: L3-ANS-530
 TITLE: Error attribution
 STATEMENT: >>>
 The qubes_proxy strategy shall label each reported result with the management
@@ -1464,7 +1464,7 @@ PRODUCT: Ansible
 STATUS: Implemented
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2S-DIAG-02
+  VALUE: L2S-DIAG-020
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -1473,7 +1473,7 @@ RELATIONS:
   ID: StrategyModule.collect_result
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-ANS-054
+UID: L3-ANS-540
 TITLE: Missing dependency reporting
 STATEMENT: >>>
 If qubesadmin cannot be imported, then the qube module shall fail with a message
@@ -1490,7 +1490,7 @@ message
 <<<
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2S-DIAG-02
+  VALUE: L2S-DIAG-020
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -1499,7 +1499,7 @@ RELATIONS:
   ID: QubesHelper
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-ANS-055
+UID: L3-ANS-550
 TITLE: Diagnostic verbosity control
 STATEMENT: >>>
 Where increased verbosity is requested, the qubes_proxy strategy shall pass that
@@ -1510,7 +1510,7 @@ PRODUCT: Ansible
 STATUS: Implemented
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2S-DIAG-03
+  VALUE: L2S-DIAG-030
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -1539,7 +1539,7 @@ TITLE: Provisioning
 TITLE: Qube lifecycle
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-SLS-001
+UID: L3-SLS-010
 TITLE: Qube creation
 STATEMENT: >>>
 When the named qube is absent, the qvm execution module shall create it with
@@ -1554,7 +1554,7 @@ this component carries a Verification anchor.
 <<<
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2P-LIFECYCLE-01
+  VALUE: L2P-LIFECYCLE-010
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -1568,7 +1568,7 @@ RELATIONS:
   ID: present
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-SLS-002
+UID: L3-SLS-020
 TITLE: Shell-safe command construction
 STATEMENT: >>>
 The qvm execution module shall pass declared arguments to the qvm-* command
@@ -1584,10 +1584,10 @@ run interpolate parsed argv straight into a shell string
 <<<
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2P-LIFECYCLE-01
+  VALUE: L2P-LIFECYCLE-010
   ROLE: Refines
 - TYPE: Parent
-  VALUE: L2C-EXEC-01
+  VALUE: L2C-EXEC-010
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -1601,7 +1601,7 @@ RELATIONS:
   ID: run
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-SLS-003
+UID: L3-SLS-030
 TITLE: Qube cloning
 STATEMENT: >>>
 When the declared clone name is free, the qvm execution module shall copy the
@@ -1612,7 +1612,7 @@ PRODUCT: Salt
 STATUS: Implemented
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2P-LIFECYCLE-02
+  VALUE: L2P-LIFECYCLE-020
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -1626,7 +1626,7 @@ RELATIONS:
   ID: clone
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-SLS-004
+UID: L3-SLS-040
 TITLE: Qube removal
 STATEMENT: >>>
 The qvm execution module shall remove the named qube together with its storage
@@ -1637,7 +1637,7 @@ PRODUCT: Salt
 STATUS: Implemented
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2P-LIFECYCLE-03
+  VALUE: L2P-LIFECYCLE-030
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -1651,7 +1651,7 @@ RELATIONS:
   ID: absent
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-SLS-005
+UID: L3-SLS-050
 TITLE: Qube start
 STATEMENT: >>>
 When a start is requested, the qvm execution module shall report completion
@@ -1662,7 +1662,7 @@ PRODUCT: Salt
 STATUS: Implemented
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2P-LIFECYCLE-04
+  VALUE: L2P-LIFECYCLE-040
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -1676,7 +1676,7 @@ RELATIONS:
   ID: start
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-SLS-006
+UID: L3-SLS-060
 TITLE: Graceful shutdown
 STATEMENT: >>>
 The qvm execution module shall bring a running qube to the halted state by a
@@ -1687,7 +1687,7 @@ PRODUCT: Salt
 STATUS: Implemented
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2P-LIFECYCLE-05
+  VALUE: L2P-LIFECYCLE-050
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -1701,7 +1701,7 @@ RELATIONS:
   ID: shutdown
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-SLS-007
+UID: L3-SLS-070
 TITLE: Forced kill
 STATEMENT: >>>
 If a graceful shutdown leaves the qube running, then the qvm execution module
@@ -1712,7 +1712,7 @@ PRODUCT: Salt
 STATUS: Implemented
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2P-LIFECYCLE-05
+  VALUE: L2P-LIFECYCLE-050
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -1726,7 +1726,7 @@ RELATIONS:
   ID: kill
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-SLS-008
+UID: L3-SLS-080
 TITLE: Pause and resume
 STATEMENT: >>>
 When a pause or a resume is requested, the qvm execution module shall place the
@@ -1737,7 +1737,7 @@ PRODUCT: Salt
 STATUS: Implemented
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2P-LIFECYCLE-06
+  VALUE: L2P-LIFECYCLE-060
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -1756,7 +1756,7 @@ RELATIONS:
 TITLE: Qube attributes
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-SLS-009
+UID: L3-SLS-090
 TITLE: Qube property configuration
 STATEMENT: >>>
 The qvm execution module shall set each qube property named in the state
@@ -1767,7 +1767,7 @@ PRODUCT: Salt
 STATUS: Implemented
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2P-CONFIG-01
+  VALUE: L2P-CONFIG-010
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -1781,7 +1781,7 @@ RELATIONS:
   ID: prefs
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-SLS-010
+UID: L3-SLS-100
 TITLE: Property reset to default
 STATEMENT: >>>
 When a declared property value is *default*, the qvm execution module shall
@@ -1792,7 +1792,7 @@ PRODUCT: Salt
 STATUS: Implemented
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2P-CONFIG-02
+  VALUE: L2P-CONFIG-020
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -1801,7 +1801,7 @@ RELATIONS:
   ID: prefs
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-SLS-011
+UID: L3-SLS-110
 TITLE: Qube feature configuration
 STATEMENT: >>>
 The qvm execution module shall bring each declared qube feature to its declared
@@ -1812,7 +1812,7 @@ PRODUCT: Salt
 STATUS: Implemented
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2P-CONFIG-03
+  VALUE: L2P-CONFIG-030
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -1826,7 +1826,7 @@ RELATIONS:
   ID: features
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-SLS-012
+UID: L3-SLS-120
 TITLE: Qube service configuration
 STATEMENT: >>>
 The qvm execution module shall enable, disable or reset a named service through
@@ -1842,7 +1842,7 @@ a command-line reset falls through to list mode
 <<<
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2P-CONFIG-04
+  VALUE: L2P-CONFIG-040
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -1856,7 +1856,7 @@ RELATIONS:
   ID: service
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-SLS-013
+UID: L3-SLS-130
 TITLE: Qube tag configuration
 STATEMENT: >>>
 The qvm execution module shall bring a qube's tag set to the tags declared
@@ -1867,7 +1867,7 @@ PRODUCT: Salt
 STATUS: Implemented
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2P-CONFIG-05
+  VALUE: L2P-CONFIG-050
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -1881,7 +1881,7 @@ RELATIONS:
   ID: tags
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-SLS-014
+UID: L3-SLS-140
 TITLE: Qube notes
 STATEMENT: >>>
 The qvm execution module shall set the free-form notes attached to a qube.
@@ -1896,11 +1896,11 @@ prefs argument group refers to them
 <<<
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2P-CONFIG-06
+  VALUE: L2P-CONFIG-060
   ROLE: Refines
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-SLS-015
+UID: L3-SLS-150
 TITLE: Qube class immutability
 STATEMENT: >>>
 If a declared class differs from an existing qube's class, then the qvm state
@@ -1916,7 +1916,7 @@ class is ignored rather than rejected
 <<<
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2P-CONFIG-08
+  VALUE: L2P-CONFIG-080
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -1935,7 +1935,7 @@ RELATIONS:
 TITLE: Storage and volumes
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-SLS-016
+UID: L3-SLS-160
 TITLE: Volume resize
 STATEMENT: >>>
 The qvm execution module shall resize a qube volume to the declared size.
@@ -1950,11 +1950,11 @@ qvm-grow-private and qvm-grow-root unimplemented
 <<<
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2P-STORAGE-01
+  VALUE: L2P-STORAGE-010
   ROLE: Refines
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-SLS-017
+UID: L3-SLS-170
 TITLE: Volume revision retention
 STATEMENT: >>>
 The qvm execution module shall set the number of snapshot revisions retained
@@ -1970,11 +1970,11 @@ repository and prefs exposes no volume property
 <<<
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2P-STORAGE-02
+  VALUE: L2P-STORAGE-020
   ROLE: Refines
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-SLS-018
+UID: L3-SLS-180
 TITLE: Storage pool selection
 STATEMENT: >>>
 The qvm execution module shall place a qube's volumes in the declared storage
@@ -1990,7 +1990,7 @@ option and no pool is managed for a qube
 <<<
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2P-STORAGE-03
+  VALUE: L2P-STORAGE-030
   ROLE: Refines
 
 [[/SECTION]]
@@ -1999,7 +1999,7 @@ RELATIONS:
 TITLE: Device assignment
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-SLS-019
+UID: L3-SLS-190
 TITLE: Transient device attachment
 STATEMENT: >>>
 The qvm execution module shall attach a device to a qube for the lifetime of
@@ -2015,11 +2015,11 @@ checklist still marks qvm-block and qvm-usb unimplemented
 <<<
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2P-DEVICE-01
+  VALUE: L2P-DEVICE-010
   ROLE: Refines
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-SLS-020
+UID: L3-SLS-200
 TITLE: Persistent device assignment
 STATEMENT: >>>
 The qvm execution module shall assign each declared device to the qube so that
@@ -2035,10 +2035,10 @@ backend name string, so the skip branch is unreachable and every run reassigns
 <<<
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2P-DEVICE-02
+  VALUE: L2P-DEVICE-020
   ROLE: Refines
 - TYPE: Parent
-  VALUE: L2S-CONV-01
+  VALUE: L2S-CONV-010
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -2052,7 +2052,7 @@ RELATIONS:
   ID: devices
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-SLS-021
+UID: L3-SLS-210
 TITLE: Assignment mode selection
 STATEMENT: >>>
 The qvm execution module shall set a device assignment's mode to the declared
@@ -2068,11 +2068,11 @@ accepted from the declaration
 <<<
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2P-DEVICE-03
+  VALUE: L2P-DEVICE-030
   ROLE: Refines
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-SLS-022
+UID: L3-SLS-220
 TITLE: PCI assignment mode
 STATEMENT: >>>
 If a PCI device is declared for a qube, then the qvm execution module shall
@@ -2083,7 +2083,7 @@ PRODUCT: Salt
 STATUS: Implemented
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2P-DEVICE-04
+  VALUE: L2P-DEVICE-040
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -2102,7 +2102,7 @@ RELATIONS:
 TITLE: Network and firewall
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-SLS-023
+UID: L3-SLS-230
 TITLE: Netvm validation
 STATEMENT: >>>
 If a declared netvm does not provide network, then the qvm state module shall
@@ -2118,7 +2118,7 @@ not among those _state_action catches, so the run aborts with a traceback
 <<<
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2P-NET-01
+  VALUE: L2P-NET-010
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -2137,7 +2137,7 @@ RELATIONS:
   ID: QubesAdminAPI.vm_property_set
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-SLS-024
+UID: L3-SLS-240
 TITLE: Firewall rule set
 STATEMENT: >>>
 The qvm execution module shall replace a qube's firewall rules with the
@@ -2148,7 +2148,7 @@ PRODUCT: Salt
 STATUS: Implemented
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2P-NET-02
+  VALUE: L2P-NET-020
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -2167,7 +2167,7 @@ RELATIONS:
 TITLE: Software and templates
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-SLS-041
+UID: L3-SLS-410
 TITLE: Template installation
 STATEMENT: >>>
 When the declared template is not installed, the qvm state module shall install
@@ -2178,7 +2178,7 @@ PRODUCT: Salt
 STATUS: Implemented
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2P-SW-02
+  VALUE: L2P-SW-020
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -2192,7 +2192,7 @@ RELATIONS:
   ID: template_install
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-SLS-042
+UID: L3-SLS-420
 TITLE: Template signature verification
 STATEMENT: >>>
 The qvm execution module shall verify a downloaded template's signature before
@@ -2208,7 +2208,7 @@ nor inspects the result beyond the exit code
 <<<
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2P-SW-03
+  VALUE: L2P-SW-030
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -2222,7 +2222,7 @@ RELATIONS:
 TITLE: Inspection
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-SLS-034
+UID: L3-SLS-340
 TITLE: Power state reporting
 STATEMENT: >>>
 The qvm execution module shall report the current power state of the named
@@ -2233,7 +2233,7 @@ PRODUCT: Salt
 STATUS: Implemented
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2P-INSPECT-02
+  VALUE: L2P-INSPECT-020
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -2257,7 +2257,7 @@ TITLE: Configuration
 TITLE: Command execution
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-SLS-037
+UID: L3-SLS-370
 TITLE: Command execution in qube
 STATEMENT: >>>
 The qvm execution module shall run the declared command inside the named qube
@@ -2268,7 +2268,7 @@ PRODUCT: Salt
 STATUS: Implemented
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2C-EXEC-01
+  VALUE: L2C-EXEC-010
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -2282,7 +2282,7 @@ RELATIONS:
   ID: run
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-SLS-038
+UID: L3-SLS-380
 TITLE: File transfer
 STATEMENT: >>>
 The qubessalt management runner shall transfer a file from dom0 into a qube.
@@ -2297,11 +2297,11 @@ qubes.Filecopy use stages the salt configuration into the management disposable 
 <<<
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2C-EXEC-02
+  VALUE: L2C-EXEC-020
   ROLE: Refines
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-SLS-039
+UID: L3-SLS-390
 TITLE: Execution user selection
 STATEMENT: >>>
 The qvm execution module shall run a command in a qube under the declared user
@@ -2312,7 +2312,7 @@ PRODUCT: Salt
 STATUS: Implemented
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2C-EXEC-03
+  VALUE: L2C-EXEC-030
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -2326,7 +2326,7 @@ RELATIONS:
 TITLE: Management isolation
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-SLS-044
+UID: L3-SLS-440
 TITLE: Per-target management disposable qube
 STATEMENT: >>>
 The qubessalt management runner shall use a disposable qube dedicated to the
@@ -2342,7 +2342,7 @@ so two targets sharing a long name prefix share one management disposable qube
 <<<
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2C-SEC-02
+  VALUE: L2C-SEC-020
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -2351,7 +2351,7 @@ RELATIONS:
   ID: ManageVM.salt_call
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-SLS-045
+UID: L3-SLS-450
 TITLE: Management policy revocation
 STATEMENT: >>>
 When a management run over a target ends, the qubessalt management runner shall
@@ -2362,7 +2362,7 @@ PRODUCT: Salt
 STATUS: Implemented
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2C-SEC-03
+  VALUE: L2C-SEC-030
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -2376,7 +2376,7 @@ RELATIONS:
   ID: ManageVM.salt_call
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-SLS-046
+UID: L3-SLS-460
 TITLE: Output sanitisation
 STATEMENT: >>>
 The qubessalt management runner shall strip control characters from qube output
@@ -2392,7 +2392,7 @@ to the dom0 terminal
 <<<
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2C-SEC-04
+  VALUE: L2C-SEC-040
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -2401,7 +2401,7 @@ RELATIONS:
   ID: ManageVM.salt_call
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-SLS-047
+UID: L3-SLS-470
 TITLE: Disposable qube bypass prevention
 STATEMENT: >>>
 If a run is configured to bypass the management disposable qube, then qubesctl
@@ -2417,7 +2417,7 @@ non-disposable qube code path
 <<<
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2C-SEC-05
+  VALUE: L2C-SEC-050
   ROLE: Refines
 
 [[/SECTION]]
@@ -2431,7 +2431,7 @@ TITLE: Common
 TITLE: Convergence
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-SLS-025
+UID: L3-SLS-250
 TITLE: Unchanged property skip
 STATEMENT: >>>
 While a declared property already holds the declared value, the qvm execution
@@ -2442,7 +2442,7 @@ PRODUCT: Salt
 STATUS: Implemented
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2S-CONV-01
+  VALUE: L2S-CONV-010
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -2456,7 +2456,7 @@ RELATIONS:
   ID: firewall
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-SLS-026
+UID: L3-SLS-260
 TITLE: Change reporting
 STATEMENT: >>>
 The qvm execution module shall record the previous and new value of every
@@ -2467,7 +2467,7 @@ PRODUCT: Salt
 STATUS: Implemented
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2S-CONV-02
+  VALUE: L2S-CONV-020
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -2481,7 +2481,7 @@ RELATIONS:
   ID: vm
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-SLS-027
+UID: L3-SLS-270
 TITLE: Dry-run property preview
 STATEMENT: >>>
 Where a dry run is requested, the qvm execution module shall report property
@@ -2497,7 +2497,7 @@ assign/unassign calls all execute during a dry run
 <<<
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2S-CONV-03
+  VALUE: L2S-CONV-030
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -2506,7 +2506,7 @@ RELATIONS:
   ID: prefs
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-SLS-028
+UID: L3-SLS-280
 TITLE: Dry-run device preview
 STATEMENT: >>>
 Where a dry run is requested, the qvm execution module shall report device
@@ -2522,7 +2522,7 @@ qube's device list
 <<<
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2S-CONV-03
+  VALUE: L2S-CONV-030
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -2531,7 +2531,7 @@ RELATIONS:
   ID: devices
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-SLS-029
+UID: L3-SLS-290
 TITLE: Dry-run shutdown preview
 STATEMENT: >>>
 Where a dry run is requested, the qvm execution module shall report a pending
@@ -2547,7 +2547,7 @@ announces a shutdown for a qube that is already halted
 <<<
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2S-CONV-03
+  VALUE: L2S-CONV-030
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -2556,7 +2556,7 @@ RELATIONS:
   ID: shutdown
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-SLS-030
+UID: L3-SLS-300
 TITLE: Template-first ordering
 STATEMENT: >>>
 qubesctl shall configure every targeted template before any other targeted
@@ -2567,7 +2567,7 @@ PRODUCT: Salt
 STATUS: Implemented
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2S-CONV-04
+  VALUE: L2S-CONV-040
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -2575,7 +2575,7 @@ RELATIONS:
   LINE_RANGE: 100, 117
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-SLS-031
+UID: L3-SLS-310
 TITLE: Precondition validation
 STATEMENT: >>>
 The qvm state module shall validate every declared action before applying any
@@ -2591,7 +2591,7 @@ actions after a failure and leaving the earlier ones applied
 <<<
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2S-CONV-05
+  VALUE: L2S-CONV-050
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -2605,7 +2605,7 @@ RELATIONS:
   ID: check
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-SLS-032
+UID: L3-SLS-320
 TITLE: Module availability check
 STATEMENT: >>>
 The qvm execution module shall load only on a host where the Qubes Admin API is
@@ -2621,7 +2621,7 @@ qubesadmin or for dom0
 <<<
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2S-CONV-05
+  VALUE: L2S-CONV-050
   ROLE: Refines
 
 [[/SECTION]]
@@ -2630,7 +2630,7 @@ RELATIONS:
 TITLE: Inspection
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-SLS-035
+UID: L3-SLS-350
 TITLE: Property and tag listing
 STATEMENT: >>>
 When no value is declared, the qvm execution module shall report the qube's
@@ -2641,7 +2641,7 @@ PRODUCT: Salt
 STATUS: Implemented
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2S-INSPECT-03
+  VALUE: L2S-INSPECT-030
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -2655,7 +2655,7 @@ RELATIONS:
   ID: tags
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-SLS-036
+UID: L3-SLS-360
 TITLE: Device inventory listing
 STATEMENT: >>>
 The qvm execution module shall report the devices currently assigned to a qube.
@@ -2670,7 +2670,7 @@ passes to vars() and raises an uncaught TypeError
 <<<
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2S-INSPECT-03
+  VALUE: L2S-INSPECT-030
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -2684,7 +2684,7 @@ RELATIONS:
   ID: _state_action
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-SLS-033
+UID: L3-SLS-330
 TITLE: Target selection
 STATEMENT: >>>
 qubesctl shall restrict a run to the qubes named by the caller's target and
@@ -2695,7 +2695,7 @@ PRODUCT: Salt
 STATUS: Implemented
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2S-SYSTEM-03
+  VALUE: L2S-SYSTEM-030
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -2708,7 +2708,7 @@ RELATIONS:
 TITLE: Security
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-SLS-043
+UID: L3-SLS-430
 TITLE: Configuration outside dom0
 STATEMENT: >>>
 The qubessalt management runner shall run salt-ssh against a target from inside
@@ -2719,7 +2719,7 @@ PRODUCT: Salt
 STATUS: Implemented
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2S-SEC-01
+  VALUE: L2S-SEC-010
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -2737,7 +2737,7 @@ RELATIONS:
 TITLE: Diagnostics
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-SLS-048
+UID: L3-SLS-480
 TITLE: Failure exit status
 STATEMENT: >>>
 qubesctl shall exit with the highest exit code returned by any target it
@@ -2748,7 +2748,7 @@ PRODUCT: Salt
 STATUS: Implemented
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2S-DIAG-01
+  VALUE: L2S-DIAG-010
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -2761,7 +2761,7 @@ RELATIONS:
   LINE_RANGE: 101, 117
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-SLS-049
+UID: L3-SLS-490
 TITLE: Error attribution
 STATEMENT: >>>
 The qubessalt management runner shall label every reported result with the name
@@ -2772,7 +2772,7 @@ PRODUCT: Salt
 STATUS: Implemented
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2S-DIAG-02
+  VALUE: L2S-DIAG-020
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -2786,7 +2786,7 @@ RELATIONS:
   ID: ManageVMRunner.collect_result
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-SLS-050
+UID: L3-SLS-500
 TITLE: Diagnostic verbosity control
 STATEMENT: >>>
 Where show-output is requested, qubesctl shall print the salt output collected
@@ -2797,7 +2797,7 @@ PRODUCT: Salt
 STATUS: Implemented
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2S-DIAG-03
+  VALUE: L2S-DIAG-030
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -2825,7 +2825,7 @@ TITLE: Provisioning
 TITLE: Qube lifecycle
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-QTL-001
+UID: L3-QTL-010
 TITLE: Qube creation
 STATEMENT: >>>
 The qvm-create tool shall create a qube of the caller-given class, template and
@@ -2840,7 +2840,7 @@ no requirement in this slice carries a Verification anchor.
 <<<
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2P-LIFECYCLE-01
+  VALUE: L2P-LIFECYCLE-010
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -2849,7 +2849,7 @@ RELATIONS:
   ID: main
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-QTL-002
+UID: L3-QTL-020
 TITLE: Qube cloning
 STATEMENT: >>>
 The qvm-clone tool shall create a new qube as a copy of an existing qube.
@@ -2859,7 +2859,7 @@ PRODUCT: QubesadminTools
 STATUS: Implemented
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2P-LIFECYCLE-02
+  VALUE: L2P-LIFECYCLE-020
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -2868,7 +2868,7 @@ RELATIONS:
   ID: main
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-QTL-003
+UID: L3-QTL-030
 TITLE: Qube removal
 STATEMENT: >>>
 The qvm-remove tool shall delete each named qube together with its storage
@@ -2879,7 +2879,7 @@ PRODUCT: QubesadminTools
 STATUS: Implemented
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2P-LIFECYCLE-03
+  VALUE: L2P-LIFECYCLE-030
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -2888,7 +2888,7 @@ RELATIONS:
   ID: main
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-QTL-004
+UID: L3-QTL-040
 TITLE: dom0 removal refusal
 STATEMENT: >>>
 If dom0 is among the qubes named for removal, then qvm-remove shall refuse the
@@ -2903,7 +2903,7 @@ is touched.
 <<<
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2P-LIFECYCLE-03
+  VALUE: L2P-LIFECYCLE-030
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -2912,7 +2912,7 @@ RELATIONS:
   ID: main
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-QTL-005
+UID: L3-QTL-050
 TITLE: Qube start
 STATEMENT: >>>
 The qvm-start tool shall return only once each named qube has been started.
@@ -2922,7 +2922,7 @@ PRODUCT: QubesadminTools
 STATUS: Implemented
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2P-LIFECYCLE-04
+  VALUE: L2P-LIFECYCLE-040
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -2931,7 +2931,7 @@ RELATIONS:
   ID: run_async
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-QTL-006
+UID: L3-QTL-060
 TITLE: Graceful shutdown
 STATEMENT: >>>
 The qvm-shutdown tool shall request a graceful shutdown of each named running
@@ -2942,7 +2942,7 @@ PRODUCT: QubesadminTools
 STATUS: Implemented
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2P-LIFECYCLE-05
+  VALUE: L2P-LIFECYCLE-050
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -2951,7 +2951,7 @@ RELATIONS:
   ID: run_async
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-QTL-007
+UID: L3-QTL-070
 TITLE: Shutdown timeout escalation
 STATEMENT: >>>
 If a qube is still running after its shutdown was retried, then qvm-shutdown
@@ -2962,7 +2962,7 @@ PRODUCT: QubesadminTools
 STATUS: Implemented
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2P-LIFECYCLE-05
+  VALUE: L2P-LIFECYCLE-050
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -2971,7 +2971,7 @@ RELATIONS:
   ID: run_async
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-QTL-008
+UID: L3-QTL-080
 TITLE: Forced kill
 STATEMENT: >>>
 The qvm-kill tool shall terminate each named qube without a graceful shutdown
@@ -2982,7 +2982,7 @@ PRODUCT: QubesadminTools
 STATUS: Implemented
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2P-LIFECYCLE-05
+  VALUE: L2P-LIFECYCLE-050
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -2991,7 +2991,7 @@ RELATIONS:
   ID: run_async
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-QTL-009
+UID: L3-QTL-090
 TITLE: Qube pause
 STATEMENT: >>>
 The qvm-pause tool shall suspend execution of each named running qube.
@@ -3001,7 +3001,7 @@ PRODUCT: QubesadminTools
 STATUS: Implemented
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2P-LIFECYCLE-06
+  VALUE: L2P-LIFECYCLE-060
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -3010,7 +3010,7 @@ RELATIONS:
   ID: main
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-QTL-010
+UID: L3-QTL-100
 TITLE: Qube resume
 STATEMENT: >>>
 The qvm-unpause tool shall return each named paused qube to the running state.
@@ -3020,7 +3020,7 @@ PRODUCT: QubesadminTools
 STATUS: Implemented
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2P-LIFECYCLE-06
+  VALUE: L2P-LIFECYCLE-060
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -3034,7 +3034,7 @@ RELATIONS:
 TITLE: Qube attributes
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-QTL-011
+UID: L3-QTL-110
 TITLE: Property configuration
 STATEMENT: >>>
 The qvm-prefs and qubes-prefs tools shall set a named property to the value
@@ -3045,7 +3045,7 @@ PRODUCT: QubesadminTools
 STATUS: Implemented
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2P-CONFIG-01
+  VALUE: L2P-CONFIG-010
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -3059,7 +3059,7 @@ RELATIONS:
   ID: main
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-QTL-012
+UID: L3-QTL-120
 TITLE: Property reset
 STATEMENT: >>>
 Where a reset is requested, qvm-prefs shall restore the named property to its
@@ -3070,7 +3070,7 @@ PRODUCT: QubesadminTools
 STATUS: Implemented
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2P-CONFIG-02
+  VALUE: L2P-CONFIG-020
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -3079,7 +3079,7 @@ RELATIONS:
   ID: process_actions
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-QTL-013
+UID: L3-QTL-130
 TITLE: Feature configuration
 STATEMENT: >>>
 The qvm-features tool shall set a named qube feature to the caller-given value.
@@ -3089,7 +3089,7 @@ PRODUCT: QubesadminTools
 STATUS: Implemented
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2P-CONFIG-03
+  VALUE: L2P-CONFIG-030
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -3098,7 +3098,7 @@ RELATIONS:
   ID: main
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-QTL-014
+UID: L3-QTL-140
 TITLE: Service configuration
 STATEMENT: >>>
 The qvm-service tool shall record a named service as enabled or disabled in the
@@ -3109,7 +3109,7 @@ PRODUCT: QubesadminTools
 STATUS: Implemented
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2P-CONFIG-04
+  VALUE: L2P-CONFIG-040
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -3123,7 +3123,7 @@ RELATIONS:
   ID: parse_bool
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-QTL-015
+UID: L3-QTL-150
 TITLE: Tag configuration
 STATEMENT: >>>
 The qvm-tags tool shall bring a qube's tag set to the tags named by the caller.
@@ -3138,7 +3138,7 @@ qube's tags equal a given set
 <<<
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2P-CONFIG-05
+  VALUE: L2P-CONFIG-050
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -3147,7 +3147,7 @@ RELATIONS:
   ID: mode_add
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-QTL-016
+UID: L3-QTL-160
 TITLE: Qube notes
 STATEMENT: >>>
 The qvm-notes tool shall replace a qube's notes with caller-supplied text.
@@ -3157,7 +3157,7 @@ PRODUCT: QubesadminTools
 STATUS: Implemented
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2P-CONFIG-06
+  VALUE: L2P-CONFIG-060
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -3166,7 +3166,7 @@ RELATIONS:
   ID: main
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-QTL-017
+UID: L3-QTL-170
 TITLE: Notes size limit
 STATEMENT: >>>
 If supplied notes exceed 256 000 bytes, then qvm-notes shall reject the change and
@@ -3182,11 +3182,11 @@ to the Admin API
 <<<
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2P-CONFIG-07
+  VALUE: L2P-CONFIG-070
   ROLE: Refines
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-QTL-018
+UID: L3-QTL-180
 TITLE: Qube class immutability
 STATEMENT: >>>
 The qvm-prefs tool shall reject a request to change an existing qube's class.
@@ -3201,7 +3201,7 @@ only by the Admin API answering that the property does not exist
 <<<
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2P-CONFIG-08
+  VALUE: L2P-CONFIG-080
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -3220,7 +3220,7 @@ RELATIONS:
 TITLE: Storage and volumes
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-QTL-019
+UID: L3-QTL-190
 TITLE: Volume resize
 STATEMENT: >>>
 The qvm-volume tool shall resize a named qube volume to the caller-given size.
@@ -3230,7 +3230,7 @@ PRODUCT: QubesadminTools
 STATUS: Implemented
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2P-STORAGE-01
+  VALUE: L2P-STORAGE-010
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -3239,7 +3239,7 @@ RELATIONS:
   ID: resize_volume
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-QTL-020
+UID: L3-QTL-200
 TITLE: Volume revision retention
 STATEMENT: >>>
 The qvm-volume tool shall set the number of revisions retained for a named qube
@@ -3250,7 +3250,7 @@ PRODUCT: QubesadminTools
 STATUS: Implemented
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2P-STORAGE-02
+  VALUE: L2P-STORAGE-020
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -3259,7 +3259,7 @@ RELATIONS:
   ID: config_volume
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-QTL-021
+UID: L3-QTL-210
 TITLE: Settable volume properties
 STATEMENT: >>>
 If a caller names a volume property other than rw, revisions_to_keep or
@@ -3270,7 +3270,7 @@ PRODUCT: QubesadminTools
 STATUS: Implemented
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2P-STORAGE-02
+  VALUE: L2P-STORAGE-020
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -3279,7 +3279,7 @@ RELATIONS:
   ID: config_volume
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-QTL-022
+UID: L3-QTL-220
 TITLE: Storage pool selection
 STATEMENT: >>>
 The qvm-create tool shall place a new qube's volumes in the caller-given storage
@@ -3290,7 +3290,7 @@ PRODUCT: QubesadminTools
 STATUS: Implemented
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2P-STORAGE-03
+  VALUE: L2P-STORAGE-030
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -3304,7 +3304,7 @@ RELATIONS:
 TITLE: Device assignment
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-QTL-023
+UID: L3-QTL-230
 TITLE: Transient device attachment
 STATEMENT: >>>
 The qvm-device tool shall attach a device to a qube for that qube's current run.
@@ -3314,7 +3314,7 @@ PRODUCT: QubesadminTools
 STATUS: Implemented
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2P-DEVICE-01
+  VALUE: L2P-DEVICE-010
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -3323,7 +3323,7 @@ RELATIONS:
   ID: attach_device
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-QTL-024
+UID: L3-QTL-240
 TITLE: Persistent device assignment
 STATEMENT: >>>
 The qvm-device tool shall assign a device to a qube so the binding survives a
@@ -3334,7 +3334,7 @@ PRODUCT: QubesadminTools
 STATUS: Implemented
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2P-DEVICE-02
+  VALUE: L2P-DEVICE-020
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -3343,7 +3343,7 @@ RELATIONS:
   ID: assign_device
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-QTL-025
+UID: L3-QTL-250
 TITLE: Assignment removal
 STATEMENT: >>>
 The qvm-device tool shall remove an existing device assignment from a qube.
@@ -3353,7 +3353,7 @@ PRODUCT: QubesadminTools
 STATUS: Implemented
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2P-DEVICE-02
+  VALUE: L2P-DEVICE-020
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -3362,7 +3362,7 @@ RELATIONS:
   ID: unassign_device
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-QTL-026
+UID: L3-QTL-260
 TITLE: Assignment modes
 STATEMENT: >>>
 The qvm-device tool shall record the assignment mode requested by the caller as
@@ -3373,7 +3373,7 @@ PRODUCT: QubesadminTools
 STATUS: Implemented
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2P-DEVICE-03
+  VALUE: L2P-DEVICE-030
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -3387,7 +3387,7 @@ RELATIONS:
   ID: attach_device
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-QTL-027
+UID: L3-QTL-270
 TITLE: PCI assignment constraint
 STATEMENT: >>>
 If a PCI device is bound to a qube, then qvm-device shall record a required
@@ -3403,7 +3403,7 @@ pci attach is forwarded to the Admin API unchecked
 <<<
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2P-DEVICE-04
+  VALUE: L2P-DEVICE-040
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -3422,7 +3422,7 @@ RELATIONS:
 TITLE: Network and firewall
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-QTL-028
+UID: L3-QTL-280
 TITLE: Netvm validation
 STATEMENT: >>>
 If the qube named as netvm does not provide network, then qvm-prefs shall reject
@@ -3438,11 +3438,11 @@ the Admin API
 <<<
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2P-NET-01
+  VALUE: L2P-NET-010
   ROLE: Refines
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-QTL-029
+UID: L3-QTL-290
 TITLE: Firewall rule set
 STATEMENT: >>>
 The qvm-firewall tool shall apply a caller-supplied rule sequence to a qube in
@@ -3458,7 +3458,7 @@ with a caller-supplied sequence, and reset installs only a single accept rule
 <<<
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2P-NET-02
+  VALUE: L2P-NET-020
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -3472,7 +3472,7 @@ RELATIONS:
 TITLE: Software and templates
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-QTL-038
+UID: L3-QTL-380
 TITLE: Template installation
 STATEMENT: >>>
 The qvm-template tool shall install a template package obtained from a
@@ -3483,7 +3483,7 @@ PRODUCT: QubesadminTools
 STATUS: Implemented
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2P-SW-02
+  VALUE: L2P-SW-020
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -3497,7 +3497,7 @@ RELATIONS:
   ID: download
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-QTL-039
+UID: L3-QTL-390
 TITLE: Template signature verification
 STATEMENT: >>>
 The qvm-template tool shall verify a template package against the repository key
@@ -3508,7 +3508,7 @@ PRODUCT: QubesadminTools
 STATUS: Implemented
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2P-SW-03
+  VALUE: L2P-SW-030
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -3517,7 +3517,7 @@ RELATIONS:
   ID: verify_rpm
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-QTL-040
+UID: L3-QTL-400
 TITLE: Verification bypass scope
 STATEMENT: >>>
 Where a signature check is waived for a downloaded template, qvm-template shall
@@ -3532,7 +3532,7 @@ freshly downloaded one has no such provenance.
 <<<
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2P-SW-03
+  VALUE: L2P-SW-030
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -3546,7 +3546,7 @@ RELATIONS:
 TITLE: Inspection
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-QTL-032
+UID: L3-QTL-320
 TITLE: Power state reporting
 STATEMENT: >>>
 The qvm-check tool shall report through its exit status whether the named qubes
@@ -3561,10 +3561,10 @@ cannot infer from a single failure code.
 <<<
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2P-INSPECT-02
+  VALUE: L2P-INSPECT-020
   ROLE: Refines
 - TYPE: Parent
-  VALUE: L2S-DIAG-01
+  VALUE: L2S-DIAG-010
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -3588,7 +3588,7 @@ TITLE: Configuration
 TITLE: Command execution
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-QTL-035
+UID: L3-QTL-350
 TITLE: Command execution in qube
 STATEMENT: >>>
 The qvm-run tool shall run a caller-supplied command in a qube and return that
@@ -3599,7 +3599,7 @@ PRODUCT: QubesadminTools
 STATUS: Implemented
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2C-EXEC-01
+  VALUE: L2C-EXEC-010
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -3613,7 +3613,7 @@ RELATIONS:
   ID: run_command_single
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-QTL-036
+UID: L3-QTL-360
 TITLE: File transfer
 STATEMENT: >>>
 The command-line tools shall transfer a file between dom0 and a qube.
@@ -3628,11 +3628,11 @@ shell pipeline built on qvm-run --pass-io
 <<<
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2C-EXEC-02
+  VALUE: L2C-EXEC-020
   ROLE: Refines
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-QTL-037
+UID: L3-QTL-370
 TITLE: Execution user selection
 STATEMENT: >>>
 The qvm-run tool shall run the command under the user account named by the
@@ -3643,7 +3643,7 @@ PRODUCT: QubesadminTools
 STATUS: Implemented
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2C-EXEC-03
+  VALUE: L2C-EXEC-030
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -3662,7 +3662,7 @@ TITLE: Common
 TITLE: Convergence
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-QTL-030
+UID: L3-QTL-300
 TITLE: Dry-run preview
 STATEMENT: >>>
 Where a dry run is requested, qvm-shutdown shall report the shutdowns it would
@@ -3678,7 +3678,7 @@ the component offers a preview
 <<<
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2S-CONV-03
+  VALUE: L2S-CONV-030
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -3692,7 +3692,7 @@ RELATIONS:
 TITLE: Inspection
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-QTL-033
+UID: L3-QTL-330
 TITLE: Property reporting
 STATEMENT: >>>
 The qvm-prefs tool shall print each property of a qube with a marker showing
@@ -3703,7 +3703,7 @@ PRODUCT: QubesadminTools
 STATUS: Implemented
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2S-INSPECT-03
+  VALUE: L2S-INSPECT-030
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -3712,7 +3712,7 @@ RELATIONS:
   ID: process_actions
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-QTL-034
+UID: L3-QTL-340
 TITLE: Tag reporting
 STATEMENT: >>>
 The qvm-tags tool shall print the tags currently carried by a qube.
@@ -3722,7 +3722,7 @@ PRODUCT: QubesadminTools
 STATUS: Implemented
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2S-INSPECT-03
+  VALUE: L2S-INSPECT-030
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -3731,7 +3731,7 @@ RELATIONS:
   ID: mode_query
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-QTL-031
+UID: L3-QTL-310
 TITLE: Qube listing and filtering
 STATEMENT: >>>
 The qvm-ls tool shall list the qubes matching the selection criteria given by
@@ -3742,7 +3742,7 @@ PRODUCT: QubesadminTools
 STATUS: Implemented
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2S-SYSTEM-03
+  VALUE: L2S-SYSTEM-030
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -3761,7 +3761,7 @@ RELATIONS:
 TITLE: Diagnostics
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-QTL-045
+UID: L3-QTL-450
 TITLE: Failure exit status
 STATEMENT: >>>
 The command-line tools shall exit with a non-zero status when a requested
@@ -3776,7 +3776,7 @@ qube that exists but is incompletely configured.
 <<<
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2S-DIAG-01
+  VALUE: L2S-DIAG-010
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -3790,7 +3790,7 @@ RELATIONS:
   ID: main
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-QTL-046
+UID: L3-QTL-460
 TITLE: Error attribution
 STATEMENT: >>>
 The command-line tools shall name the qube and the failed operation in each
@@ -3801,7 +3801,7 @@ PRODUCT: QubesadminTools
 STATUS: Implemented
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2S-DIAG-02
+  VALUE: L2S-DIAG-020
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -3815,7 +3815,7 @@ RELATIONS:
   ID: run_async
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-QTL-047
+UID: L3-QTL-470
 TITLE: Diagnostic verbosity control
 STATEMENT: >>>
 Where increased verbosity is requested, the command-line tools shall lower the
@@ -3826,7 +3826,7 @@ PRODUCT: QubesadminTools
 STATUS: Implemented
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2S-DIAG-03
+  VALUE: L2S-DIAG-030
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -3855,7 +3855,7 @@ TITLE: Provisioning
 TITLE: Qube lifecycle
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-TF-001
+UID: L3-TF-010
 TITLE: Qube creation
 STATEMENT: >>>
 When a declared qube does not exist, the qubes_vm resource shall create it with
@@ -3866,7 +3866,7 @@ PRODUCT: Terraform
 STATUS: Implemented
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2P-LIFECYCLE-01
+  VALUE: L2P-LIFECYCLE-010
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -3895,7 +3895,7 @@ RELATIONS:
   ID: test_default_template_create_is_noop_then_present
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-TF-002
+UID: L3-TF-020
 TITLE: Qube cloning
 STATEMENT: >>>
 When a ``clone`` origin is declared for an absent qube, the qubes_vm resource
@@ -3911,7 +3911,7 @@ assignments are not carried over to the copy
 <<<
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2P-LIFECYCLE-02
+  VALUE: L2P-LIFECYCLE-020
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -3930,7 +3930,7 @@ RELATIONS:
   ID: test_create_via_origin_clone
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-TF-003
+UID: L3-TF-030
 TITLE: Qube removal
 STATEMENT: >>>
 When a qubes_vm resource is destroyed, the qubes_vm resource shall delete the
@@ -3946,7 +3946,7 @@ The wait for the killed qube to reach the shutdown state is an unbounded
 <<<
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2P-LIFECYCLE-03
+  VALUE: L2P-LIFECYCLE-030
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -3985,7 +3985,7 @@ RELATIONS:
   ID: QubesHelper.__get_state
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-TF-034
+UID: L3-TF-340
 TITLE: Existing qube import
 STATEMENT: >>>
 When terraform import names an existing qube, the qubes_vm resource shall adopt it
@@ -3996,7 +3996,7 @@ PRODUCT: Terraform
 STATUS: Implemented
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2P-LIFECYCLE-07
+  VALUE: L2P-LIFECYCLE-070
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -4030,7 +4030,7 @@ RELATIONS:
 TITLE: Qube attributes
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-TF-006
+UID: L3-TF-060
 TITLE: Property configuration
 STATEMENT: >>>
 The qubes_vm resource shall set the ``label``, ``template`` and each property named
@@ -4041,7 +4041,7 @@ PRODUCT: Terraform
 STATUS: Implemented
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2P-CONFIG-01
+  VALUE: L2P-CONFIG-010
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -4075,7 +4075,7 @@ RELATIONS:
   ID: test_template_change_halted_succeeds
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-TF-048
+UID: L3-TF-480
 TITLE: Disposable template validation
 STATEMENT: >>>
 If default_dispvm or management_dispvm names a qube that is not an app qube serving
@@ -4086,7 +4086,7 @@ PRODUCT: Terraform
 STATUS: Implemented
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2P-CONFIG-01
+  VALUE: L2P-CONFIG-010
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -4095,7 +4095,7 @@ RELATIONS:
   ID: QubeModule.validate_properties
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-TF-007
+UID: L3-TF-070
 TITLE: Property reset to default
 STATEMENT: >>>
 When a property or the template is declared as ``*default*``, the qubes_vm resource
@@ -4106,7 +4106,7 @@ PRODUCT: Terraform
 STATUS: Implemented
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2P-CONFIG-02
+  VALUE: L2P-CONFIG-020
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -4145,7 +4145,7 @@ RELATIONS:
   ID: test_mapping_default_template_becomes_none
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-TF-008
+UID: L3-TF-080
 TITLE: Feature configuration
 STATEMENT: >>>
 The qubes_vm resource shall bring each managed feature to its declared value,
@@ -4156,7 +4156,7 @@ PRODUCT: Terraform
 STATUS: Implemented
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2P-CONFIG-03
+  VALUE: L2P-CONFIG-030
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -4195,7 +4195,7 @@ RELATIONS:
   ID: test_features_managed_subset_ignores_system_features
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-TF-009
+UID: L3-TF-090
 TITLE: Service configuration
 STATEMENT: >>>
 The qubes_vm resource shall set the ``service.`` feature of each declared service
@@ -4211,7 +4211,7 @@ as disabled, and a dropped name has its feature deleted instead
 <<<
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2P-CONFIG-04
+  VALUE: L2P-CONFIG-040
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -4235,7 +4235,7 @@ RELATIONS:
   ID: TerraformAnsibleAdapter.removed_items
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-TF-010
+UID: L3-TF-100
 TITLE: Tag configuration
 STATEMENT: >>>
 The qubes_vm resource shall bring its managed tags to the declared set, removing
@@ -4250,7 +4250,7 @@ place so that system tagging survives.
 <<<
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2P-CONFIG-05
+  VALUE: L2P-CONFIG-050
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -4284,7 +4284,7 @@ RELATIONS:
   ID: test_tags_block_deletion_removes
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-TF-011
+UID: L3-TF-110
 TITLE: Qube notes
 STATEMENT: >>>
 The qubes_vm resource shall set the qube's notes to the declared ``notes`` text.
@@ -4294,7 +4294,7 @@ PRODUCT: Terraform
 STATUS: Implemented
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2P-CONFIG-06
+  VALUE: L2P-CONFIG-060
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -4313,7 +4313,7 @@ RELATIONS:
   ID: test_notes_set_and_roundtrip
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-TF-012
+UID: L3-TF-120
 TITLE: Notes size limit
 STATEMENT: >>>
 If the declared notes exceed 256 000 bytes, then the qubes_vm resource shall
@@ -4329,7 +4329,7 @@ only at apply, after properties, volumes, devices and features were already chan
 <<<
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2P-CONFIG-07
+  VALUE: L2P-CONFIG-070
   ROLE: Refines
 - TYPE: File
   ROLE: Authority
@@ -4338,7 +4338,7 @@ RELATIONS:
   ID: QubesAdminAPI.vm_notes_set
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-TF-013
+UID: L3-TF-130
 TITLE: Qube class immutability
 STATEMENT: >>>
 If the declared class differs from the existing qube's class, then the qubes_vm
@@ -4354,7 +4354,7 @@ of the qube and its volumes instead of a rejection
 <<<
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2P-CONFIG-08
+  VALUE: L2P-CONFIG-080
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -4378,7 +4378,7 @@ RELATIONS:
 TITLE: Storage and volumes
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-TF-015
+UID: L3-TF-150
 TITLE: Volume resize
 STATEMENT: >>>
 The qubes_vm resource shall resize a declared ``private`` or ``root`` volume to
@@ -4394,7 +4394,7 @@ triggers a shrink that qubesadmin refuses, failing every later update of the qub
 <<<
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2P-STORAGE-01
+  VALUE: L2P-STORAGE-010
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -4413,7 +4413,7 @@ RELATIONS:
   ID: test_volume_resize
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-TF-016
+UID: L3-TF-160
 TITLE: Volume revision retention
 STATEMENT: >>>
 The qubes_vm resource shall set a declared volume's retained revision count to
@@ -4424,7 +4424,7 @@ PRODUCT: Terraform
 STATUS: Implemented
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2P-STORAGE-02
+  VALUE: L2P-STORAGE-020
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -4438,7 +4438,7 @@ RELATIONS:
   ID: test_volume_revisions_to_keep_passthrough
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-TF-017
+UID: L3-TF-170
 TITLE: Storage pool selection
 STATEMENT: >>>
 Where a storage pool is declared, the qubes_vm resource shall create the qube's
@@ -4454,7 +4454,7 @@ Only a ``repo`` origin's ``repo_pool`` reaches a pool, because qube creation cal
 <<<
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2P-STORAGE-03
+  VALUE: L2P-STORAGE-030
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -4473,7 +4473,7 @@ RELATIONS:
 TITLE: Device assignment
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-TF-018
+UID: L3-TF-180
 TITLE: Persistent device assignment
 STATEMENT: >>>
 When a device is declared in ``devices``, the qubes_vm resource shall
@@ -4489,7 +4489,7 @@ assignment removed outside Terraform is never re-applied
 <<<
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2P-DEVICE-02
+  VALUE: L2P-DEVICE-020
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -4528,7 +4528,7 @@ RELATIONS:
   ID: QubesHelper.parse_device
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-TF-049
+UID: L3-TF-490
 TITLE: Strict device strategy
 STATEMENT: >>>
 Where the ``strict`` device strategy applies, the qubes_vm resource shall unassign
@@ -4544,7 +4544,7 @@ assigned device stays assigned
 <<<
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2P-DEVICE-02
+  VALUE: L2P-DEVICE-020
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -4563,7 +4563,7 @@ RELATIONS:
   ID: QubesHelper.unassign
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-TF-050
+UID: L3-TF-500
 TITLE: Append device strategy
 STATEMENT: >>>
 Where the ``append`` device strategy is declared, the qubes_vm resource shall leave
@@ -4574,7 +4574,7 @@ PRODUCT: Terraform
 STATUS: Implemented
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2P-DEVICE-02
+  VALUE: L2P-DEVICE-020
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -4588,7 +4588,7 @@ RELATIONS:
   ID: QubeModule.validate_devices
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-TF-019
+UID: L3-TF-190
 TITLE: Device assignment mode
 STATEMENT: >>>
 The qubes_vm resource shall assign each declared device in the mode given in its
@@ -4599,7 +4599,7 @@ PRODUCT: Terraform
 STATUS: Implemented
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2P-DEVICE-03
+  VALUE: L2P-DEVICE-030
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -4613,7 +4613,7 @@ RELATIONS:
   ID: QubesHelper.sync_devices
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-TF-020
+UID: L3-TF-200
 TITLE: PCI assignment mode
 STATEMENT: >>>
 Where no mode is declared for a pci device, the qubes_vm resource shall assign it
@@ -4624,7 +4624,7 @@ PRODUCT: Terraform
 STATUS: Implemented
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2P-DEVICE-04
+  VALUE: L2P-DEVICE-040
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -4648,7 +4648,7 @@ RELATIONS:
 TITLE: Network and firewall
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-TF-021
+UID: L3-TF-210
 TITLE: Netvm validation
 STATEMENT: >>>
 If the qube declared as the ``netvm`` property does not provide network, then the
@@ -4659,7 +4659,7 @@ PRODUCT: Terraform
 STATUS: Implemented
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2P-NET-01
+  VALUE: L2P-NET-010
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -4688,7 +4688,7 @@ RELATIONS:
   ID: QubesAdminAPI.vm_property_set
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-TF-022
+UID: L3-TF-220
 TITLE: Firewall rule set
 STATEMENT: >>>
 The qubes_vm resource shall replace a qube's firewall rules with the declared
@@ -4704,7 +4704,7 @@ firewall resource, so firewall rules cannot be declared
 <<<
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2P-NET-02
+  VALUE: L2P-NET-020
   ROLE: Refines
 
 [[/SECTION]]
@@ -4713,7 +4713,7 @@ RELATIONS:
 TITLE: Software and templates
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-TF-038
+UID: L3-TF-380
 TITLE: Template installation
 STATEMENT: >>>
 Where a repo origin is declared, the qubes_vm resource shall install the named
@@ -4729,7 +4729,7 @@ provider's own host and fails when the provider runs in network-less dom0
 <<<
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2P-SW-02
+  VALUE: L2P-SW-020
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -4753,7 +4753,7 @@ RELATIONS:
   ID: test_create_via_origin_repo_idempotent_when_present
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-TF-039
+UID: L3-TF-390
 TITLE: Template signature verification
 STATEMENT: >>>
 When the qubes_vm resource installs a template, the qubes_vm resource shall
@@ -4773,7 +4773,7 @@ with no signature check
 <<<
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2P-SW-03
+  VALUE: L2P-SW-030
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -4787,7 +4787,7 @@ RELATIONS:
 TITLE: Qubes system
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-TF-014
+UID: L3-TF-140
 TITLE: Global property configuration
 STATEMENT: >>>
 The qubes_prefs resource shall set each declared global Qubes property to its
@@ -4798,7 +4798,7 @@ PRODUCT: Terraform
 STATUS: Implemented
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2P-SYSTEM-01
+  VALUE: L2P-SYSTEM-010
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -4827,7 +4827,7 @@ RELATIONS:
   ID: test_update_changes_value
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-TF-058
+UID: L3-TF-580
 TITLE: Global property reset
 STATEMENT: >>>
 When a managed global property is undeclared or the resource destroyed, the qubes_prefs resource
@@ -4838,7 +4838,7 @@ PRODUCT: Terraform
 STATUS: Implemented
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2P-SYSTEM-01
+  VALUE: L2P-SYSTEM-010
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -4867,7 +4867,7 @@ RELATIONS:
   ID: test_delete_resets_managed_only
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-TF-059
+UID: L3-TF-590
 TITLE: Global property import
 STATEMENT: >>>
 When terraform import runs for qubes_prefs, the qubes_prefs resource shall adopt every non-default
@@ -4878,7 +4878,7 @@ PRODUCT: Terraform
 STATUS: Implemented
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2P-SYSTEM-01
+  VALUE: L2P-SYSTEM-010
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -4892,7 +4892,7 @@ RELATIONS:
   ID: QubesPrefs.customized
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-TF-042
+UID: L3-TF-420
 TITLE: qrexec policy file management
 STATEMENT: >>>
 When a qubes_policy resource is applied, the qubes_policy resource shall replace
@@ -4903,7 +4903,7 @@ PRODUCT: Terraform
 STATUS: Implemented
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2P-SYSTEM-05
+  VALUE: L2P-SYSTEM-050
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -4972,7 +4972,7 @@ RELATIONS:
   ID: test_params_round_trip_via_import
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-TF-060
+UID: L3-TF-600
 TITLE: Policy file removal
 STATEMENT: >>>
 When a qubes_policy resource is destroyed, the qubes_policy resource shall remove the named policy
@@ -4983,7 +4983,7 @@ PRODUCT: Terraform
 STATUS: Implemented
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2P-SYSTEM-05
+  VALUE: L2P-SYSTEM-050
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -5002,7 +5002,7 @@ RELATIONS:
   ID: test_delete_removes_file
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-TF-061
+UID: L3-TF-610
 TITLE: Existing policy file protection
 STATEMENT: >>>
 If the named policy file already exists when the resource is created, then the qubes_policy
@@ -5020,11 +5020,11 @@ overwritten (qubes-terraform/qubes_provider/utils/policy.py:144).
 <<<
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2P-SYSTEM-05
+  VALUE: L2P-SYSTEM-050
   ROLE: Refines
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-TF-062
+UID: L3-TF-620
 TITLE: Policy file import
 STATEMENT: >>>
 When terraform import names an existing policy file, the qubes_policy resource shall adopt its
@@ -5035,7 +5035,7 @@ PRODUCT: Terraform
 STATUS: Implemented
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2P-SYSTEM-05
+  VALUE: L2P-SYSTEM-050
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -5064,7 +5064,7 @@ RELATIONS:
 TITLE: Drift and recovery
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-TF-028
+UID: L3-TF-280
 TITLE: Refresh drift detection
 STATEMENT: >>>
 When terraform plan refreshes a resource, the provider shall report each declared
@@ -5080,7 +5080,7 @@ configuration, so their out-of-band changes never appear in the plan
 <<<
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2P-CONV-06
+  VALUE: L2P-CONV-060
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -5129,7 +5129,7 @@ RELATIONS:
   ID: test_read_missing_file_returns_none
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-TF-055
+UID: L3-TF-550
 TITLE: No false drift
 STATEMENT: >>>
 While a declared object's live state is equivalent to its declaration, the provider shall report no
@@ -5144,7 +5144,7 @@ as a perpetual diff.
 <<<
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2P-CONV-06
+  VALUE: L2P-CONV-060
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -5193,7 +5193,7 @@ RELATIONS:
   ID: test_volume_already_big_enough_roundtrips
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-TF-029
+UID: L3-TF-290
 TITLE: Drift correction
 STATEMENT: >>>
 When a managed qube was changed or removed outside Terraform, the qubes_vm
@@ -5209,7 +5209,7 @@ Terraform with another class is never replaced and every later update fails
 <<<
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2P-CONV-07
+  VALUE: L2P-CONV-070
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -5238,7 +5238,7 @@ RELATIONS:
   ID: test_read_absent_returns_none
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-TF-030
+UID: L3-TF-300
 TITLE: Failed-create rollback scope
 STATEMENT: >>>
 If creating a qube fails during apply, then the qubes_vm resource shall remove
@@ -5254,7 +5254,7 @@ template that the create adopted rather than created
 <<<
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2P-CONV-08
+  VALUE: L2P-CONV-080
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -5283,7 +5283,7 @@ TITLE: Configuration
 TITLE: Delegation
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-TF-035
+UID: L3-TF-350
 TITLE: Command execution in qube
 STATEMENT: >>>
 The provider shall run a declared command inside a qube and report that
@@ -5299,7 +5299,7 @@ Terraform's generic local-exec provisioner invoking qvm-run from the Terraform h
 <<<
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2C-DELEG-01
+  VALUE: L2C-DELEG-010
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -5307,7 +5307,7 @@ RELATIONS:
   LINE_RANGE: 28, 35
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-TF-037
+UID: L3-TF-370
 TITLE: Execution user selection
 STATEMENT: >>>
 Where a command user is declared, the provider shall run the command inside the
@@ -5323,7 +5323,7 @@ local-exec provisioner passing qvm-run --user from the Terraform host
 <<<
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2C-DELEG-01
+  VALUE: L2C-DELEG-010
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -5341,7 +5341,7 @@ TITLE: Common
 TITLE: Convergence
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-TF-023
+UID: L3-TF-230
 TITLE: Idempotent attribute write
 STATEMENT: >>>
 When terraform apply updates a qube, the qubes_vm resource shall write only
@@ -5357,7 +5357,7 @@ later update re-applies it as a shrinking resize
 <<<
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2S-CONV-01
+  VALUE: L2S-CONV-010
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -5376,7 +5376,7 @@ RELATIONS:
   ID: QubesVmAdapter._qube_volumes_to_state
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-TF-024
+UID: L3-TF-240
 TITLE: Change reporting
 STATEMENT: >>>
 When terraform apply updates a qube, the qubes_vm resource shall change nothing
@@ -5392,7 +5392,7 @@ re-applied (qubes-terraform/qubes_provider/utils/qubes_adapter.py:233).
 <<<
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2S-CONV-02
+  VALUE: L2S-CONV-020
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -5411,7 +5411,7 @@ RELATIONS:
   ID: test_update_changes_property
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-TF-025
+UID: L3-TF-250
 TITLE: Side-effect-free plan
 STATEMENT: >>>
 When terraform plan runs, the provider shall read qubes, global properties and
@@ -5422,7 +5422,7 @@ PRODUCT: Terraform
 STATUS: Implemented
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2S-CONV-03
+  VALUE: L2S-CONV-030
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -5446,7 +5446,7 @@ RELATIONS:
   ID: QubesPolicyResource.read
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-TF-026
+UID: L3-TF-260
 TITLE: Reference-ordered application
 STATEMENT: >>>
 Where a qube-valued attribute references another qubes_vm resource, the provider
@@ -5462,7 +5462,7 @@ carry them.
 <<<
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2S-CONV-04
+  VALUE: L2S-CONV-040
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -5471,7 +5471,7 @@ RELATIONS:
   ID: QubesVMResource.get_schema
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-TF-051
+UID: L3-TF-510
 TITLE: Shutdown-first template change
 STATEMENT: >>>
 Where shutdown_if_required is set, the qubes_vm resource shall halt the qube and
@@ -5486,7 +5486,7 @@ running.
 <<<
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2S-CONV-04
+  VALUE: L2S-CONV-040
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -5525,7 +5525,7 @@ RELATIONS:
   ID: test_template_change_running_with_flag_shuts_down
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-TF-027
+UID: L3-TF-270
 TITLE: Plan-time configuration validation
 STATEMENT: >>>
 When terraform plan runs, the provider shall reject an invalid resource
@@ -5541,7 +5541,7 @@ volume or netvm is rejected only mid-apply
 <<<
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2S-CONV-05
+  VALUE: L2S-CONV-050
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -5565,7 +5565,7 @@ RELATIONS:
   ID: test_validate_exactly_one_ok
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-TF-052
+UID: L3-TF-520
 TITLE: Precondition validation
 STATEMENT: >>>
 The qubes_vm resource shall validate every declared attribute before making any
@@ -5581,7 +5581,7 @@ system (qubes-terraform/qubes_provider/utils/qubes_adapter.py:232).
 <<<
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2S-CONV-05
+  VALUE: L2S-CONV-050
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -5645,7 +5645,7 @@ RELATIONS:
 TITLE: Inspection
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-TF-033
+UID: L3-TF-330
 TITLE: Qube fact reporting
 STATEMENT: >>>
 The qubes_vm resource shall report the qube's current property, feature and tag
@@ -5661,7 +5661,7 @@ reads an unmanaged qube, so undeclared values are never reported
 <<<
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2S-INSPECT-03
+  VALUE: L2S-INSPECT-030
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -5695,7 +5695,7 @@ RELATIONS:
   ID: test_create_features_and_tags
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-TF-053
+UID: L3-TF-530
 TITLE: Service fact reporting
 STATEMENT: >>>
 The qubes_vm resource shall report each declared service as enabled or disabled in
@@ -5711,7 +5711,7 @@ reported the same as an unset one
 <<<
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2S-INSPECT-03
+  VALUE: L2S-INSPECT-030
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -5725,7 +5725,7 @@ RELATIONS:
   ID: test_services_enable_and_roundtrip
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-TF-056
+UID: L3-TF-560
 TITLE: System catalogue data sources
 STATEMENT: >>>
 The provider shall report the system's available labels, storage pools, pool drivers, qube classes
@@ -5736,7 +5736,7 @@ PRODUCT: Terraform
 STATUS: Implemented
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2S-SYSTEM-02
+  VALUE: L2S-SYSTEM-020
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -5800,7 +5800,7 @@ RELATIONS:
   ID: test_vmclass_and_deviceclass
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-TF-057
+UID: L3-TF-570
 TITLE: Global property data source
 STATEMENT: >>>
 The provider shall report the current value of every global Qubes property through the
@@ -5815,7 +5815,7 @@ property (qubes-terraform/qubes_provider/data_sources/system.py:42).
 <<<
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2S-SYSTEM-02
+  VALUE: L2S-SYSTEM-020
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -5859,7 +5859,7 @@ RELATIONS:
 TITLE: Security
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-TF-040
+UID: L3-TF-400
 TITLE: Opaque qube-reported values
 STATEMENT: >>>
 The qubes_vm resource shall handle feature values read from a qube only as opaque
@@ -5874,7 +5874,7 @@ input reaching the provider's host.
 <<<
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2S-SEC-01
+  VALUE: L2S-SEC-010
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -5893,7 +5893,7 @@ RELATIONS:
 TITLE: Diagnostics
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-TF-043
+UID: L3-TF-430
 TITLE: Failure diagnostics
 STATEMENT: >>>
 If a resource or data source operation fails, then the provider shall return an
@@ -5907,7 +5907,7 @@ Terraform core turns any error diagnostic into a non-zero exit status.
 <<<
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2S-DIAG-01
+  VALUE: L2S-DIAG-010
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -5991,7 +5991,7 @@ RELATIONS:
   ID: test_import_missing_errors
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-TF-044
+UID: L3-TF-440
 TITLE: Error attribution
 STATEMENT: >>>
 If a qubes_vm operation fails, then the qubes_vm resource shall report an error
@@ -6007,7 +6007,7 @@ qube name that the create diagnostic includes
 <<<
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2S-DIAG-02
+  VALUE: L2S-DIAG-020
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
@@ -6041,7 +6041,7 @@ RELATIONS:
   ID: test_import_missing
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-TF-054
+UID: L3-TF-540
 TITLE: Missing dependency reporting
 STATEMENT: >>>
 If qubesadmin cannot be imported, then the provider shall fail with a message
@@ -6057,11 +6057,11 @@ qubes_adapter.py can run (qubes-terraform/qubes_provider/data_sources/system.py:
 <<<
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2S-DIAG-02
+  VALUE: L2S-DIAG-020
   ROLE: Refines
 
 [TECHNICAL_REQUIREMENT]
-UID: L3-TF-045
+UID: L3-TF-450
 TITLE: Diagnostic verbosity control
 STATEMENT: >>>
 Where Terraform logging is enabled, the provider shall log each Qubes Admin API
@@ -6077,7 +6077,7 @@ no-op, so TF_LOG surfaces no provider detail
 <<<
 RELATIONS:
 - TYPE: Parent
-  VALUE: L2S-DIAG-03
+  VALUE: L2S-DIAG-030
   ROLE: Refines
 
 [[/SECTION]]
