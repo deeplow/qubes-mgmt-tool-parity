@@ -5,7 +5,7 @@
 	path = qubes-core-admin
 	url = https://github.com/QubesOS/qubes-core-admin
 [submodule "qubes-core-admin-client"]
-	path = qubes-core-admin-client
+	path = qubes-tools/qubes-core-admin-client
 	url = https://github.com/QubesOS/qubes-core-admin-client
 [submodule "qubes-mgmt-salt"]
 	path = qubes-mgmt-salt
@@ -16,3 +16,6 @@
 [submodule "qubes-terraform"]
 	path = qubes-terraform
 	url = ../qubes-terraform
+[submodule "qubes-tools/qubes-manager"]
+	path = qubes-tools/qubes-manager
+	url = https://github.com/QubesOS/qubes-manager

@@ -20,7 +20,7 @@ The management tool shall run a caller-supplied command inside a qube and
 return that command's exit status.
 <<<
 EARS_PATTERN: Ubiquitous
-PRODUCT: Ansible, Salt, QubesadminTools
+PRODUCT: Ansible, Salt, QubesTools
 RELATIONS:
 - TYPE: Parent
   VALUE: L1-OPERATE
@@ -36,7 +36,7 @@ STATEMENT: >>>
 The management tool shall transfer a file between the qube it is running in and the one being managed.
 <<<
 EARS_PATTERN: Ubiquitous
-PRODUCT: Ansible, Salt, QubesadminTools
+PRODUCT: Ansible, Salt, QubesTools
 RELATIONS:
 - TYPE: Parent
   VALUE: L1-OPERATE
@@ -53,7 +53,7 @@ The management tool shall run a command in a qube under a caller-specified user
 account.
 <<<
 EARS_PATTERN: Ubiquitous
-PRODUCT: Ansible, Salt, QubesadminTools
+PRODUCT: Ansible, Salt, QubesTools
 RATIONALE: >>>
 Running as root where the unprivileged user suffices widens the blast radius of
 a compromised or malicious guest command.

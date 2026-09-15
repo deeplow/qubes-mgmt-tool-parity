@@ -91,7 +91,7 @@ EARS_KINDS = grammar_choices("TECHNICAL_REQUIREMENT", "EARS_PATTERN")
 PRODUCT_CODES = {
     "Ansible": "ANS",
     "Salt": "SLS",
-    "QubesadminTools": "QTL",
+    "QubesTools": "QTL",
     "Terraform": "TF",
 }
 

@@ -11,6 +11,7 @@ it.
 | `tools/parity_matrix.py`, `.css` | Renders the feature-parity matrix screen |
 | `strictdoc_config.py` | StrictDoc project configuration |
 | `qubes-*/` | Upstream sources, as git submodules. Read-only here; requirement anchors point into them |
+| `qubes-tools/` | The submodules behind the QubesTools product (qubes-core-admin-client, qubes-manager) |
 
 ## Running
 

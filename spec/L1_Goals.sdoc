@@ -16,7 +16,7 @@ STATEMENT: >>>
 An administrator shall be able to declare the intended state of qubes and system resources and
 have the system brought to it.
 <<<
-PRODUCT: Ansible, Salt, QubesadminTools, Terraform
+PRODUCT: Ansible, Salt, QubesTools, Terraform
 
 [SYSTEM_GOAL]
 UID: L1-OPERATE
@@ -25,7 +25,7 @@ STATEMENT: >>>
 An administrator shall be able to act on qubes on demand: start, stop, pause, attach devices,
 run commands.
 <<<
-PRODUCT: Ansible, Salt, QubesadminTools
+PRODUCT: Ansible, Salt, QubesTools
 
 [SYSTEM_GOAL]
 UID: L1-RECONCILE
@@ -43,7 +43,7 @@ STATEMENT: >>>
 Administering a qube shall never cause data originating from that qube to be
 interpreted by a management qube, unless it is trivial to parse.
 <<<
-PRODUCT: Ansible, Salt, QubesadminTools, Terraform
+PRODUCT: Ansible, Salt, QubesTools, Terraform
 RATIONALE: >>>
 A management qube has control of the qubes it manages, so vulnerabilities in the parsing of managed-qube-supplied data may lead to total compromise of all qubes under its management. `QSB #45 <https://www.qubes-os.org/news/2018/12/03/qsb-45/>`__ established the
 countermeasure now common to the tooling: configuration work runs inside a per-target management disposable qube rather than in dom0 / management qubes.
@@ -57,7 +57,7 @@ TITLE: Admin API through policy system in management qube
 STATEMENT: >>>
 Every administrative action shall be performed through a qrexec-mediated interface from a management qube with the necessary `Qubes Admin API <https://doc.qubes-os.org/en/latest/developer/services/admin-api.html>`__ calls and `policies <https://www.qubes-os.org/news/2020/06/22/new-qrexec-policy-system/>`__.
 <<<
-PRODUCT: Ansible, Salt, QubesadminTools, Terraform
+PRODUCT: Ansible, Salt, QubesTools, Terraform
 RATIONALE: >>>
 Qrexec policy is the authoritative access control over administration in Qubes OS.
 <<<
@@ -69,7 +69,7 @@ STATEMENT: >>>
 An administrator shall be able to inspect current state, preview a change before
 applying it, and obtain an unambiguous account of what changed and what failed.
 <<<
-PRODUCT: Ansible, Salt, QubesadminTools, Terraform
+PRODUCT: Ansible, Salt, QubesTools, Terraform
 RATIONALE: >>>
 Administrative errors in dom0 are expensive and hard to reverse. Previewing a
 change is the primary defence, so a dry run that silently mutates state is worse

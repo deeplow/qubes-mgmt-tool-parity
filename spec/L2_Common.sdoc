@@ -52,7 +52,7 @@ Where a dry run is requested, the management tool shall report the changes it
 would make without applying any of them.
 <<<
 EARS_PATTERN: Optional-feature
-PRODUCT: Ansible, Salt, QubesadminTools, Terraform
+PRODUCT: Ansible, Salt, QubesTools, Terraform
 RATIONALE: >>>
 A preview that mutates state is worse than no preview, because the
 administrator acts on the assumption that nothing happened.
@@ -107,7 +107,7 @@ The management tool shall report a qube's current property, feature and tag
 values.
 <<<
 EARS_PATTERN: Ubiquitous
-PRODUCT: Ansible, Salt, QubesadminTools, Terraform
+PRODUCT: Ansible, Salt, QubesTools, Terraform
 RELATIONS:
 - TYPE: Parent
   VALUE: L1-OBSERVABILITY
@@ -175,7 +175,7 @@ The management tool shall list the qubes present on the system, restricted by
 caller-supplied selection criteria.
 <<<
 EARS_PATTERN: Ubiquitous
-PRODUCT: Ansible, Salt, QubesadminTools
+PRODUCT: Ansible, Salt, QubesTools
 RELATIONS:
 - TYPE: Parent
   VALUE: L1-OBSERVABILITY
@@ -218,7 +218,7 @@ The management tool shall exit with a non-zero status when any requested
 operation fails.
 <<<
 EARS_PATTERN: Ubiquitous
-PRODUCT: Ansible, Salt, QubesadminTools, Terraform
+PRODUCT: Ansible, Salt, QubesTools, Terraform
 RELATIONS:
 - TYPE: Parent
   VALUE: L1-OBSERVABILITY
@@ -232,7 +232,7 @@ The management tool shall attribute each reported failure to the qube and the
 operation that produced it.
 <<<
 EARS_PATTERN: Ubiquitous
-PRODUCT: Ansible, Salt, QubesadminTools, Terraform
+PRODUCT: Ansible, Salt, QubesTools, Terraform
 RELATIONS:
 - TYPE: Parent
   VALUE: L1-OBSERVABILITY
@@ -246,7 +246,7 @@ Where increased verbosity is requested, the management tool shall emit
 additional detail about each operation it performs.
 <<<
 EARS_PATTERN: Optional-feature
-PRODUCT: Ansible, Salt, QubesadminTools, Terraform
+PRODUCT: Ansible, Salt, QubesTools, Terraform
 RELATIONS:
 - TYPE: Parent
   VALUE: L1-OBSERVABILITY

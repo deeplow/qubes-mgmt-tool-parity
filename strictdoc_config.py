@@ -36,8 +36,11 @@ def create_config() -> ProjectConfig:
             "qubes-mgmt-salt/srv/**",
             # QTL — the qvm-* CLI tools only. The rest of the qubesadmin/
             # library (app.py, backup/, vm/, ...) is deliberately not indexed;
-            # widening this is a decision.
-            "qubes-core-admin-client/qubesadmin/tools/**",
+            # widening this is a decision. Plus qubes-manager's rename, the
+            # only Qubes tool that has one.
+            "qubes-tools/qubes-core-admin-client/qubesadmin/tools/**",
+            "qubes-tools/qubes-manager/qubesmanager/settings.py",
+            "qubes-tools/qubes-manager/qubesmanager/tests/test_vm_settings.py",
             # TF — qubes-terraform. Includes the vendored qubes-ansible copy
             # under qubes_provider/utils/qubes_ansible/, which the provider runs.
             "qubes-terraform/qubes_provider/**",

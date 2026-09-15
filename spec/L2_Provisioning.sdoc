@@ -20,7 +20,7 @@ The management tool shall create a qube of a caller-specified class from a
 caller-specified template.
 <<<
 EARS_PATTERN: Ubiquitous
-PRODUCT: Ansible, Salt, QubesadminTools, Terraform
+PRODUCT: Ansible, Salt, QubesTools, Terraform
 RELATIONS:
 - TYPE: Parent
   VALUE: L1-STATE
@@ -39,7 +39,7 @@ The management tool shall create a new qube as a copy of an existing qube,
 including that qube's configuration.
 <<<
 EARS_PATTERN: Ubiquitous
-PRODUCT: Ansible, Salt, QubesadminTools, Terraform
+PRODUCT: Ansible, Salt, QubesTools, Terraform
 RELATIONS:
 - TYPE: Parent
   VALUE: L1-STATE
@@ -56,13 +56,46 @@ RELATIONS:
   ID: QubesAdminAPI.vm_volume_clone_to
 
 [PRODUCT_REQUIREMENT]
+UID: L2P-LIFECYCLE-021
+TITLE: Qube renaming
+STATEMENT: >>>
+The management tool shall rename an existing qube, preserving its storage and the
+settings of qubes that refer to it.
+<<<
+EARS_PATTERN: Ubiquitous
+PRODUCT: Ansible, Salt, QubesTools, Terraform
+RATIONALE: >>>
+qubesd treats a qube's name as write-once, so a rename is a clone under the new
+name, repointing of the qubes that use it, and removal of the original.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: L1-STATE
+  ROLE: Refines
+- TYPE: File
+  ROLE: Authority
+  PATH: qubes-core-admin/qubes/api/admin.py
+  ELEMENT: function
+  ID: QubesAdminAPI.vm_create
+- TYPE: File
+  ROLE: Authority
+  PATH: qubes-core-admin/qubes/api/admin.py
+  ELEMENT: function
+  ID: QubesAdminAPI.vm_volume_clone_to
+- TYPE: File
+  ROLE: Authority
+  PATH: qubes-core-admin/qubes/api/admin.py
+  ELEMENT: function
+  ID: QubesAdminAPI.vm_remove
+
+[PRODUCT_REQUIREMENT]
 UID: L2P-LIFECYCLE-030
 TITLE: Qube removal
 STATEMENT: >>>
 The management tool shall remove a qube together with its storage volumes.
 <<<
 EARS_PATTERN: Ubiquitous
-PRODUCT: Ansible, Salt, QubesadminTools, Terraform
+PRODUCT: Ansible, Salt, QubesTools, Terraform
 RELATIONS:
 - TYPE: Parent
   VALUE: L1-STATE
@@ -81,7 +114,7 @@ The management tool shall start a halted qube and report completion only once
 that qube is running.
 <<<
 EARS_PATTERN: Ubiquitous
-PRODUCT: Ansible, Salt, QubesadminTools
+PRODUCT: Ansible, Salt, QubesTools
 RELATIONS:
 - TYPE: Parent
   VALUE: L1-OPERATE
@@ -100,7 +133,7 @@ The management tool shall bring a running qube to the halted state by a
 caller-selected graceful shutdown or forced kill.
 <<<
 EARS_PATTERN: Ubiquitous
-PRODUCT: Ansible, Salt, QubesadminTools
+PRODUCT: Ansible, Salt, QubesTools
 RELATIONS:
 - TYPE: Parent
   VALUE: L1-OPERATE
@@ -124,7 +157,7 @@ The management tool shall transition a qube between the running and paused
 execution states on request.
 <<<
 EARS_PATTERN: Ubiquitous
-PRODUCT: Ansible, Salt, QubesadminTools
+PRODUCT: Ansible, Salt, QubesTools
 RELATIONS:
 - TYPE: Parent
   VALUE: L1-OPERATE
@@ -167,7 +200,7 @@ The management tool shall set each qube property named in the desired state to
 the value given there.
 <<<
 EARS_PATTERN: Ubiquitous
-PRODUCT: Ansible, Salt, QubesadminTools, Terraform
+PRODUCT: Ansible, Salt, QubesTools, Terraform
 RELATIONS:
 - TYPE: Parent
   VALUE: L1-STATE
@@ -186,7 +219,7 @@ The management tool shall restore a qube property to its default value on
 request.
 <<<
 EARS_PATTERN: Ubiquitous
-PRODUCT: Ansible, Salt, QubesadminTools, Terraform
+PRODUCT: Ansible, Salt, QubesTools, Terraform
 RATIONALE: >>>
 A property holding its default is not the same state as a property explicitly
 set to the same value, because the default tracks later system changes.
@@ -209,7 +242,7 @@ The management tool shall bring a qube's features to the set of values given in
 the desired state.
 <<<
 EARS_PATTERN: Ubiquitous
-PRODUCT: Ansible, Salt, QubesadminTools, Terraform
+PRODUCT: Ansible, Salt, QubesTools, Terraform
 RELATIONS:
 - TYPE: Parent
   VALUE: L1-STATE
@@ -228,7 +261,7 @@ The management tool shall set a named qube service to enabled or disabled
 through its corresponding service feature.
 <<<
 EARS_PATTERN: Ubiquitous
-PRODUCT: Ansible, Salt, QubesadminTools, Terraform
+PRODUCT: Ansible, Salt, QubesTools, Terraform
 RATIONALE: >>>
 Services have no storage of their own; a service is the feature named
 ``service.<name>``, so the two views must not diverge.
@@ -251,7 +284,7 @@ The management tool shall bring a qube's tag set to the tags given in the
 desired state.
 <<<
 EARS_PATTERN: Ubiquitous
-PRODUCT: Ansible, Salt, QubesadminTools, Terraform
+PRODUCT: Ansible, Salt, QubesTools, Terraform
 RELATIONS:
 - TYPE: Parent
   VALUE: L1-STATE
@@ -274,7 +307,7 @@ STATEMENT: >>>
 The management tool shall set the free-form notes attached to a qube.
 <<<
 EARS_PATTERN: Ubiquitous
-PRODUCT: Ansible, Salt, QubesadminTools, Terraform
+PRODUCT: Ansible, Salt, QubesTools, Terraform
 RELATIONS:
 - TYPE: Parent
   VALUE: L1-STATE
@@ -293,7 +326,7 @@ If notes exceed 256 000 bytes, then the management tool shall reject the
 change and leave the stored notes untouched.
 <<<
 EARS_PATTERN: Unwanted-behaviour
-PRODUCT: Ansible, QubesadminTools, Terraform
+PRODUCT: Ansible, QubesTools, Terraform
 RATIONALE: >>>
 Notes are qube-visible text held in dom0, so the Admin API caps them at 256 000 bytes.
 Scoped to the components that expose notes; the wider gap is carried by
@@ -320,7 +353,7 @@ The management tool shall reject a request to change the class of an existing
 qube.
 <<<
 EARS_PATTERN: Ubiquitous
-PRODUCT: Ansible, Salt, QubesadminTools, Terraform
+PRODUCT: Ansible, Salt, QubesTools, Terraform
 RATIONALE: >>>
 Class fixes a qube's storage layout and startup semantics at creation, so a
 declared class change is a request to recreate, never to mutate.
@@ -347,7 +380,7 @@ STATEMENT: >>>
 The management tool shall resize a qube volume to a caller-specified size.
 <<<
 EARS_PATTERN: Ubiquitous
-PRODUCT: Ansible, Salt, QubesadminTools, Terraform
+PRODUCT: Ansible, Salt, QubesTools, Terraform
 RELATIONS:
 - TYPE: Parent
   VALUE: L1-STATE
@@ -366,7 +399,7 @@ The management tool shall set the number of snapshot revisions retained for a
 qube volume.
 <<<
 EARS_PATTERN: Ubiquitous
-PRODUCT: Ansible, Salt, QubesadminTools, Terraform
+PRODUCT: Ansible, Salt, QubesTools, Terraform
 RELATIONS:
 - TYPE: Parent
   VALUE: L1-STATE
@@ -385,7 +418,7 @@ The management tool shall place a qube's volumes in a caller-specified storage
 pool.
 <<<
 EARS_PATTERN: Ubiquitous
-PRODUCT: Ansible, Salt, QubesadminTools, Terraform
+PRODUCT: Ansible, Salt, QubesTools, Terraform
 RELATIONS:
 - TYPE: Parent
   VALUE: L1-STATE
@@ -409,7 +442,7 @@ The management tool shall attach a device to a qube for the lifetime of that
 qube's current run.
 <<<
 EARS_PATTERN: Ubiquitous
-PRODUCT: Salt, QubesadminTools
+PRODUCT: Salt, QubesTools
 RATIONALE: >>>
 An attachment does not survive a restart, so it is an operation rather than
 declarable state; the Ansible collection deliberately manages assignments only.
@@ -435,7 +468,7 @@ The management tool shall assign a device to a qube so that the assignment
 survives a restart of that qube.
 <<<
 EARS_PATTERN: Ubiquitous
-PRODUCT: Ansible, Salt, QubesadminTools, Terraform
+PRODUCT: Ansible, Salt, QubesTools, Terraform
 RELATIONS:
 - TYPE: Parent
   VALUE: L1-STATE
@@ -454,7 +487,7 @@ The management tool shall set a device assignment's mode to ask-to-attach,
 auto-attach or required.
 <<<
 EARS_PATTERN: Ubiquitous
-PRODUCT: Ansible, Salt, QubesadminTools, Terraform
+PRODUCT: Ansible, Salt, QubesTools, Terraform
 RELATIONS:
 - TYPE: Parent
   VALUE: L1-STATE
@@ -473,7 +506,7 @@ If a PCI device is bound to a qube, then the management tool shall record it as
 a required assignment rather than an attachment.
 <<<
 EARS_PATTERN: Unwanted-behaviour
-PRODUCT: Ansible, Salt, QubesadminTools, Terraform
+PRODUCT: Ansible, Salt, QubesTools, Terraform
 RATIONALE: >>>
 PCI passthrough is fixed at qube start, so any weaker binding leaves the qube
 running without the device it was configured to have.
@@ -501,7 +534,7 @@ If the qube named as netvm does not provide network, then the management tool
 shall reject the change.
 <<<
 EARS_PATTERN: Unwanted-behaviour
-PRODUCT: Ansible, Salt, QubesadminTools, Terraform
+PRODUCT: Ansible, Salt, QubesTools, Terraform
 RELATIONS:
 - TYPE: Parent
   VALUE: L1-STATE
@@ -520,7 +553,7 @@ The management tool shall apply an ordered set of firewall rules to a qube,
 replacing the rules previously in force.
 <<<
 EARS_PATTERN: Ubiquitous
-PRODUCT: Ansible, Salt, QubesadminTools, Terraform
+PRODUCT: Ansible, Salt, QubesTools, Terraform
 RATIONALE: >>>
 Rules are evaluated in order and the first match wins, so a rule set is only
 meaningful as a whole sequence.
@@ -548,7 +581,7 @@ The management tool shall install a template from a configured template
 repository.
 <<<
 EARS_PATTERN: Ubiquitous
-PRODUCT: Ansible, Salt, QubesadminTools, Terraform
+PRODUCT: Ansible, Salt, QubesTools, Terraform
 RELATIONS:
 - TYPE: Parent
   VALUE: L1-STATE
@@ -562,7 +595,7 @@ The management tool shall verify the cryptographic signature of a downloaded
 template before installing it.
 <<<
 EARS_PATTERN: Ubiquitous
-PRODUCT: Ansible, Salt, QubesadminTools, Terraform
+PRODUCT: Ansible, Salt, QubesTools, Terraform
 RATIONALE: >>>
 Template packages are unpacked in a management qube, so an unverified download
 is a direct management qube code-execution path.
@@ -627,7 +660,7 @@ STATEMENT: >>>
 The management tool shall report the current power state of a qube.
 <<<
 EARS_PATTERN: Ubiquitous
-PRODUCT: Ansible, Salt, QubesadminTools
+PRODUCT: Ansible, Salt, QubesTools
 RELATIONS:
 - TYPE: Parent
   VALUE: L1-OPERATE

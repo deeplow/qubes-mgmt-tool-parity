@@ -62,7 +62,7 @@ expected at L2 as at L3.
 
 The product scope of those goals makes one tree serve two kinds of tool:
 - **Declarative tools** (Terraform) meet the STATE and RECONCILE branches.
-- **Imperative tools** (Ansible, Salt, QubesadminTools) meet STATE and OPERATE.
+- **Imperative tools** (Ansible, Salt, QubesTools) meet STATE and OPERATE.
 
 The shared STATE branch is the same requirements in both views, not a copy.
 
@@ -71,8 +71,9 @@ Products:
   delegation.
 - **Ansible and Salt** cover both sets, and configure a qube through a
   disposable management qube.
-- **QubesadminTools** is mostly provisioning. The exception is `qvm-run`, which
-  runs commands inside qubes but has no desired-state convergence.
+- **QubesTools** is mostly provisioning. The exception is `qvm-run`, which
+  runs commands inside qubes but has no desired-state convergence. It also
+  covers qubes-manager's qube rename, which no `qvm-*` tool offers.
 
 ## Products
 
@@ -91,7 +92,9 @@ least one L2. The option lists must be identical; `audit_spec.py` fails with a
 
 Products map to trees as follows: **Ansible** → `qubes-ansible/`; **Salt** →
 `qubes-mgmt-salt-dom0-qvm/` *and* `qubes-mgmt-salt/` (one product, two repos);
-**QubesadminTools** → `qubes-core-admin-client/qubesadmin/tools/`; **Terraform** →
+**QubesTools** → `qubes-tools/qubes-core-admin-client/qubesadmin/tools/` *and*
+`qubes-tools/qubes-manager/` (rename only; one product, two repos, both under
+`qubes-tools/`); **Terraform** →
 `qubes-terraform/`, whose `qubes_vm` resource runs a vendored copy of qubes-ansible
 under `qubes_provider/utils/qubes_ansible/` (anchor that copy, not `qubes-ansible/`).
 

@@ -79,6 +79,36 @@ RELATIONS:
   ID: test_create_clone_vmtype_combinations
 
 [TECHNICAL_REQUIREMENT]
+UID: L3-ANS-021
+TITLE: Qube renaming
+STATEMENT: >>>
+The qube module shall rename a qube only as a clone under the new name followed
+by removal of the original.
+<<<
+EARS_PATTERN: Ubiquitous
+PRODUCT: Ansible
+STATUS: Workaround
+DEFECT: >>>
+Qubes referring to the original are not repointed at the copy, so removing the
+original fails while they still use it
+(qubes-ansible/ansible_collections/qubesos/core/plugins/module_utils/qubes_module_qube.py:248).
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2P-LIFECYCLE-021
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-ansible/ansible_collections/qubesos/core/plugins/module_utils/qubes_module_qube.py
+  ELEMENT: function
+  ID: QubeModule.enforce_existence
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-ansible/ansible_collections/qubesos/core/plugins/module_utils/qubes_helper.py
+  ELEMENT: function
+  ID: QubesHelper.remove
+
+[TECHNICAL_REQUIREMENT]
 UID: L3-ANS-030
 TITLE: Qube removal
 STATEMENT: >>>
@@ -1626,6 +1656,36 @@ RELATIONS:
   ID: clone
 
 [TECHNICAL_REQUIREMENT]
+UID: L3-SLS-031
+TITLE: Qube renaming
+STATEMENT: >>>
+The qvm state module shall rename a qube only as a clone under the new name
+followed by removal of the original.
+<<<
+EARS_PATTERN: Ubiquitous
+PRODUCT: Salt
+STATUS: Workaround
+DEFECT: >>>
+Qubes referring to the original are not repointed at the copy, so removing the
+original fails while they still use it
+(qubes-mgmt-salt-dom0-qvm/_states/ext_state_qvm.py:269).
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2P-LIFECYCLE-021
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-mgmt-salt-dom0-qvm/_states/ext_state_qvm.py
+  ELEMENT: function
+  ID: clone
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-mgmt-salt-dom0-qvm/_states/ext_state_qvm.py
+  ELEMENT: function
+  ID: absent
+
+[TECHNICAL_REQUIREMENT]
 UID: L3-SLS-040
 TITLE: Qube removal
 STATEMENT: >>>
@@ -2816,7 +2876,7 @@ RELATIONS:
 [[/SECTION]]
 
 [[SECTION]]
-TITLE: QubesadminTools
+TITLE: QubesTools
 
 [[SECTION]]
 TITLE: Provisioning
@@ -2832,7 +2892,7 @@ The qvm-create tool shall create a qube of the caller-given class, template and
 label.
 <<<
 EARS_PATTERN: Ubiquitous
-PRODUCT: QubesadminTools
+PRODUCT: QubesTools
 STATUS: Implemented
 RATIONALE: >>>
 The qubesadmin library and its test suite are absent from this working tree, so
@@ -2844,7 +2904,7 @@ RELATIONS:
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
-  PATH: qubes-core-admin-client/qubesadmin/tools/qvm_create.py
+  PATH: qubes-tools/qubes-core-admin-client/qubesadmin/tools/qvm_create.py
   ELEMENT: function
   ID: main
 
@@ -2855,7 +2915,7 @@ STATEMENT: >>>
 The qvm-clone tool shall create a new qube as a copy of an existing qube.
 <<<
 EARS_PATTERN: Ubiquitous
-PRODUCT: QubesadminTools
+PRODUCT: QubesTools
 STATUS: Implemented
 RELATIONS:
 - TYPE: Parent
@@ -2863,9 +2923,39 @@ RELATIONS:
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
-  PATH: qubes-core-admin-client/qubesadmin/tools/qvm_clone.py
+  PATH: qubes-tools/qubes-core-admin-client/qubesadmin/tools/qvm_clone.py
   ELEMENT: function
   ID: main
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-QTL-021
+TITLE: Qube renaming
+STATEMENT: >>>
+When a rename is requested, qubes-manager shall move the qube to the new name,
+repointing every setting that refers to it.
+<<<
+EARS_PATTERN: Event-driven
+PRODUCT: QubesTools
+STATUS: Implemented
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2P-LIFECYCLE-021
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-tools/qubes-manager/qubesmanager/settings.py
+  ELEMENT: function
+  ID: VMSettingsWindow.rename_vm
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-tools/qubes-manager/qubesmanager/settings.py
+  ELEMENT: function
+  ID: RenameVMThread.run
+- TYPE: File
+  ROLE: Verification
+  PATH: qubes-tools/qubes-manager/qubesmanager/tests/test_vm_settings.py
+  ELEMENT: function
+  ID: test_109_renamevm
 
 [TECHNICAL_REQUIREMENT]
 UID: L3-QTL-030
@@ -2875,7 +2965,7 @@ The qvm-remove tool shall delete each named qube together with its storage
 volumes.
 <<<
 EARS_PATTERN: Ubiquitous
-PRODUCT: QubesadminTools
+PRODUCT: QubesTools
 STATUS: Implemented
 RELATIONS:
 - TYPE: Parent
@@ -2883,7 +2973,7 @@ RELATIONS:
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
-  PATH: qubes-core-admin-client/qubesadmin/tools/qvm_remove.py
+  PATH: qubes-tools/qubes-core-admin-client/qubesadmin/tools/qvm_remove.py
   ELEMENT: function
   ID: main
 
@@ -2895,7 +2985,7 @@ If dom0 is among the qubes named for removal, then qvm-remove shall refuse the
 whole request.
 <<<
 EARS_PATTERN: Unwanted-behaviour
-PRODUCT: QubesadminTools
+PRODUCT: QubesTools
 STATUS: Implemented
 RATIONALE: >>>
 Removing dom0 is unrecoverable, so the guard runs before any qube in the batch
@@ -2907,7 +2997,7 @@ RELATIONS:
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
-  PATH: qubes-core-admin-client/qubesadmin/tools/qvm_remove.py
+  PATH: qubes-tools/qubes-core-admin-client/qubesadmin/tools/qvm_remove.py
   ELEMENT: function
   ID: main
 
@@ -2918,7 +3008,7 @@ STATEMENT: >>>
 The qvm-start tool shall return only once each named qube has been started.
 <<<
 EARS_PATTERN: Ubiquitous
-PRODUCT: QubesadminTools
+PRODUCT: QubesTools
 STATUS: Implemented
 RELATIONS:
 - TYPE: Parent
@@ -2926,7 +3016,7 @@ RELATIONS:
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
-  PATH: qubes-core-admin-client/qubesadmin/tools/qvm_start.py
+  PATH: qubes-tools/qubes-core-admin-client/qubesadmin/tools/qvm_start.py
   ELEMENT: function
   ID: run_async
 
@@ -2938,7 +3028,7 @@ The qvm-shutdown tool shall request a graceful shutdown of each named running
 qube.
 <<<
 EARS_PATTERN: Ubiquitous
-PRODUCT: QubesadminTools
+PRODUCT: QubesTools
 STATUS: Implemented
 RELATIONS:
 - TYPE: Parent
@@ -2946,7 +3036,7 @@ RELATIONS:
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
-  PATH: qubes-core-admin-client/qubesadmin/tools/qvm_shutdown.py
+  PATH: qubes-tools/qubes-core-admin-client/qubesadmin/tools/qvm_shutdown.py
   ELEMENT: function
   ID: run_async
 
@@ -2958,7 +3048,7 @@ If a qube is still running after its shutdown was retried, then qvm-shutdown
 shall kill it.
 <<<
 EARS_PATTERN: Unwanted-behaviour
-PRODUCT: QubesadminTools
+PRODUCT: QubesTools
 STATUS: Implemented
 RELATIONS:
 - TYPE: Parent
@@ -2966,7 +3056,7 @@ RELATIONS:
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
-  PATH: qubes-core-admin-client/qubesadmin/tools/qvm_shutdown.py
+  PATH: qubes-tools/qubes-core-admin-client/qubesadmin/tools/qvm_shutdown.py
   ELEMENT: function
   ID: run_async
 
@@ -2978,7 +3068,7 @@ The qvm-kill tool shall terminate each named qube without a graceful shutdown
 sequence.
 <<<
 EARS_PATTERN: Ubiquitous
-PRODUCT: QubesadminTools
+PRODUCT: QubesTools
 STATUS: Implemented
 RELATIONS:
 - TYPE: Parent
@@ -2986,7 +3076,7 @@ RELATIONS:
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
-  PATH: qubes-core-admin-client/qubesadmin/tools/qvm_kill.py
+  PATH: qubes-tools/qubes-core-admin-client/qubesadmin/tools/qvm_kill.py
   ELEMENT: function
   ID: run_async
 
@@ -2997,7 +3087,7 @@ STATEMENT: >>>
 The qvm-pause tool shall suspend execution of each named running qube.
 <<<
 EARS_PATTERN: Ubiquitous
-PRODUCT: QubesadminTools
+PRODUCT: QubesTools
 STATUS: Implemented
 RELATIONS:
 - TYPE: Parent
@@ -3005,7 +3095,7 @@ RELATIONS:
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
-  PATH: qubes-core-admin-client/qubesadmin/tools/qvm_pause.py
+  PATH: qubes-tools/qubes-core-admin-client/qubesadmin/tools/qvm_pause.py
   ELEMENT: function
   ID: main
 
@@ -3016,7 +3106,7 @@ STATEMENT: >>>
 The qvm-unpause tool shall return each named paused qube to the running state.
 <<<
 EARS_PATTERN: Ubiquitous
-PRODUCT: QubesadminTools
+PRODUCT: QubesTools
 STATUS: Implemented
 RELATIONS:
 - TYPE: Parent
@@ -3024,7 +3114,7 @@ RELATIONS:
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
-  PATH: qubes-core-admin-client/qubesadmin/tools/qvm_unpause.py
+  PATH: qubes-tools/qubes-core-admin-client/qubesadmin/tools/qvm_unpause.py
   ELEMENT: function
   ID: main
 
@@ -3041,7 +3131,7 @@ The qvm-prefs and qubes-prefs tools shall set a named property to the value
 given by the caller.
 <<<
 EARS_PATTERN: Ubiquitous
-PRODUCT: QubesadminTools
+PRODUCT: QubesTools
 STATUS: Implemented
 RELATIONS:
 - TYPE: Parent
@@ -3049,12 +3139,12 @@ RELATIONS:
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
-  PATH: qubes-core-admin-client/qubesadmin/tools/qvm_prefs.py
+  PATH: qubes-tools/qubes-core-admin-client/qubesadmin/tools/qvm_prefs.py
   ELEMENT: function
   ID: process_actions
 - TYPE: File
   ROLE: Implementation
-  PATH: qubes-core-admin-client/qubesadmin/tools/qubes_prefs.py
+  PATH: qubes-tools/qubes-core-admin-client/qubesadmin/tools/qubes_prefs.py
   ELEMENT: function
   ID: main
 
@@ -3066,7 +3156,7 @@ Where a reset is requested, qvm-prefs shall restore the named property to its
 default value.
 <<<
 EARS_PATTERN: Optional-feature
-PRODUCT: QubesadminTools
+PRODUCT: QubesTools
 STATUS: Implemented
 RELATIONS:
 - TYPE: Parent
@@ -3074,7 +3164,7 @@ RELATIONS:
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
-  PATH: qubes-core-admin-client/qubesadmin/tools/qvm_prefs.py
+  PATH: qubes-tools/qubes-core-admin-client/qubesadmin/tools/qvm_prefs.py
   ELEMENT: function
   ID: process_actions
 
@@ -3085,7 +3175,7 @@ STATEMENT: >>>
 The qvm-features tool shall set a named qube feature to the caller-given value.
 <<<
 EARS_PATTERN: Ubiquitous
-PRODUCT: QubesadminTools
+PRODUCT: QubesTools
 STATUS: Implemented
 RELATIONS:
 - TYPE: Parent
@@ -3093,7 +3183,7 @@ RELATIONS:
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
-  PATH: qubes-core-admin-client/qubesadmin/tools/qvm_features.py
+  PATH: qubes-tools/qubes-core-admin-client/qubesadmin/tools/qvm_features.py
   ELEMENT: function
   ID: main
 
@@ -3105,7 +3195,7 @@ The qvm-service tool shall record a named service as enabled or disabled in the
 corresponding service feature.
 <<<
 EARS_PATTERN: Ubiquitous
-PRODUCT: QubesadminTools
+PRODUCT: QubesTools
 STATUS: Implemented
 RELATIONS:
 - TYPE: Parent
@@ -3113,12 +3203,12 @@ RELATIONS:
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
-  PATH: qubes-core-admin-client/qubesadmin/tools/qvm_service.py
+  PATH: qubes-tools/qubes-core-admin-client/qubesadmin/tools/qvm_service.py
   ELEMENT: function
   ID: main
 - TYPE: File
   ROLE: Implementation
-  PATH: qubes-core-admin-client/qubesadmin/tools/qvm_service.py
+  PATH: qubes-tools/qubes-core-admin-client/qubesadmin/tools/qvm_service.py
   ELEMENT: function
   ID: parse_bool
 
@@ -3129,12 +3219,12 @@ STATEMENT: >>>
 The qvm-tags tool shall bring a qube's tag set to the tags named by the caller.
 <<<
 EARS_PATTERN: Ubiquitous
-PRODUCT: QubesadminTools
+PRODUCT: QubesTools
 STATUS: Partial
 DEFECT: >>>
 The add subcommand and its set alias only add tags, so no invocation makes a
 qube's tags equal a given set
-(qubes-core-admin-client/qubesadmin/tools/qvm_tags.py:47).
+(qubes-tools/qubes-core-admin-client/qubesadmin/tools/qvm_tags.py:47).
 <<<
 RELATIONS:
 - TYPE: Parent
@@ -3142,7 +3232,7 @@ RELATIONS:
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
-  PATH: qubes-core-admin-client/qubesadmin/tools/qvm_tags.py
+  PATH: qubes-tools/qubes-core-admin-client/qubesadmin/tools/qvm_tags.py
   ELEMENT: function
   ID: mode_add
 
@@ -3153,7 +3243,7 @@ STATEMENT: >>>
 The qvm-notes tool shall replace a qube's notes with caller-supplied text.
 <<<
 EARS_PATTERN: Ubiquitous
-PRODUCT: QubesadminTools
+PRODUCT: QubesTools
 STATUS: Implemented
 RELATIONS:
 - TYPE: Parent
@@ -3161,7 +3251,7 @@ RELATIONS:
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
-  PATH: qubes-core-admin-client/qubesadmin/tools/qvm_notes.py
+  PATH: qubes-tools/qubes-core-admin-client/qubesadmin/tools/qvm_notes.py
   ELEMENT: function
   ID: main
 
@@ -3173,12 +3263,12 @@ If supplied notes exceed 256 000 bytes, then qvm-notes shall reject the change a
 leave the stored notes untouched.
 <<<
 EARS_PATTERN: Unwanted-behaviour
-PRODUCT: QubesadminTools
+PRODUCT: QubesTools
 STATUS: Not Implemented
 DEFECT: >>>
 qvm-notes checks no size before calling set_notes, so text of any length is sent
 to the Admin API
-(qubes-core-admin-client/qubesadmin/tools/qvm_notes.py:174).
+(qubes-tools/qubes-core-admin-client/qubesadmin/tools/qvm_notes.py:174).
 <<<
 RELATIONS:
 - TYPE: Parent
@@ -3192,12 +3282,12 @@ STATEMENT: >>>
 The qvm-prefs tool shall reject a request to change an existing qube's class.
 <<<
 EARS_PATTERN: Ubiquitous
-PRODUCT: QubesadminTools
+PRODUCT: QubesTools
 STATUS: Partial
 DEFECT: >>>
 qvm-prefs forwards any property name unchecked, so a class change is refused
 only by the Admin API answering that the property does not exist
-(qubes-core-admin-client/qubesadmin/tools/qvm_prefs.py:127).
+(qubes-tools/qubes-core-admin-client/qubesadmin/tools/qvm_prefs.py:127).
 <<<
 RELATIONS:
 - TYPE: Parent
@@ -3205,7 +3295,7 @@ RELATIONS:
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
-  PATH: qubes-core-admin-client/qubesadmin/tools/qvm_prefs.py
+  PATH: qubes-tools/qubes-core-admin-client/qubesadmin/tools/qvm_prefs.py
   ELEMENT: function
   ID: process_actions
 - TYPE: File
@@ -3226,7 +3316,7 @@ STATEMENT: >>>
 The qvm-volume tool shall resize a named qube volume to the caller-given size.
 <<<
 EARS_PATTERN: Ubiquitous
-PRODUCT: QubesadminTools
+PRODUCT: QubesTools
 STATUS: Implemented
 RELATIONS:
 - TYPE: Parent
@@ -3234,7 +3324,7 @@ RELATIONS:
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
-  PATH: qubes-core-admin-client/qubesadmin/tools/qvm_volume.py
+  PATH: qubes-tools/qubes-core-admin-client/qubesadmin/tools/qvm_volume.py
   ELEMENT: function
   ID: resize_volume
 
@@ -3246,7 +3336,7 @@ The qvm-volume tool shall set the number of revisions retained for a named qube
 volume.
 <<<
 EARS_PATTERN: Ubiquitous
-PRODUCT: QubesadminTools
+PRODUCT: QubesTools
 STATUS: Implemented
 RELATIONS:
 - TYPE: Parent
@@ -3254,7 +3344,7 @@ RELATIONS:
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
-  PATH: qubes-core-admin-client/qubesadmin/tools/qvm_volume.py
+  PATH: qubes-tools/qubes-core-admin-client/qubesadmin/tools/qvm_volume.py
   ELEMENT: function
   ID: config_volume
 
@@ -3266,7 +3356,7 @@ If a caller names a volume property other than rw, revisions_to_keep or
 ephemeral, then qvm-volume shall reject it.
 <<<
 EARS_PATTERN: Unwanted-behaviour
-PRODUCT: QubesadminTools
+PRODUCT: QubesTools
 STATUS: Implemented
 RELATIONS:
 - TYPE: Parent
@@ -3274,7 +3364,7 @@ RELATIONS:
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
-  PATH: qubes-core-admin-client/qubesadmin/tools/qvm_volume.py
+  PATH: qubes-tools/qubes-core-admin-client/qubesadmin/tools/qvm_volume.py
   ELEMENT: function
   ID: config_volume
 
@@ -3286,7 +3376,7 @@ The qvm-create tool shall place a new qube's volumes in the caller-given storage
 pool.
 <<<
 EARS_PATTERN: Ubiquitous
-PRODUCT: QubesadminTools
+PRODUCT: QubesTools
 STATUS: Implemented
 RELATIONS:
 - TYPE: Parent
@@ -3294,7 +3384,7 @@ RELATIONS:
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
-  PATH: qubes-core-admin-client/qubesadmin/tools/qvm_create.py
+  PATH: qubes-tools/qubes-core-admin-client/qubesadmin/tools/qvm_create.py
   ELEMENT: function
   ID: main
 
@@ -3310,7 +3400,7 @@ STATEMENT: >>>
 The qvm-device tool shall attach a device to a qube for that qube's current run.
 <<<
 EARS_PATTERN: Ubiquitous
-PRODUCT: QubesadminTools
+PRODUCT: QubesTools
 STATUS: Implemented
 RELATIONS:
 - TYPE: Parent
@@ -3318,7 +3408,7 @@ RELATIONS:
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
-  PATH: qubes-core-admin-client/qubesadmin/tools/qvm_device.py
+  PATH: qubes-tools/qubes-core-admin-client/qubesadmin/tools/qvm_device.py
   ELEMENT: function
   ID: attach_device
 
@@ -3330,7 +3420,7 @@ The qvm-device tool shall assign a device to a qube so the binding survives a
 restart.
 <<<
 EARS_PATTERN: Ubiquitous
-PRODUCT: QubesadminTools
+PRODUCT: QubesTools
 STATUS: Implemented
 RELATIONS:
 - TYPE: Parent
@@ -3338,7 +3428,7 @@ RELATIONS:
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
-  PATH: qubes-core-admin-client/qubesadmin/tools/qvm_device.py
+  PATH: qubes-tools/qubes-core-admin-client/qubesadmin/tools/qvm_device.py
   ELEMENT: function
   ID: assign_device
 
@@ -3349,7 +3439,7 @@ STATEMENT: >>>
 The qvm-device tool shall remove an existing device assignment from a qube.
 <<<
 EARS_PATTERN: Ubiquitous
-PRODUCT: QubesadminTools
+PRODUCT: QubesTools
 STATUS: Implemented
 RELATIONS:
 - TYPE: Parent
@@ -3357,7 +3447,7 @@ RELATIONS:
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
-  PATH: qubes-core-admin-client/qubesadmin/tools/qvm_device.py
+  PATH: qubes-tools/qubes-core-admin-client/qubesadmin/tools/qvm_device.py
   ELEMENT: function
   ID: unassign_device
 
@@ -3369,7 +3459,7 @@ The qvm-device tool shall record the assignment mode requested by the caller as
 ask-to-attach, auto-attach or required.
 <<<
 EARS_PATTERN: Ubiquitous
-PRODUCT: QubesadminTools
+PRODUCT: QubesTools
 STATUS: Implemented
 RELATIONS:
 - TYPE: Parent
@@ -3377,12 +3467,12 @@ RELATIONS:
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
-  PATH: qubes-core-admin-client/qubesadmin/tools/qvm_device.py
+  PATH: qubes-tools/qubes-core-admin-client/qubesadmin/tools/qvm_device.py
   ELEMENT: function
   ID: assign_device
 - TYPE: File
   ROLE: Implementation
-  PATH: qubes-core-admin-client/qubesadmin/tools/qvm_device.py
+  PATH: qubes-tools/qubes-core-admin-client/qubesadmin/tools/qvm_device.py
   ELEMENT: function
   ID: attach_device
 
@@ -3394,12 +3484,12 @@ If a PCI device is bound to a qube, then qvm-device shall record a required
 assignment rather than an attachment.
 <<<
 EARS_PATTERN: Unwanted-behaviour
-PRODUCT: QubesadminTools
+PRODUCT: QubesTools
 STATUS: Partial
 DEFECT: >>>
 A required assignment is recorded only when --persistent is given, so a plain
 pci attach is forwarded to the Admin API unchecked
-(qubes-core-admin-client/qubesadmin/tools/qvm_device.py:257).
+(qubes-tools/qubes-core-admin-client/qubesadmin/tools/qvm_device.py:257).
 <<<
 RELATIONS:
 - TYPE: Parent
@@ -3407,7 +3497,7 @@ RELATIONS:
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
-  PATH: qubes-core-admin-client/qubesadmin/tools/qvm_device.py
+  PATH: qubes-tools/qubes-core-admin-client/qubesadmin/tools/qvm_device.py
   ELEMENT: function
   ID: attach_device
 - TYPE: File
@@ -3429,12 +3519,12 @@ If the qube named as netvm does not provide network, then qvm-prefs shall reject
 the change.
 <<<
 EARS_PATTERN: Unwanted-behaviour
-PRODUCT: QubesadminTools
+PRODUCT: QubesTools
 STATUS: Not Implemented
 DEFECT: >>>
 qvm-prefs validates no property value and forwards the netvm name straight to
 the Admin API
-(qubes-core-admin-client/qubesadmin/tools/qvm_prefs.py:127).
+(qubes-tools/qubes-core-admin-client/qubesadmin/tools/qvm_prefs.py:127).
 <<<
 RELATIONS:
 - TYPE: Parent
@@ -3449,12 +3539,12 @@ The qvm-firewall tool shall apply a caller-supplied rule sequence to a qube in
 the order given.
 <<<
 EARS_PATTERN: Ubiquitous
-PRODUCT: QubesadminTools
+PRODUCT: QubesTools
 STATUS: Partial
 DEFECT: >>>
 Rules are added and deleted one at a time; no subcommand replaces the rule set
 with a caller-supplied sequence, and reset installs only a single accept rule
-(qubes-core-admin-client/qubesadmin/tools/qvm_firewall.py:207).
+(qubes-tools/qubes-core-admin-client/qubesadmin/tools/qvm_firewall.py:207).
 <<<
 RELATIONS:
 - TYPE: Parent
@@ -3462,7 +3552,7 @@ RELATIONS:
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
-  PATH: qubes-core-admin-client/qubesadmin/tools/qvm_firewall.py
+  PATH: qubes-tools/qubes-core-admin-client/qubesadmin/tools/qvm_firewall.py
   ELEMENT: function
   ID: rules_add
 
@@ -3479,7 +3569,7 @@ The qvm-template tool shall install a template package obtained from a
 configured template repository.
 <<<
 EARS_PATTERN: Ubiquitous
-PRODUCT: QubesadminTools
+PRODUCT: QubesTools
 STATUS: Implemented
 RELATIONS:
 - TYPE: Parent
@@ -3487,12 +3577,12 @@ RELATIONS:
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
-  PATH: qubes-core-admin-client/qubesadmin/tools/qvm_template.py
+  PATH: qubes-tools/qubes-core-admin-client/qubesadmin/tools/qvm_template.py
   ELEMENT: function
   ID: install
 - TYPE: File
   ROLE: Implementation
-  PATH: qubes-core-admin-client/qubesadmin/tools/qvm_template.py
+  PATH: qubes-tools/qubes-core-admin-client/qubesadmin/tools/qvm_template.py
   ELEMENT: function
   ID: download
 
@@ -3504,7 +3594,7 @@ The qvm-template tool shall verify a template package against the repository key
 before installing it.
 <<<
 EARS_PATTERN: Ubiquitous
-PRODUCT: QubesadminTools
+PRODUCT: QubesTools
 STATUS: Implemented
 RELATIONS:
 - TYPE: Parent
@@ -3512,7 +3602,7 @@ RELATIONS:
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
-  PATH: qubes-core-admin-client/qubesadmin/tools/qvm_template.py
+  PATH: qubes-tools/qubes-core-admin-client/qubesadmin/tools/qvm_template.py
   ELEMENT: function
   ID: verify_rpm
 
@@ -3524,7 +3614,7 @@ Where a signature check is waived for a downloaded template, qvm-template shall
 verify that template regardless.
 <<<
 EARS_PATTERN: Optional-feature
-PRODUCT: QubesadminTools
+PRODUCT: QubesTools
 STATUS: Implemented
 RATIONALE: >>>
 The --nogpgcheck escape exists for packages the administrator already holds; a
@@ -3536,7 +3626,7 @@ RELATIONS:
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
-  PATH: qubes-core-admin-client/qubesadmin/tools/qvm_template.py
+  PATH: qubes-tools/qubes-core-admin-client/qubesadmin/tools/qvm_template.py
   ELEMENT: function
   ID: download
 
@@ -3553,7 +3643,7 @@ The qvm-check tool shall report through its exit status whether the named qubes
 are in a requested power state.
 <<<
 EARS_PATTERN: Ubiquitous
-PRODUCT: QubesadminTools
+PRODUCT: QubesTools
 STATUS: Implemented
 RATIONALE: >>>
 Status 1 means no qube matched and status 3 means only some did, which a caller
@@ -3568,12 +3658,12 @@ RELATIONS:
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
-  PATH: qubes-core-admin-client/qubesadmin/tools/qvm_check.py
+  PATH: qubes-tools/qubes-core-admin-client/qubesadmin/tools/qvm_check.py
   ELEMENT: function
   ID: main
 - TYPE: File
   ROLE: Implementation
-  PATH: qubes-core-admin-client/qubesadmin/tools/qvm_check.py
+  PATH: qubes-tools/qubes-core-admin-client/qubesadmin/tools/qvm_check.py
   ELEMENT: function
   ID: get_filters
 
@@ -3595,7 +3685,7 @@ The qvm-run tool shall run a caller-supplied command in a qube and return that
 command's exit status.
 <<<
 EARS_PATTERN: Ubiquitous
-PRODUCT: QubesadminTools
+PRODUCT: QubesTools
 STATUS: Implemented
 RELATIONS:
 - TYPE: Parent
@@ -3603,12 +3693,12 @@ RELATIONS:
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
-  PATH: qubes-core-admin-client/qubesadmin/tools/qvm_run.py
+  PATH: qubes-tools/qubes-core-admin-client/qubesadmin/tools/qvm_run.py
   ELEMENT: function
   ID: main
 - TYPE: File
   ROLE: Implementation
-  PATH: qubes-core-admin-client/qubesadmin/tools/qvm_run.py
+  PATH: qubes-tools/qubes-core-admin-client/qubesadmin/tools/qvm_run.py
   ELEMENT: function
   ID: run_command_single
 
@@ -3619,12 +3709,12 @@ STATEMENT: >>>
 The command-line tools shall transfer a file between dom0 and a qube.
 <<<
 EARS_PATTERN: Ubiquitous
-PRODUCT: QubesadminTools
+PRODUCT: QubesTools
 STATUS: Not Implemented
 DEFECT: >>>
 No tool in the component transfers files; a caller must stream data through a
 shell pipeline built on qvm-run --pass-io
-(qubes-core-admin-client/qubesadmin/tools/qvm_run.py:63).
+(qubes-tools/qubes-core-admin-client/qubesadmin/tools/qvm_run.py:63).
 <<<
 RELATIONS:
 - TYPE: Parent
@@ -3639,7 +3729,7 @@ The qvm-run tool shall run the command under the user account named by the
 caller.
 <<<
 EARS_PATTERN: Ubiquitous
-PRODUCT: QubesadminTools
+PRODUCT: QubesTools
 STATUS: Implemented
 RELATIONS:
 - TYPE: Parent
@@ -3647,7 +3737,7 @@ RELATIONS:
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
-  PATH: qubes-core-admin-client/qubesadmin/tools/qvm_run.py
+  PATH: qubes-tools/qubes-core-admin-client/qubesadmin/tools/qvm_run.py
   ELEMENT: function
   ID: run_command_single
 
@@ -3669,12 +3759,12 @@ Where a dry run is requested, qvm-shutdown shall report the shutdowns it would
 perform.
 <<<
 EARS_PATTERN: Optional-feature
-PRODUCT: QubesadminTools
+PRODUCT: QubesTools
 STATUS: Partial
 DEFECT: >>>
 The --dry-run option returns before any output is produced, and no other tool in
 the component offers a preview
-(qubes-core-admin-client/qubesadmin/tools/qvm_shutdown.py:94).
+(qubes-tools/qubes-core-admin-client/qubesadmin/tools/qvm_shutdown.py:94).
 <<<
 RELATIONS:
 - TYPE: Parent
@@ -3682,7 +3772,7 @@ RELATIONS:
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
-  PATH: qubes-core-admin-client/qubesadmin/tools/qvm_shutdown.py
+  PATH: qubes-tools/qubes-core-admin-client/qubesadmin/tools/qvm_shutdown.py
   ELEMENT: function
   ID: run_async
 
@@ -3699,7 +3789,7 @@ The qvm-prefs tool shall print each property of a qube with a marker showing
 whether the value is the default.
 <<<
 EARS_PATTERN: Ubiquitous
-PRODUCT: QubesadminTools
+PRODUCT: QubesTools
 STATUS: Implemented
 RELATIONS:
 - TYPE: Parent
@@ -3707,7 +3797,7 @@ RELATIONS:
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
-  PATH: qubes-core-admin-client/qubesadmin/tools/qvm_prefs.py
+  PATH: qubes-tools/qubes-core-admin-client/qubesadmin/tools/qvm_prefs.py
   ELEMENT: function
   ID: process_actions
 
@@ -3718,7 +3808,7 @@ STATEMENT: >>>
 The qvm-tags tool shall print the tags currently carried by a qube.
 <<<
 EARS_PATTERN: Ubiquitous
-PRODUCT: QubesadminTools
+PRODUCT: QubesTools
 STATUS: Implemented
 RELATIONS:
 - TYPE: Parent
@@ -3726,7 +3816,7 @@ RELATIONS:
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
-  PATH: qubes-core-admin-client/qubesadmin/tools/qvm_tags.py
+  PATH: qubes-tools/qubes-core-admin-client/qubesadmin/tools/qvm_tags.py
   ELEMENT: function
   ID: mode_query
 
@@ -3738,7 +3828,7 @@ The qvm-ls tool shall list the qubes matching the selection criteria given by
 the caller.
 <<<
 EARS_PATTERN: Ubiquitous
-PRODUCT: QubesadminTools
+PRODUCT: QubesTools
 STATUS: Implemented
 RELATIONS:
 - TYPE: Parent
@@ -3746,12 +3836,12 @@ RELATIONS:
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
-  PATH: qubes-core-admin-client/qubesadmin/tools/qvm_ls.py
+  PATH: qubes-tools/qubes-core-admin-client/qubesadmin/tools/qvm_ls.py
   ELEMENT: function
   ID: main
 - TYPE: File
   ROLE: Implementation
-  PATH: qubes-core-admin-client/qubesadmin/tools/__init__.py
+  PATH: qubes-tools/qubes-core-admin-client/qubesadmin/tools/__init__.py
   ELEMENT: function
   ID: VmNameAction.parse_qubes_app
 
@@ -3768,7 +3858,7 @@ The command-line tools shall exit with a non-zero status when a requested
 operation fails.
 <<<
 EARS_PATTERN: Ubiquitous
-PRODUCT: QubesadminTools
+PRODUCT: QubesTools
 STATUS: Implemented
 RATIONALE: >>>
 qvm-create grades the status by stage, distinguishing a failed creation from a
@@ -3780,12 +3870,12 @@ RELATIONS:
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
-  PATH: qubes-core-admin-client/qubesadmin/tools/__init__.py
+  PATH: qubes-tools/qubes-core-admin-client/qubesadmin/tools/__init__.py
   ELEMENT: function
   ID: QubesArgumentParser.error_runtime
 - TYPE: File
   ROLE: Implementation
-  PATH: qubes-core-admin-client/qubesadmin/tools/qvm_create.py
+  PATH: qubes-tools/qubes-core-admin-client/qubesadmin/tools/qvm_create.py
   ELEMENT: function
   ID: main
 
@@ -3797,7 +3887,7 @@ The command-line tools shall name the qube and the failed operation in each
 error they report.
 <<<
 EARS_PATTERN: Ubiquitous
-PRODUCT: QubesadminTools
+PRODUCT: QubesTools
 STATUS: Implemented
 RELATIONS:
 - TYPE: Parent
@@ -3805,12 +3895,12 @@ RELATIONS:
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
-  PATH: qubes-core-admin-client/qubesadmin/tools/__init__.py
+  PATH: qubes-tools/qubes-core-admin-client/qubesadmin/tools/__init__.py
   ELEMENT: function
   ID: QubesArgumentParser.print_error
 - TYPE: File
   ROLE: Implementation
-  PATH: qubes-core-admin-client/qubesadmin/tools/qvm_shutdown.py
+  PATH: qubes-tools/qubes-core-admin-client/qubesadmin/tools/qvm_shutdown.py
   ELEMENT: function
   ID: run_async
 
@@ -3822,7 +3912,7 @@ Where increased verbosity is requested, the command-line tools shall lower the
 logging threshold by one level per repetition.
 <<<
 EARS_PATTERN: Optional-feature
-PRODUCT: QubesadminTools
+PRODUCT: QubesTools
 STATUS: Implemented
 RELATIONS:
 - TYPE: Parent
@@ -3830,12 +3920,12 @@ RELATIONS:
   ROLE: Refines
 - TYPE: File
   ROLE: Implementation
-  PATH: qubes-core-admin-client/qubesadmin/tools/__init__.py
+  PATH: qubes-tools/qubes-core-admin-client/qubesadmin/tools/__init__.py
   ELEMENT: function
   ID: QubesArgumentParser.set_qubes_verbosity
 - TYPE: File
   ROLE: Implementation
-  PATH: qubes-core-admin-client/qubesadmin/tools/__init__.py
+  PATH: qubes-tools/qubes-core-admin-client/qubesadmin/tools/__init__.py
   ELEMENT: function
   ID: QubesArgumentParser.get_loglevel_from_verbosity
 
@@ -3928,6 +4018,51 @@ RELATIONS:
   PATH: qubes-terraform/tests/test_capabilities.py
   ELEMENT: function
   ID: test_create_via_origin_clone
+
+[TECHNICAL_REQUIREMENT]
+UID: L3-TF-021
+TITLE: Qube renaming
+STATEMENT: >>>
+When a declared qube's name changes, the qubes_vm resource shall rename the qube
+instead of replacing it.
+<<<
+EARS_PATTERN: Event-driven
+PRODUCT: Terraform
+STATUS: Implemented
+RELATIONS:
+- TYPE: Parent
+  VALUE: L2P-LIFECYCLE-021
+  ROLE: Refines
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-terraform/qubes_provider/resources/qube.py
+  ELEMENT: function
+  ID: QubesVMResource.update
+- TYPE: File
+  ROLE: Implementation
+  PATH: qubes-terraform/qubes_provider/utils/qubes_adapter.py
+  ELEMENT: function
+  ID: QubesVmAdapter.rename
+- TYPE: File
+  ROLE: Verification
+  PATH: qubes-terraform/tests/test_qube.py
+  ELEMENT: function
+  ID: test_name_change_does_not_replace
+- TYPE: File
+  ROLE: Verification
+  PATH: qubes-terraform/tests/test_qube.py
+  ELEMENT: function
+  ID: test_rename_keeps_qube
+- TYPE: File
+  ROLE: Verification
+  PATH: qubes-terraform/tests/test_qube.py
+  ELEMENT: function
+  ID: test_rename_repoints_dependents
+- TYPE: File
+  ROLE: Verification
+  PATH: qubes-terraform/tests/test_qube.py
+  ELEMENT: function
+  ID: test_rename_rolls_back_when_repoint_fails
 
 [TECHNICAL_REQUIREMENT]
 UID: L3-TF-030
