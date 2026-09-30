@@ -15,7 +15,7 @@
 	url = https://github.com/QubesOS/qubes-mgmt-salt-dom0-qvm
 [submodule "qubes-terraform"]
 	path = qubes-terraform
-	url = ../qubes-terraform
+	url = https://github.com/deeplow/qubes-terraform-poc
 [submodule "qubes-tools/qubes-manager"]
 	path = qubes-tools/qubes-manager
 	url = https://github.com/QubesOS/qubes-manager
