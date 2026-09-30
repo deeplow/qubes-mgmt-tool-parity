@@ -859,9 +859,9 @@ wheels = [
 ]
 
 [[package]]
-name = "qubes-requirements-experiments"
+name = "qubes-mgmt-tool-parity"
 version = "0.1.0"
-source = { editable = "." }
+source = { virtual = "." }
 dependencies = [
     { name = "strictdoc" },
 ]
