@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2026 deeplow
+# SPDX-License-Identifier: Apache-2.0
+
 """
 Render a two-level coverage matrix as StrictDoc's project statistics screen.
 

@@ -1,4 +1,9 @@
 /*
+ * SPDX-FileCopyrightText: 2026 deeplow
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+/*
  * Feature-parity matrix styling.
  *
  * Loaded on every screen via `custom_css_path` in strictdoc_config.py, so every

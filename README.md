@@ -70,3 +70,12 @@ index. A report, not a gate: use it to find missing anchors or requirements.
   UIDs, the fan-out rule, EARS patterns, anchor style.
 - [StrictDoc documentation](https://strictdoc.readthedocs.io/) — the tool
   itself, including how to write `.sdoc` documents.
+
+## License
+
+This repository is licensed under the Apache License, Version 2.0;
+see [LICENSE](LICENSE).
+
+The git submodules are separate projects and are **not** covered by this
+license. Each one is distributed under its own license, found in its own
+repository.

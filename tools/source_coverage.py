@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-FileCopyrightText: 2026 deeplow
+# SPDX-License-Identifier: Apache-2.0
 """List source functions that no requirement traces to.
 
 StrictDoc's Source coverage screen gives per-file line and function percentages

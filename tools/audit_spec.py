@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-FileCopyrightText: 2026 deeplow
+# SPDX-License-Identifier: Apache-2.0
 """Audit the Qubes management-tooling requirements spec.
 
 Checks what strictdoc does not: anchor IDs that resolve to real definitions,

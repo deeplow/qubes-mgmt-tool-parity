@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2026 deeplow
+# SPDX-License-Identifier: Apache-2.0
+
 """Project configuration of the parity matrix (see tools/parity_matrix.py).
 
 Wired in via `statistics_generator` in strictdoc_config.py. The generator stays
