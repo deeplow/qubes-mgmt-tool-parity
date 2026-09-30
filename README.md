@@ -1,5 +1,10 @@
 # Qubes OS Management Tooling Requirements
 
+> **LLM DISCLAIMER**
+>
+> This was generated with LLMs, and wasn't exhaustively reviewed.
+> Please use at your own risk.
+
 A [StrictDoc](https://strictdoc.readthedocs.io/) specification of what Qubes OS
 management tooling is required to do, and how far each tool actually implements
 it.
