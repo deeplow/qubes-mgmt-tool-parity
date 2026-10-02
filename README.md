@@ -13,6 +13,10 @@ The rendered specification is published at
 <https://deeplow.github.io/qubes-mgmt-tool-parity/>, rebuilt on every push to
 `main` and weekly.
 
+[![Feature-parity matrix: product requirements down the side, Ansible, Salt,
+QubesTools and Terraform across the top, coloured by implementation
+status](docs/images/parity-matrix.png)](https://deeplow.github.io/qubes-mgmt-tool-parity/project_statistics.html)
+
 | Path | What |
 |---|---|
 | `spec/` | The specification: L1 goals, the three L2 requirement sets (`L2_Provisioning`, `L2_Configuration`, `L2_Common`), L3 technical requirements, the shared grammar, and authoring conventions |
