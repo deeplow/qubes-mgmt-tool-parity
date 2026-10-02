@@ -19,7 +19,7 @@ status](docs/images/parity-matrix.png)](https://deeplow.github.io/qubes-mgmt-too
 
 | Path | What |
 |---|---|
-| `spec/` | The specification: L1 goals, the three L2 requirement sets (`L2_Provisioning`, `L2_Configuration`, `L2_Common`), L3 technical requirements, the shared grammar, and authoring conventions |
+| `docs/spec/` | The specification: L1 goals, the three L2 requirement sets (`L2_Provisioning`, `L2_Configuration`, `L2_Common`), L3 technical requirements, the shared grammar, and authoring conventions |
 | `tools/audit_spec.py` | Consistency audit of the specification |
 | `tools/parity_matrix.py`, `.css` | Renders the feature-parity matrix screen |
 | `strictdoc_config.py` | StrictDoc project configuration |
@@ -74,7 +74,7 @@ index. A report, not a gate: use it to find missing anchors or requirements.
 
 ## Further reading
 
-- `spec/CONVENTIONS.md` — the conventions for this specification: levels and
+- `docs/spec/CONVENTIONS.md` — the conventions for this specification: levels and
   UIDs, the fan-out rule, EARS patterns, anchor style.
 - [StrictDoc documentation](https://strictdoc.readthedocs.io/) — the tool
   itself, including how to write `.sdoc` documents.

@@ -2,7 +2,7 @@
 
 Prose conventions for everyone writing `.sdoc` files here.
 
-**The machine-readable definitions live in `spec/requirements.sgra`** — node
+**The machine-readable definitions live in `docs/spec/requirements.sgra`** — node
 types, field sets, choice enumerations and relation roles. All documents
 import it with `[GRAMMAR]` / `IMPORT_FROM_FILE: requirements.sgra`, and
 `tools/audit_spec.py` reads its enumerations rather than hardcoding them. To add

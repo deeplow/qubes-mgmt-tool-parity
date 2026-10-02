@@ -5,7 +5,7 @@
 
 Checks what strictdoc does not: anchor IDs that resolve to real definitions,
 fan-out between PRODUCT and actual L3 children, EARS conformance, and the
-writing-style limits from spec/CONVENTIONS.md.
+writing-style limits from docs/spec/CONVENTIONS.md.
 
 Run from the repo root:
 
@@ -25,7 +25,7 @@ from pathlib import Path
 from typing import Dict, List, Optional, Set, Tuple
 
 REPO = Path(__file__).resolve().parent.parent
-SPEC = REPO / "spec"
+SPEC = REPO / "docs" / "spec"
 GRAMMAR = SPEC / "requirements.sgra"
 
 AUTHORITY_PATH = "qubes-core-admin/qubes/api/admin.py"
@@ -335,7 +335,7 @@ class Audit:
         l2_uids = {n.uid for n in l2}
 
         if not l2:
-            self.fail("structure", "no L2 requirements found in spec/L2_*.sdoc")
+            self.fail("structure", "no L2 requirements found in docs/spec/L2_*.sdoc")
         for n in l2:
             prefix = L2_PREFIX_BY_FILE.get(n.doc)
             if prefix is None:
