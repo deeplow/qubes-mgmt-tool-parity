@@ -9,6 +9,10 @@ A [StrictDoc](https://strictdoc.readthedocs.io/) specification of what Qubes OS
 management tooling is required to do, and how far each tool actually implements
 it.
 
+The rendered specification is published at
+<https://deeplow.github.io/qubes-mgmt-tool-parity/>, rebuilt on every push to
+`main` and weekly.
+
 | Path | What |
 |---|---|
 | `spec/` | The specification: L1 goals, the three L2 requirement sets (`L2_Provisioning`, `L2_Configuration`, `L2_Common`), L3 technical requirements, the shared grammar, and authoring conventions |
