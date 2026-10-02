@@ -69,9 +69,9 @@ def build_index() -> TraceabilityIndex:
     export_config = ExportCommandConfig(
         debug=False,
         command="export",
-        input_paths=[str(REPO)],
+        input_paths=[str(REPO / "docs")],
         output_dir=None,
-        config=None,
+        config=str(REPO),
         project_title=None,
         formats=["html"],
         fields=["UID"],

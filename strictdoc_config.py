@@ -7,9 +7,9 @@ from strictdoc.api import ProjectConfig
 def create_config() -> ProjectConfig:
     return ProjectConfig(
         project_title="Qubes OS Management Tooling Requirements",
-        source_root_path=".",
+        source_root_path="..",
         statistics_generator="tools.qubes_matrix.QubesParityMatrixGenerator",
-        custom_css_path="tools/parity_matrix.css",
+        custom_css_path="../tools/parity_matrix.css",
         project_features=[
             "TABLE_SCREEN",
             "TRACEABILITY_SCREEN",
@@ -20,8 +20,7 @@ def create_config() -> ProjectConfig:
             "REQUIREMENT_TO_SOURCE_TRACEABILITY",
             "TREE_MAP_SCREEN",
         ],
-        include_doc_paths=["/README.md", "docs/**"],
-        exclude_doc_paths=[".venv/**", "output/**"],
+        include_doc_paths=["/README.md", "spec/**", "_assets/"],
         include_source_paths=[
             # ANS — qubes-ansible
             "qubes-ansible/ansible_collections/**",

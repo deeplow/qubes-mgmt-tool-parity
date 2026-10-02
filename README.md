@@ -15,7 +15,7 @@ The rendered specification is published at
 
 [![Feature-parity matrix: product requirements down the side, Ansible, Salt,
 QubesTools and Terraform across the top, coloured by implementation
-status](docs/_assets/parity-matrix.png)](https://deeplow.github.io/qubes-mgmt-tool-parity/project_statistics.html)
+status](https://raw.githubusercontent.com/deeplow/qubes-mgmt-tool-parity/main/docs/_assets/parity-matrix.png)](https://deeplow.github.io/qubes-mgmt-tool-parity/project_statistics.html)
 
 | Path | What |
 |---|---|
@@ -40,13 +40,13 @@ git submodule update --init
 Build the HTML:
 
 ```bash
-uv run strictdoc export .          # → output/html/index.html
+uv run strictdoc export docs --config .   # → output/html/index.html
 ```
 
 Or serve it, which adds the search screen:
 
 ```bash
-uv run strictdoc server .          # → http://127.0.0.1:5111
+uv run strictdoc server docs --config .   # → http://127.0.0.1:5111
 ```
 
 The **Statistics** screen in the navigation is the feature-parity matrix:
