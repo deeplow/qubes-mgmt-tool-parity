@@ -253,7 +253,7 @@ wheels = [
 
 [[package]]
 name = "html2pdf4doc"
-version = "0.0.33"
+version = "0.0.35"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "pypdf" },
@@ -261,9 +261,9 @@ dependencies = [
     { name = "selenium" },
     { name = "webdriver-manager" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/30/3a/81a53441195f373dbcb171236a801d2849f4efa42dfff7d36feb48484ae7/html2pdf4doc-0.0.33.tar.gz", hash = "sha256:5eee7f3f1fec69c46dae376f9a57c2c162da2ac37a38be60098be8e883fec759", size = 61301, upload-time = "2026-04-10T06:41:56.212Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/be/54/1faec6ac85242e2e71ef7347c306a9d6f6d39b222d73dc783d181766e523/html2pdf4doc-0.0.35.tar.gz", hash = "sha256:747cbc228295049405288801416b46558a7bed50664b12d9fd1635221864c56c", size = 62529, upload-time = "2026-09-13T13:04:07.716Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/df/95/122d5439bb8d60ee630f0a6fdacd7a273aa66c690e4d7a526875de766736/html2pdf4doc-0.0.33-py3-none-any.whl", hash = "sha256:f2c540cc367c7b441928fc686a128493a552dabf0fe8c3024ac2e247e3bba833", size = 63402, upload-time = "2026-04-10T06:41:54.893Z" },
+    { url = "https://files.pythonhosted.org/packages/30/f1/6b1a7fab03a880211e58df1bdc90c388f14920227c38bc263525d6391555/html2pdf4doc-0.0.35-py3-none-any.whl", hash = "sha256:8b35b58da83b300bc6ab1eb556ef5ec703e27bc79ec2c1ffeebccbd56683544b", size = 64718, upload-time = "2026-09-13T13:04:06.465Z" },
 ]
 
 [[package]]
@@ -746,11 +746,11 @@ wheels = [
 
 [[package]]
 name = "pygments"
-version = "2.20.0"
+version = "2.21.0"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/c3/b2/bc9c9196916376152d655522fdcebac55e66de6603a76a02bca1b6414f6c/pygments-2.20.0.tar.gz", hash = "sha256:6757cd03768053ff99f3039c1a36d6c0aa0b263438fcab17520b30a303a82b5f", size = 4955991, upload-time = "2026-03-29T13:29:33.898Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/49/2e/ced460408999b33da6b31b0021b0f37d329e202d4169aeb164493778f25b/pygments-2.21.0.tar.gz", hash = "sha256:610ca751c9bc2492b38eb9a38a7fbc93edbbb2d7182edaf34e66ae493dee5c8c", size = 5005329, upload-time = "2026-08-17T08:02:48.824Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/f4/7e/a72dd26f3b0f4f2bf1dd8923c85f7ceb43172af56d63c7383eb62b332364/pygments-2.20.0-py3-none-any.whl", hash = "sha256:81a9e26dd42fd28a23a2d169d86d7ac03b46e2f8b59ed4698fb4785f946d0176", size = 1231151, upload-time = "2026-03-29T13:29:30.038Z" },
+    { url = "https://files.pythonhosted.org/packages/71/46/17f022dd3e953bf20a04a028a21ec746d942f8d2af30fa0f124fa0e6a684/pygments-2.21.0-py3-none-any.whl", hash = "sha256:2363c69b61c4a97c838da3b130dcd6468f4848992b21a82f2a63ec34377137d9", size = 1250147, upload-time = "2026-08-17T08:02:44.912Z" },
 ]
 
 [[package]]
@@ -867,7 +867,7 @@ dependencies = [
 ]
 
 [package.metadata]
-requires-dist = [{ name = "strictdoc", specifier = ">=0.27.1" }]
+requires-dist = [{ name = "strictdoc", specifier = ">=0.30.1" }]
 
 [[package]]
 name = "rdflib"
@@ -883,7 +883,7 @@ wheels = [
 
 [[package]]
 name = "reqif"
-version = "0.0.53"
+version = "0.1.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "jinja2" },
@@ -891,9 +891,9 @@ dependencies = [
     { name = "openpyxl" },
     { name = "xmlschema" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/de/e4/8a58ad8808041907ffc967435b7d82a6ba9850231d76564709a98a8f4102/reqif-0.0.53.tar.gz", hash = "sha256:7ec324b267bdafdaacb64e3fafe4f5c00586f678329d40b1939f71b413371834", size = 52370, upload-time = "2026-07-26T20:17:19.26Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/dc/83/3d20cc6a37b514e0d43153b10686248af45786b33da1aa5a37bd6b754f7d/reqif-0.1.0.tar.gz", hash = "sha256:419e8fb838fdb1c0cd6b79ae8c0fb06c9c01dca78690e7e6bae80bf8878d3ca5", size = 55239, upload-time = "2026-08-11T20:11:10.386Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/eb/2e/97b523fce8e79c049e92389c225cc68496db6d918d6cb8e9dd857a801ead/reqif-0.0.53-py3-none-any.whl", hash = "sha256:25cb49353c92e5a21a28857771025a45d77c737303f486f956894e172a5f3bd9", size = 100562, upload-time = "2026-07-26T20:17:17.95Z" },
+    { url = "https://files.pythonhosted.org/packages/37/d6/4e41440e0c7b32bcd659bfdf66e92af889210ba371c35668eb01f955343d/reqif-0.1.0-py3-none-any.whl", hash = "sha256:c3af000d745e107c3d409535acc54274f469522385e6bb3923f5d3918219a189", size = 94886, upload-time = "2026-08-11T20:11:09.149Z" },
 ]
 
 [[package]]
@@ -1016,7 +1016,7 @@ wheels = [
 
 [[package]]
 name = "strictdoc"
-version = "0.27.1"
+version = "0.30.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "beautifulsoup4" },
@@ -1045,15 +1045,16 @@ dependencies = [
     { name = "tree-sitter-cpp" },
     { name = "tree-sitter-python" },
     { name = "tree-sitter-rust" },
+    { name = "typing-extensions" },
     { name = "uvicorn", extra = ["standard"] },
     { name = "watchdog" },
     { name = "websockets" },
     { name = "xlrd" },
     { name = "xlsxwriter" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/70/24/25518ee8c7b8705205281add25fd7949be5339794abf0902c44bb22a5fa8/strictdoc-0.27.1.tar.gz", hash = "sha256:cfbce1d7ec37287e4039dafcfff14683dcb63e14c7bd32ce70fe081a4a5b52ec", size = 5902123, upload-time = "2026-07-26T20:09:20.224Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/96/3f/441a6251fc7fb4d2f022e8b4278f0ae6f93363a13bf830319c93991cbd5c/strictdoc-0.30.1.tar.gz", hash = "sha256:1e9c3fa9afaaf254a97b4a2d626db47b655f093912579c99bf731aeee0dc9759", size = 7626388, upload-time = "2026-09-16T06:13:56.277Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/5c/c4/40c54d739ddf61eed7b479a99fa5e36d6b34b9a631554f8ebb60834a644b/strictdoc-0.27.1-py3-none-any.whl", hash = "sha256:1e7d6ffe2d70bff177613bb70e979b85f72ed61c46338771ed10bef43e73636f", size = 6213980, upload-time = "2026-07-26T20:09:18.418Z" },
+    { url = "https://files.pythonhosted.org/packages/03/26/bd1ac89aa9698a27aa48dc35ef942fba78d2135f164982fe4a539e0a7df0/strictdoc-0.30.1-py3-none-any.whl", hash = "sha256:28885881371f246ed53eecf131e1f222fe60dc276aabe47902ad7b41e349d4e9", size = 7950117, upload-time = "2026-09-16T06:13:54.148Z" },
 ]
 
 [[package]]

@@ -87,6 +87,8 @@ def build_index() -> TraceabilityIndex:
         generate_diff_git=None,
         generate_diff_dirs=None,
         chromedriver=None,
+        chrome_binary=None,
+        disable_ssl_check=False,
     )
     export_config.validate()
     project_config = ProjectConfigLoader.load_using_export_config(export_config)
