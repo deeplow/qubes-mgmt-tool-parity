@@ -20,7 +20,7 @@ def create_config() -> ProjectConfig:
             "REQUIREMENT_TO_SOURCE_TRACEABILITY",
             "TREE_MAP_SCREEN",
         ],
-        include_doc_paths=["docs/spec/**"],
+        include_doc_paths=["/README.md", "docs/spec/**"],
         exclude_doc_paths=[".venv/**", "output/**"],
         include_source_paths=[
             # ANS — qubes-ansible
