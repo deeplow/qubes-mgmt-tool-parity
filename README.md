@@ -15,7 +15,7 @@ The rendered specification is published at
 
 [![Feature-parity matrix: product requirements down the side, Ansible, Salt,
 QubesTools and Terraform across the top, coloured by implementation
-status](docs/images/parity-matrix.png)](https://deeplow.github.io/qubes-mgmt-tool-parity/project_statistics.html)
+status](docs/_assets/parity-matrix.png)](https://deeplow.github.io/qubes-mgmt-tool-parity/project_statistics.html)
 
 | Path | What |
 |---|---|
